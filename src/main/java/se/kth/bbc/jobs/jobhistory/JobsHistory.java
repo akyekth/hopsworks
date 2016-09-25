@@ -95,18 +95,18 @@ public class JobsHistory implements Serializable {
     private String jobType;
     
     @Basic(optional = false)
-    @NotNull
+//    @NotNull
     @Size(min = 1, max = 255)
     @Column(name = "class_name")
     private String className;
     
     @Basic(optional = false)
-    @NotNull
+//    @NotNull
     @Column(name = "arguments")
     private String arguments;
     
     @Basic(optional = false)
-    @NotNull
+//    @NotNull
     @Column(name = "input_blocks_in_hdfs")
     private String inputBlocksInHdfs;
     

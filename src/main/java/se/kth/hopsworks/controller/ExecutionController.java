@@ -19,7 +19,7 @@ import se.kth.hopsworks.user.model.Users;
 
 /**
  * Takes care of booting the execution of a job.
- * <p/>
+ *
  * @author stig
  */
 @Stateless
@@ -38,41 +38,40 @@ public class ExecutionController {
   private ActivityFacade activityFacade;
   @EJB
   private JobsHistoryFacade jobHistoryFac;
-  
+
   final Logger logger = LoggerFactory.getLogger(ExecutionController.class);
 
   public Execution start(JobDescription job, Users user) throws IOException {
     Execution exec = null;
-
     switch (job.getJobType()) {
       case ADAM:
         exec = adamController.startJob(job, user);
-//        if (exec == null) {
-//          throw new IllegalArgumentException("Problem getting execution object for: " + job.
-//              getJobType());
-//        }
-//        int execId = exec.getId();
-//        AdamJobConfiguration adamConfig = (AdamJobConfiguration) job.getJobConfig();
-//        String path = adamConfig.getJarPath();
-//        String[] parts = path.split("/");
-//        String pathOfInode = path.replace("hdfs://" + parts[2], "");
-//        
-//        Inode inode = inodes.getInodeAtPath(pathOfInode);
-//        String inodeName = inode.getInodePK().getName();
-//        
-//        jobHistoryFac.persist(user, job, execId, exec.getAppId());
-//        activityFacade.persistActivity(activityFacade.EXECUTED_JOB + inodeName, job.getProject(), user);
+        if (exec == null) {
+          throw new IllegalArgumentException(
+                  "Problem getting execution object for: " + job.
+                  getJobType());
+        }
+        int execId = exec.getId();
+        AdamJobConfiguration adamConfig = (AdamJobConfiguration) job.
+                getJobConfig();
+        jobHistoryFac.persist(user, job, execId, exec.getAppId());
+        activityFacade.persistActivity(String.format(
+                ActivityFacade.EXECUTED_SPARK_JOB,
+                adamConfig.getSelectedCommand().getCommand()),
+                job.getProject(), user);
         break;
       case FLINK:
         return flinkController.startJob(job, user);
       case SPARK:
         exec = sparkController.startJob(job, user);
         if (exec == null) {
-          throw new IllegalArgumentException("Problem getting execution object for: " + job.
-              getJobType());
+          throw new IllegalArgumentException(
+                  "Problem getting execution object for: " + job.
+                  getJobType());
         }
-        int execId = exec.getId();
-        SparkJobConfiguration config = (SparkJobConfiguration) job.getJobConfig();
+        execId = exec.getId();
+        SparkJobConfiguration config = (SparkJobConfiguration) job.
+                getJobConfig();
 
         String path = config.getJarPath();
         String patternString = "hdfs://(.*)\\s";
@@ -80,24 +79,25 @@ public class ExecutionController {
         Matcher m = p.matcher(path);
         String[] parts = path.split("/");
         String pathOfInode = path.replace("hdfs://" + parts[2], "");
-        
+
         Inode inode = inodes.getInodeAtPath(pathOfInode);
         String inodeName = inode.getInodePK().getName();
-        
+
         jobHistoryFac.persist(user, job, execId, exec.getAppId());
-        activityFacade.persistActivity(activityFacade.EXECUTED_JOB + inodeName, job.getProject(), user);
+        activityFacade.persistActivity(ActivityFacade.EXECUTED_SPARK_JOB
+                + inodeName, job.getProject(), user);
         break;
       default:
         throw new IllegalArgumentException(
-            "Unsupported job type: " + job.
-            getJobType());
+                "Unsupported job type: " + job.
+                getJobType());
     }
 
     return exec;
   }
 
   public void stop(JobDescription job, Users user, String appid) throws
-      IOException {
+          IOException {
     switch (job.getJobType()) {
       case ADAM:
         adamController.stopJob(job, user, appid);
@@ -110,8 +110,8 @@ public class ExecutionController {
         break;
       default:
         throw new IllegalArgumentException("Unsupported job type: " + job.
-            getJobType());
-        
+                getJobType());
+
     }
   }
 }

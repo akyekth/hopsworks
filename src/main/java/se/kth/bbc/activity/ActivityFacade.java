@@ -43,7 +43,9 @@ public class ActivityFacade extends AbstractFacade<Activity> {
   public static final String CREATED_JOB = " created a new job named ";
   public static final String DELETED_JOB = " deleted a job named ";
   public static final String SCHEDULED_JOB = " scheduled a job named ";
-  public static final String EXECUTED_JOB = " ran a job used as input file ";
+  public static final String EXECUTED_SPARK_JOB = " ran a job using application file ";
+  public static final String EXECUTED_ADAM_JOB = " ran a %s Adam job ";
+
   // Flag constants
   public static final String FLAG_PROJECT = "PROJECT";
   public static final String FLAG_DATASET = "DATASET";

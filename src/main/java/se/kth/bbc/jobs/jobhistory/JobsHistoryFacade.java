@@ -13,6 +13,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
+import joptsimple.internal.Strings;
 import se.kth.kthfsdashboard.user.AbstractFacade;
 import se.kth.bbc.jobs.model.description.JobDescription;
 import se.kth.bbc.jobs.spark.SparkJobConfiguration;
@@ -132,7 +133,7 @@ public class JobsHistoryFacade extends AbstractFacade<JobsHistory> {
   private String checkArguments(String arguments) {
     String blocks = "0";
     DistributedFileSystemOps dfso = null;
-    if (arguments.startsWith("hdfs://")) {
+    if (!Strings.isNullOrEmpty(arguments) && arguments.startsWith("hdfs://")) {
       try {
           dfso = fileOperations.getDfsOps();
           blocks = dfso.getFileBlocks(arguments);
