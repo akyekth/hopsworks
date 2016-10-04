@@ -1,6 +1,9 @@
+
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+
   <groupId>se.kth.hop</groupId>
   <artifactId>hopsworks</artifactId>
   <version>0.1.0</version>
@@ -31,7 +34,6 @@
         which has CDI annotated beans, causing deployment of hopsworks to fail. Because Zeppelin-interpreter
         is a 3rd party jar, Glassfish won't exclude from scanning beans/paths we put in beans.xml 
         -->
-    
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
@@ -114,6 +116,7 @@
             <artifactId>erasure-coding</artifactId>
             <version>2.4.0</version>    
         </dependency>
+    
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka_2.10</artifactId>
@@ -148,6 +151,7 @@
             <artifactId>avro</artifactId>
             <version>1.7.7</version>
         </dependency>
+
         <!--end of io.hops -->
         <dependency>
             <groupId>org.json</groupId>
@@ -194,6 +198,7 @@
             <artifactId>commons-lang</artifactId>
             <version>2.5</version>
         </dependency>
+
         <!--End of Zeppelin dependencies -->
         <!--Elastic dependency-->
         <dependency>
@@ -253,6 +258,72 @@
                 </exclusion>
             </exclusions>
         </dependency> 
+<!--    <dependency>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-connector-filesystem_2.10</artifactId>
+      <version>1.0.3</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.flink</groupId>
+          <artifactId>flink-shaded-hadoop2</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>-->
+<!--    <dependency>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-streaming-java_2.10</artifactId>
+      <version>1.0.3</version>
+      <type>jar</type>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.flink</groupId>
+          <artifactId>flink-shaded-hadoop2</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-all</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>-->
+<!--    <dependency>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-streaming-java_2.10</artifactId>
+      <version>1.0.3</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.flink</groupId>
+          <artifactId>flink-shaded-hadoop2</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.netty</groupId>
+          <artifactId>netty-all</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.zookeeper</groupId>
+          <artifactId>zookeeper</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    
+    <dependency>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-connector-kafka-base_2.10</artifactId>
+      <version>1.0.3</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.zookeeper</groupId>
+          <artifactId>zookeeper</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency> -->
     </dependencies>
     <build>
         <finalName>hopsworks</finalName>
@@ -381,6 +452,7 @@
                             </filesets>
                         </configuration>
                     </plugin>
+
                 </plugins>
             </build>
         </profile>

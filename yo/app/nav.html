@@ -53,7 +53,28 @@
                     </button>
                 </div>
             </div>
-
+              </li>
+              <a ng-click="mainCtrl.openMessageModal()" style="text-decoration:none;"> See all messages</a>
+            </ul>
+          </li>
+          <li class="dropdown">
+            <a class="dropdown-toggle" style="padding:7px 10px 8px 10px; text-decoration:none;" data-toggle="dropdown"  aria-expanded="false" id="navbarProfile">
+              <img src="https://gravatar.com/avatar/{{mainCtrl.emailHash}}?d=retro&s=50" style="height: 35px; margin-right: 10px;border: 0.5px solid gray;" class="profile-image img-circle">
+              {{mainCtrl.email}} <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+              <li ng-show="mainCtrl.isAdmin>0"><a ng-click="mainCtrl.goToAdminPage()"><i class="fa fa-user-secret"></i>Admin</a></li>
+              <li><a ng-click="mainCtrl.profileModal()"><i class="fa fa-cog"></i> Account</a></li>
+              <!--<li><a ng-click="mainCtrl.sshKeysModal()"><i class="fa fa-key"></i> Ssh Keys</a></li>-->
+              <li><a href="#/" ng-click="mainCtrl.logout()"><i class="fa fa-sign-out"></i> Sign out</a></li>
+            </ul>
+          </li>
+        </ul>
+        <form class="navbar-form" role="search">
+          <div class="col-md-offset-2 col-md-4 input-group">
+            <input type="text" class="form-control" style="height: 28px;margin-top: 3px;" placeholder="Search"
+                   name="srch-term" id="srch-term" ng-model="mainCtrl.searchTerm" ng-model-options="{debounce: 500}"
+                   ng-change="mainCtrl.keyTyped()" ng-keyup="mainCtrl.hitEnter($event)">
             <div class="collapse navbar-collapse" id="navbar">
                 <ul class="nav navbar-nav navbar-right"
                     style="margin-right:10px;">
