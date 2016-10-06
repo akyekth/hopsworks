@@ -343,5 +343,24 @@ angular.module('hopsWorksApp')
                         }, function (error) {
                             growl.error(error, {title: 'Error', ttl: 1000});
                         });
-                      };
+                      }; 
+  
+              self.searchResults = [
+              {color: "green",label: "public",hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "blue",label: "project",hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "red",label: "dataset",hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "yellow",label: "public",hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "gold",label: "project",hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "cyan",label: "dataset",hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "hotPink",label: "public",hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "green",label: "public",hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"}             
+              ];
   }]);
