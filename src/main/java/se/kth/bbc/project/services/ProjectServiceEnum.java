@@ -11,6 +11,7 @@ public enum ProjectServiceEnum {
   KAFKA("Kafka"),
   WORKFLOWS("Workflows"),
   TENSORFLOW("Tensorflow"),
+  KIBANA("Kibana"),
   HISTORY("History"),
   //  BIOBANKING("Biobanking"),
   JOBS("Jobs");

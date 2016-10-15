@@ -487,6 +487,26 @@ angular.module('hopsWorksApp', [
                           }]
                       }
                     })
+                    .when('/project/:projectID/kibana', {
+                      templateUrl: 'views/kibana.html',
+                      controller: 'ProjectCtrl as projectCtrl',
+                      resolve: {
+                        auth: ['$q', '$location', 'AuthService', '$cookies',
+                          function ($q, $location, AuthService, $cookies) {
+                            return AuthService.session().then(
+                                    function (success) {
+                                      $cookies.put("email", success.data.data.value);
+                                    },
+                                    function (err) {
+                                      $cookies.remove("email");
+                                      $cookies.remove("projectID");
+                                      $location.path('/login');
+                                      $location.replace();
+                                      return $q.reject(err);
+                                    });
+                          }]
+                      }
+                    })
                     .when('/project/:projectID/metadata', {
                       templateUrl: 'views/metadata.html',
                       controller: 'ProjectCtrl as projectCtrl',

@@ -30,7 +30,7 @@ angular.module('hopsWorksApp')
             // We could instead implement a service to get all the available types but this will do it for now
 //              self.projectTypes = ['JOBS', 'ZEPPELIN', 'KAFKA', 'WORKFLOWS'];
 //              self.projectTypes = ['JOBS', 'ZEPPELIN', 'KAFKA', 'TENSORFLOW'];
-              self.projectTypes = ['JOBS', 'ZEPPELIN', 'KAFKA'];
+              self.projectTypes = ['JOBS', 'ZEPPELIN', 'KAFKA', 'KIBANA'];
             $scope.activeService = "home";
 
             self.alreadyChoosenServices = [];
@@ -281,7 +281,11 @@ angular.module('hopsWorksApp')
             self.goToKafka = function () {
               self.goToUrl('kafka');
             };
-
+            
+            //TODO: ***Fix url parameter ***
+            self.goToKibana = function() {
+              self.goToUrl('kibana');
+            };
             self.goToService = function (service) {
               self.goToUrl(service.toLowerCase());
             };
@@ -366,6 +370,9 @@ angular.module('hopsWorksApp')
 	      
             self.showWorkflows = function () {
               return showService("Workflows");
+            };
+            self.showKibana = function () {
+              return showService("Kibana");
             };
 
             self.getRole = function () {

@@ -8,9 +8,9 @@ angular.module('hopsWorksApp')
             var service = {
               /**
                * Get Kibana main page.
-               * @returns {unresolved} Kibana content.
+               * @returns Kibana content.
                */
-              getAllJobsInProject: function () {
+              getKibanaUI: function () {
                 return $http.get('/hopsworks/kibana');
               }
             };
