@@ -585,6 +585,7 @@ public class DataSetService {
    *
    * @param path - the relative path from the project directory (excluding the
    * project directory). Not the full path
+   * @param req
    * @param dto
    * @param sc
    * @return
@@ -638,7 +639,7 @@ public class DataSetService {
       //if it exists and it's not a dir, it must be a file
       if (exists) {
         throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
-                "Destination already exists - cannot move there.");
+                "Destination already exists.");
       }
 
       message = "Moved";

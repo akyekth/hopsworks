@@ -1,6 +1,7 @@
-angular.module('hopsWorksApp').controller('P2PCtrl', ['GVoDService', '$routeParams', '$scope', '$interval', function (GVoDService, $routeParams, $scope, $interval) {
+angular.module('hopsWorksApp')
+       .controller('P2PCtrl', ['GVoDService', '$routeParams', '$scope', '$interval', 
+         function (GVoDService, $routeParams, $scope, $interval) {
         var self = this;
-
         self.projectId = $routeParams.projectID;
 
         self.preview = {};
@@ -26,7 +27,7 @@ angular.module('hopsWorksApp').controller('P2PCtrl', ['GVoDService', '$routePara
                 for (var j = 0; j < length; j++) {
                     if (self.contents[j].torrentStatus === "DOWNLOADING") {
                         var prevObj = self.preview[self.contents[j].torrentId.val];
-                        if (prevObj == null) {
+                        if (prevObj === null) {
                             prevObj = {
                                 fileName: self.contents[j].fileName,
                                 torrentId: self.contents[j].torrentId.val,
