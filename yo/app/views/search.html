@@ -12,74 +12,88 @@
       <a class="navbar-brand" >Search results</a>
     </div>
     <ul class="nav navbar-nav navbar-right search-result-menu">
-      <li class="dropdown mega-dropdown ">
-        <a class="dropdown-toggle " data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-          <span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Filter</a>
-          
-          
-        <ul class="dropdown-menu mega-dropdown-menu row">
-          <li class="col-sm-3">
-            <ul>
-              <li class="dropdown-header">New in Stores</li>
-              
-            </ul>
-          </li>
-          <li class="col-sm-3">
-              <ul>
-                <li class="dropdown-header">Dresses</li>
-                <li><a href="#">Unique Features</a></li>
-                <li><a href="#">Image Responsive</a></li>
-                <li><a href="#">Auto Carousel</a></li>
-                <li><a href="#">Newsletter Form</a></li>
-                <li><a href="#">Four columns</a></li>
-                <li class="divider"></li>
-                <li class="dropdown-header">Tops</li>
-                <li><a href="#">Good Typography</a></li>
-              </ul>
-          </li>
-          <li class="col-sm-3">
-             <ul>
-               <li class="dropdown-header">Jackets</li>
-               <li><a href="#">Easy to customize</a></li>
-               <li><a href="#">Glyphicons</a></li>
-               <li><a href="#">Pull Right Elements</a></li>
-               <li class="divider"></li>
-               <li class="dropdown-header">Pants</li>
-               <li><a href="#">Coloured Headers</a></li>
-               <li><a href="#">Primary Buttons & Default</a></li>
-               <li><a href="#">Calls to action</a></li>
-             </ul>
-          </li>        
-        </ul>
+      <li>
+        <a data-toggle="collapse" data-target="#filterdropdown" role="button" aria-haspopup="true" aria-expanded="false">
+          <span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Filter</a>         
       </li>
+      <li>
+          <a ng-click="listView= !listView"
+             data-toggle="view-type" role="button" aria-haspopup="true" aria-expanded="false">
+            <span class="glyphicon" ng-class="{'glyphicon-th-list' : !listView, 'glyphicon-th': listView}" 
+                  aria-hidden="true" style="font-size: 20px;"></span></a>
       </li>
     </ul>
   </nav>
+  <section id="filterdropdown" class="collapse search-result-filter">
+    <div class="row result-filter-body">
+      <li class="col-md-4">
+        <ul>
+          <li class="dropdown-header">Type</li>
+          <li><a class="filter-menu-uppercase" href="#" style="color: #5DA51D;">public</a></li>
+          <li><a class="filter-menu-uppercase" href="#" style="color: #4178BE;">project</a></li>
+          <li><a class="filter-menu-uppercase" href="#" style="color: #FC5120;">dataset</a></li>
+          <li class="divider"></li>
+          <li class="dropdown-header">Tops</li>
+          <li><a href="#">Votes</a></li>
+          <li><a href="#">Downloads</a></li>
+        </ul>
+      </li>
+      <li class="col-md-4">
+        <ul>
+          <li class="dropdown-header">Size</li>
+          <li><a href="#">Easy to customize</a></li>
+          <li class="divider"></li>
+          <li class="dropdown-header">Date</li>
+          <li><a href="#">Created</a></li>
+          <li><a href="#">Uploaded</a></li>
+        </ul>
+      </li>
+       <li class="col-sm-4">
+        <ul>
+          <li class="dropdown-header">Source</li>          
+          <form class="form" role="form">
+            <div class="form-group">
+              <label class="sr-only" for="email">Email address</label>
+              <input type="email" class="form-control" id="email" placeholder="Enter email">
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Filter</button>
+          </form>
+        </ul>
+      </li>
+    </div>
+  </section> 
   <section class="search-result">
-    <h3> 3 Results found for: search term </h3>
-
-    <div class="search-result-body row">
-      <div ng-repeat="results in mainCtrl.searchResults">
-        <div class="col-xs-6 col-sm-4 col-md-3">
-          <hw-card card-color="results.color" card-label="results.label" card-hader="results.hader" 
-          card-details="results.details"> </hw-card>
+    <div class="row search-result-header">
+      <div class="col-md-4 pull-left">
+        <h3>3 Results found for: search term</h3>
+      </div>
+      <div class="col-xs-1 col-sm-1 col-md-1 pull-right">
+        <div class="input-group spinner">  
+          <input type="text" class="form-control" ng-model="mainCtrl.pageSize">
+          <div class="input-group-btn-vertical">
+            <button class="btn btn-default" ng-click="mainCtrl.incrementPage()" type="button"><i class="fa fa-caret-up"></i></button>
+            <button class="btn btn-default" ng-click="mainCtrl.decrementPage()" type="button"><i class="fa fa-caret-down"></i></button>
+          </div>
         </div>
       </div>
-
-      <!--hw-card card-color="mainCtrl.color" card-label="mainCtrl.label" card-hader="mainCtrl.hader" 
-          card-details="mainCtrl.details"> </hw-card> 
-      <hw-card card-color="mainCtrl.color" card-label="mainCtrl.label" card-hader="mainCtrl.hader" 
-          card-details="mainCtrl.details"> </hw-card> 
-      <hw-card card-color="mainCtrl.color" card-label="mainCtrl.label" card-hader="mainCtrl.hader" 
-          card-details="mainCtrl.details"> </hw-card>
-      <hw-card card-color="mainCtrl.color" card-label="mainCtrl.label" card-hader="mainCtrl.hader" 
-          card-details="mainCtrl.details"> </hw-card> 
-      <hw-card card-color="mainCtrl.color" card-label="mainCtrl.label" card-hader="mainCtrl.hader" 
-          card-details="mainCtrl.details"> </hw-card> 
-      <hw-card card-color="mainCtrl.color" card-label="mainCtrl.label" card-hader="mainCtrl.hader" 
-          card-details="mainCtrl.details"> </hw-card> 
-      <hw-card card-color="mainCtrl.color" card-label="mainCtrl.label" card-hader="mainCtrl.hader" 
-          card-details="mainCtrl.details"> </hw-card--> 
     </div>
+    <div class="search-result-body row">
+      <div ng-repeat="results in mainCtrl.searchResults| startFrom:(mainCtrl.currentPage - 1) * mainCtrl.pageSize | limitTo: mainCtrl.pageSize">
+        <div class="col-xs-12" ng-class="{'col-sm-4 col-md-3': !listView, 'col-sm-12 col-md-12': listView}">
+          <hw-card card-color="results.color" card-label="results.label" card-hader="results.hader" 
+                   card-details="results.details"> </hw-card>
+        </div>
+      </div>
+    </div>
+    <div class="row divider"></div>
+    <div class="row">
+        <ul uib-pagination ng-show="(mainCtrl.searchResults.length /mainCtrl.pageSize) > 1 "
+            total-items="mainCtrl.searchResults.length" 
+            ng-model="mainCtrl.currentPage" 
+            items-per-page="mainCtrl.pageSize" 
+            boundary-links="true"
+            class="pagination-sm pull-right">
+        </ul>
+      </div>
   </section>
 </div>

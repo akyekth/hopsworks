@@ -1,3 +1,6 @@
+html {
+  background-color: #FFFFFF !important;
+}
 body {
   height: 95%;
   font-family: "Source Sans Pro", sans-serif;
@@ -5,7 +8,7 @@ body {
   line-height: 1.52857;
   padding: 0;
   min-width: 800px;
-  overflow: hidden;
+  overflow:auto;
   width: 100%;
   margin: 0;
 }
@@ -434,21 +437,6 @@ fieldset[disabled] #tourColumn .btn-danger.active {
 
 div.cust .jslider div.jslider-bg i{
   background:url(../img/jslider.png) repeat
-}
-
-.search-result {
-  width: 100%;
-}
-
-.search-result > h3 {
-  color: #8A8A8A;
-  border-bottom: 1px solid #8A8A8A;
-  font-weight: 700;
-  margin: 1rem 0;
-}
-
-.search-result-body {
-  margin: 2rem 1.5rem;
 }
 
 .list-group.panel > .list-group-item {

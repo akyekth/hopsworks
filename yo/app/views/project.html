@@ -78,15 +78,15 @@
                     </div>
                   </div>
                 </div>
-                <uib-pagination ng-if="projectCtrl.totalPages > 1"
-                                total-items="projectCtrl.totalItems"
-                                ng-model="projectCtrl.currentPage"
-                                max-size="projectCtrl.pageSize"
-                                class="pagination-sm"
-                                boundary-links="true"
-                                rotate="false"
-                                num-pages="projectCtrl.totalPages" >
-                </uib-pagination>
+                <ul uib-pagination 
+                    ng-if="projectCtrl.totalPages > 1"
+                    total-items="projectCtrl.totalItems"
+                    ng-model="projectCtrl.currentPage"
+                    max-size="projectCtrl.pageSize"
+                    class="pagination-sm"
+                    boundary-links="true"
+                    num-pages="projectCtrl.totalPages" >
+                </ul>
               </div>
             </div>
             <!-- /#page-content-wrapper -->

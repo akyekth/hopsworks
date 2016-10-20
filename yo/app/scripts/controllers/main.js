@@ -126,24 +126,20 @@ angular.module('hopsWorksApp')
                       function (success) {
                         self.unreadMessages = success.data.data.value;
                             }, function (error) {
-                    });
+              });
             };
-                var getMessages = function () {//
+            var getMessages = function () {//
               MessageService.getMessages().then(
                       function (success) {
                         self.messages = success.data;
-                        console.log(success);
-                            }, function (error) {
-
-                      });
+                      }, function (error) {
+              });
             };
 
             var getPopularPublicDatasets = function () {
-
               ProjectService.getPopularPublicDatasets().$promise.then(function (result) {
                 self.popularDatasets = result;
               });
-
             };
 
             getPopularPublicDatasets();
@@ -165,8 +161,7 @@ angular.module('hopsWorksApp')
             self.openMessageModal = function (selected) {
               if (selected !== undefined) {
                 MessageService.markAsRead(selected.id);
-              }
-              ;
+              };
               ModalService.messages('lg', selected)
                       .then(function (success) {
                                 growl.success(success.data.successMessage, {title: 'Success', ttl: 1000})
@@ -318,8 +313,51 @@ angular.module('hopsWorksApp')
                 growl.error(error, {title: 'Error', ttl: 1000});
               });
             };
+            
+            self.incrementPage = function () {
+              self.pageSize = self.pageSize+1;
+            };
 
+            self.decrementPage = function () {
+              if (self.pageSize < 2) {
+                return;
+              }
+              self.pageSize=self.pageSize-1;
+            };
+            
             self.searchResults = [
+              {color: "green", label: "public", hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "blue", label: "project", hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "red", label: "dataset", hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "yellow", label: "public", hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "gold", label: "project", hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "cyan", label: "dataset", hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "hotPink", label: "public", hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "green", label: "public", hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "green", label: "public", hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "blue", label: "project", hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "red", label: "dataset", hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "yellow", label: "public", hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "gold", label: "project", hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "cyan", label: "dataset", hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "hotPink", label: "public", hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
+              {color: "green", label: "public", hader: "A glimpse inside the mind of a data scientist",
+                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
               {color: "green", label: "public", hader: "A glimpse inside the mind of a data scientist",
                 details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
               {color: "blue", label: "project", hader: "A glimpse inside the mind of a data scientist",

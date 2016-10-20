@@ -6,7 +6,7 @@
     box-shadow: 1px 2px 7px 1px rgba(0, 0, 0, 0.1);
     display: inline-block;
     float: left;
-    height: 200px;
+    height: 170px;
     margin-bottom: 1rem;
     margin-right: 1rem;
     min-width: 285px;
@@ -19,8 +19,8 @@
     border-top: 2px solid;
     display: flex;
     flex-direction: column;
-    height: 195px;
-    max-height: 195px;
+    height: 165px;
+    max-height: 165px;
     padding: 10px 15px 15px;
     position: relative;
 }
@@ -118,6 +118,14 @@
     margin: 5px;
 }
 
+.card-footer-icons > span > i{
+  color: #dddddd;
+}
+
+.card-footer-icons > span > i:hover{
+  color: #777;
+}
+
 .card-item-content .details {
     bottom: 25px;
     position: absolute;
@@ -129,7 +137,9 @@
     letter-spacing: 1.25px;
     text-transform: uppercase;
 }
-
+.card-item-content .header > h3 {
+  margin-top: 2px;
+}
 .card-item-content .value {
     color: #224155;
     font-size: 12px;
