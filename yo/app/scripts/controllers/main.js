@@ -287,8 +287,32 @@ angular.module('hopsWorksApp')
 
             var datePicker = function () {
               $(function () {
-                $('#datetimepicker1').datetimepicker();
+                $('[type="datepicker"]').datetimepicker({format: 'DD/MM/YYYY'});
+                $("#datepicker1").on("dp.change", function (e) {
+                  $('#datepicker2').data("DateTimePicker").minDate(e.date);
+                });
+                $("#datepicker2").on("dp.change", function (e) {
+                  $('#datepicker1').data("DateTimePicker").maxDate(e.date);
+                });
+                $("#datepicker3").on("dp.change", function (e) {
+                  $('#datepicker4').data("DateTimePicker").minDate(e.date);
+                });
+                $("#datepicker4").on("dp.change", function (e) {
+                  $('#datepicker3').data("DateTimePicker").maxDate(e.date);
+                });
               });
+            };
+            
+            self.row = function (index) {
+              var width = angular.element('#cards')[0].offsetWidth;
+              if (width === 375 && index%4 === 0 ) {
+                return true;
+              } else if (width === 500 && index%3 === 0 ) {
+                return true;
+              } else if (width === 1500) {
+                return true;
+              }
+              return false;
             };
 
             $scope.$on("$destroy", function () {

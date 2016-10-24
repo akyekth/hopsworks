@@ -6,7 +6,7 @@
     box-shadow: 1px 2px 7px 1px rgba(0, 0, 0, 0.1);
     display: inline-block;
     float: left;
-    height: 170px;
+    height: 165px;
     margin-bottom: 1rem;
     margin-right: 1rem;
     min-width: 285px;
@@ -16,7 +16,6 @@
 
 .card-item-content {
     background: #FFFFFF;
-    border-top: 2px solid;
     display: flex;
     flex-direction: column;
     height: 165px;
@@ -25,32 +24,40 @@
     position: relative;
 }
 
+.col-sm-4.col-md-3 .card-item-content {
+      border-top: 2px solid;
+}
+
+.col-sm-12.col-md-12 .card-item-content {
+      border-left: 2px solid;
+}
+
 .card-item-content.red {
-    border-color: #FC5120;
+    border-color: #FC5120 !important;
 }
 
 .card-item-content.blue {
-    border-color: #4178BE;
+    border-color: #4178BE !important;
 }
 
 .card-item-content.green {
-    border-color: #5DA51D;
+    border-color: #5DA51D !important;
 }
 
 .card-item-content.cyan  {
-    border-color: #00FFFF;
+    border-color: #00FFFF !important;
 }
 
 .card-item-content.gold  {
-    border-color: #FFD700;
+    border-color: #FFD700 !important;
 }
 
 .card-item-content.hotPink {
-    border-color: #FF69B4;
+    border-color: #FF69B4 !important;
 }
 
 .card-item-content.yellow {
-    border-color: #FFFF00;
+    border-color: #FFFF00 !important;
 }
 
 .card-item-content .header > label {

@@ -7,6 +7,7 @@ angular.module('hopsWorksApp').directive('hwCard' , function() {
       cardColor: '=',
       cardLabel: '=',
       cardHader:'=',
+      cardIndex:'=',
       cardDetails: '='
     },
     templateUrl:'views/card.html'
