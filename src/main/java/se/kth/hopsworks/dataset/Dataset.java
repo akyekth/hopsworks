@@ -54,31 +54,30 @@ import se.kth.bbc.project.fb.Inode;
             = "SELECT d FROM Dataset d WHERE d.name = :name")})
 public class Dataset implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-    public static final boolean PENDING = false;
-    public static final boolean ACCEPTED = true;
-    @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Basic(optional = false)
-    @Column(name = "id")
-    private Integer id;
-    @JoinColumns({
-        @JoinColumn(name = "inode_pid",
-                referencedColumnName = "parent_id"),
-        @JoinColumn(name = "inode_name",
-                referencedColumnName = "name")
-    })
-    @ManyToOne(optional = false)
-    private Inode inode;
-
-    @Basic(optional = false)
-    @Column(name = "inode_name", updatable = false, insertable = false)
-    private String name;
-
+  private static final long serialVersionUID = 1L;
+  public static final boolean PENDING = false;
+  public static final boolean ACCEPTED = true;
+  @Id
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
+  @Basic(optional = false)
+  @Column(name = "id")
+  private Integer id;
+  @JoinColumns({
+    @JoinColumn(name = "inode_pid", referencedColumnName = "parent_id"),
+    @JoinColumn(name = "inode_name", referencedColumnName = "name"),
+    @JoinColumn(name = "partition_id", referencedColumnName = "partition_id")
+  })
+  @ManyToOne(optional = false)
+  private Inode inode;
+  
+  @Basic(optional = false)
+  @Column(name = "inode_name", updatable = false, insertable = false)
+  private String name;  
+    
     @Basic(optional = false)
     @Column(name = "inode_id")
     private int idForInode = 0;
-
+    
     @Size(max = 3000)
     @Column(name = "description")
     private String description;
