@@ -19,6 +19,7 @@ angular.module('hopsWorksApp')
             self.selectedInterpreter;
             var projectId = $routeParams.projectID;
             var statusMsgs = ['stopped    ', "running    ", 'stopping...', 'restarting...'];
+            var loaded = false;
 
             self.deselect = function () {
               self.selected = null;
@@ -103,7 +104,6 @@ angular.module('hopsWorksApp')
                 self.interpretersRefreshing = false;
               }, function (error) {
                 self.interpretersRefreshing = false;
-                console.log('refresh-->',error);
               });
             };
 
@@ -208,19 +208,15 @@ angular.module('hopsWorksApp')
 
             ZeppelinService.websocket().ws.onMessage(function (event) {
               var payload;
-              console.log('Receive event << %o', event);
               if (event.data) {
                 payload = angular.fromJson(event.data);
               }
               console.log('Receive << %o, %o', payload.op, payload);
               var op = payload.op;
-              var data = payload.data;
-              if (op === 'NOTE') {
+              //var data = payload.data;
+              if (op === 'CREATED_SOCKET') {
                 load();
-                console.log('NOTE', data.note);
-              } else if (op === 'NOTES_INFO') {
-                load();
-                console.log('NOTES_INFO', data);
+                loaded = true;
               } 
             });
             
@@ -243,6 +239,18 @@ angular.module('hopsWorksApp')
                 startLoading("Restarting zeppelin...");
                 $route.reload();
               }
-            });                          
-
+            }); 
+            
+            $scope.$on("$destroy", function () {
+              console.log('closeing ws');
+              ZeppelinService.wsDestroy();
+              loaded = false;
+            });
+            
+            //refresh interpreter status when we return to zeppelin dashbord. 
+            window.onfocus = function () {
+              if (loaded) {
+                refresh();                
+              }
+            };
           }]);
