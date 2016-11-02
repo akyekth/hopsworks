@@ -149,9 +149,9 @@ public abstract  class Node implements Serializable {
         this.data = data;
     }
 
-    public void setData(String data) throws IOException{
-        this.data = new ObjectMapper().readTree(data);
-    }
+//    public void setData(String data) throws IOException{
+//        this.data = new ObjectMapper().readTree(data);
+//    }
 
     @Basic(optional = false)
     @Column(name = "classname")

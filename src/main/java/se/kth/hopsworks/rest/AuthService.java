@@ -1,5 +1,6 @@
 package se.kth.hopsworks.rest;
 
+import io.swagger.annotations.Api;
 import java.net.SocketException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Collection;
@@ -42,6 +43,7 @@ import se.kth.hopsworks.zeppelin.util.TicketContainer;
 
 @Path("/auth")
 @Stateless
+@Api(value = "/auth", description = "Authentication service")
 @TransactionAttribute(TransactionAttributeType.NEVER)
 public class AuthService {
 

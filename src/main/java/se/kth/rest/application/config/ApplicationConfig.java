@@ -1,7 +1,9 @@
 package se.kth.rest.application.config;
 
+import io.swagger.annotations.Api;
 import org.glassfish.jersey.server.ResourceConfig;
 
+@Api 
 @javax.ws.rs.ApplicationPath("api")
 public class ApplicationConfig extends ResourceConfig {
 
@@ -63,5 +65,10 @@ public class ApplicationConfig extends ResourceConfig {
 
     // Enable Tracing support.
     //property(ServerProperties.TRACING, "OFF");
+    
+    //swagger
+    register(io.swagger.jaxrs.listing.ApiListingResource.class);
+    register(io.swagger.jaxrs.listing.SwaggerSerializers.class);
+    
   }
 }

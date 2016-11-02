@@ -1,5 +1,6 @@
 package se.kth.hopsworks.rest;
 
+import io.swagger.annotations.Api;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,10 +55,11 @@ import se.kth.hopsworks.user.model.Users;
 import se.kth.hopsworks.util.LocalhostServices;
 import se.kth.hopsworks.util.Settings;
 
+@Stateless
 @Path("/project")
 @RolesAllowed({"HOPS_ADMIN", "HOPS_USER"})
+@Api(value = "/project", description = "Project service")
 @Produces(MediaType.APPLICATION_JSON)
-@Stateless
 @TransactionAttribute(TransactionAttributeType.NEVER)
 public class ProjectService {
 

@@ -1,5 +1,6 @@
 package se.kth.hopsworks.rest;
 
+import io.swagger.annotations.Api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -29,9 +30,11 @@ import se.kth.hopsworks.users.UserDTO;
 import se.kth.hopsworks.users.UserFacade;
 import se.kth.hopsworks.users.UserProjectDTO;
 
+
+@Stateless
 @Path("/user")
 @RolesAllowed({"HOPS_ADMIN", "HOPS_USER"})
-@Stateless
+@Api(value = "/user", description = "User service")
 @TransactionAttribute(TransactionAttributeType.NEVER)
 public class UserService {
 
