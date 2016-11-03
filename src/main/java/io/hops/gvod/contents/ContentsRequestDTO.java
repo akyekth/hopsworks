@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.hops.gvod.contents;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -11,27 +6,24 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  * @author jsvhqr
  */
-
 @XmlRootElement
 public class ContentsRequestDTO {
-    
-    private int projectId;
 
-    public ContentsRequestDTO(int projectId) {
-        this.projectId = projectId;
-    }
+  private int projectId;
 
-    public ContentsRequestDTO() {
-    }
+  public ContentsRequestDTO(int projectId) {
+    this.projectId = projectId;
+  }
 
-    public int getProjectId() {
-        return projectId;
-    }
+  public ContentsRequestDTO() {
+  }
 
-    public void setProjectId(int projectId) {
-        this.projectId = projectId;
-    }
-    
-    
-    
+  public int getProjectId() {
+    return projectId;
+  }
+
+  public void setProjectId(int projectId) {
+    this.projectId = projectId;
+  }
+
 }

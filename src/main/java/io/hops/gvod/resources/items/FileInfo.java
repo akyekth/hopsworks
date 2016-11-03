@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.hops.gvod.resources.items;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -13,45 +8,43 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class FileInfo {
-    
-    private String fileName;
-    
-    private String schema;
-    
-    private long length;
 
-    public FileInfo() {
-    }
+  private String fileName;
 
-    public FileInfo(String fileName, String schema, long length) {
-        this.fileName = fileName;
-        this.schema = schema;
-    }
+  private String schema;
 
-    public String getFileName() {
-        return fileName;
-    }
+  private long length;
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
+  public FileInfo() {
+  }
 
-    public String getSchema() {
-        return schema;
-    }
+  public FileInfo(String fileName, String schema, long length) {
+    this.fileName = fileName;
+    this.schema = schema;
+  }
 
-    public void setSchema(String schema) {
-        this.schema = schema;
-    }
+  public String getFileName() {
+    return fileName;
+  }
 
-    public long getLength() {
-        return length;
-    }
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
+  }
 
-    public void setLength(long length) {
-        this.length = length;
-    }
-    
-    
-    
+  public String getSchema() {
+    return schema;
+  }
+
+  public void setSchema(String schema) {
+    this.schema = schema;
+  }
+
+  public long getLength() {
+    return length;
+  }
+
+  public void setLength(long length) {
+    this.length = length;
+  }
+
 }

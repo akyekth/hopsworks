@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.hops.gvod.contents;
 
 import io.hops.gvod.resources.items.TorrentId;
@@ -14,53 +9,54 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class TorrentExtendedStatusJSON {
-    
-    private TorrentId torrentId;
-    private String torrentStatus;
-    private int downloadSpeed;
-    private double percentageCompleted;
 
-    public TorrentExtendedStatusJSON(TorrentId torrentId, String torrentStatus, int downloadSpeed,
-            double percentageCompleted) {
-        this.torrentId = torrentId;
-        this.torrentStatus = torrentStatus;
-        this.downloadSpeed = downloadSpeed;
-        this.percentageCompleted = percentageCompleted;
-    }
+  private TorrentId torrentId;
+  private String torrentStatus;
+  private int downloadSpeed;
+  private double percentageCompleted;
 
-    public TorrentExtendedStatusJSON() {
-    }
-    
-    public String getTorrentStatus() {
-        return torrentStatus;
-    }
+  public TorrentExtendedStatusJSON(TorrentId torrentId, String torrentStatus,
+          int downloadSpeed,
+          double percentageCompleted) {
+    this.torrentId = torrentId;
+    this.torrentStatus = torrentStatus;
+    this.downloadSpeed = downloadSpeed;
+    this.percentageCompleted = percentageCompleted;
+  }
 
-    public void setTorrentStatus(String torrentStatus) {
-        this.torrentStatus = torrentStatus;
-    }
+  public TorrentExtendedStatusJSON() {
+  }
 
-    public int getDownloadSpeed() {
-        return downloadSpeed;
-    }
+  public String getTorrentStatus() {
+    return torrentStatus;
+  }
 
-    public void setDownloadSpeed(int downloadSpeed) {
-        this.downloadSpeed = downloadSpeed;
-    }
+  public void setTorrentStatus(String torrentStatus) {
+    this.torrentStatus = torrentStatus;
+  }
 
-    public TorrentId getTorrentId() {
-        return torrentId;
-    }
+  public int getDownloadSpeed() {
+    return downloadSpeed;
+  }
 
-    public void setTorrentId(TorrentId torrentId) {
-        this.torrentId = torrentId;
-    }
+  public void setDownloadSpeed(int downloadSpeed) {
+    this.downloadSpeed = downloadSpeed;
+  }
 
-    public double getPercentageCompleted() {
-        return percentageCompleted;
-    }
+  public TorrentId getTorrentId() {
+    return torrentId;
+  }
 
-    public void setPercentageCompleted(double percentageCompleted) {
-        this.percentageCompleted = percentageCompleted;
-    }
-    
+  public void setTorrentId(TorrentId torrentId) {
+    this.torrentId = torrentId;
+  }
+
+  public double getPercentageCompleted() {
+    return percentageCompleted;
+  }
+
+  public void setPercentageCompleted(double percentageCompleted) {
+    this.percentageCompleted = percentageCompleted;
+  }
+
 }

@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.hops.gvod.resources;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -13,38 +8,32 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class HDFSResource {
-    
-    private String dirPath;
-    private String fileName;
 
-    public HDFSResource() {
-    }
+  private String dirPath;
+  private String fileName;
 
-    public HDFSResource(String dirPath, String fileName) {
-        this.dirPath = dirPath;
-        this.fileName = fileName;
-    }
+  public HDFSResource() {
+  }
 
-    public String getDirPath() {
-        return dirPath;
-    }
+  public HDFSResource(String dirPath, String fileName) {
+    this.dirPath = dirPath;
+    this.fileName = fileName;
+  }
 
-    public void setDirPath(String dirPath) {
-        this.dirPath = dirPath;
-    }
+  public String getDirPath() {
+    return dirPath;
+  }
 
-    public String getFileName() {
-        return fileName;
-    }
+  public void setDirPath(String dirPath) {
+    this.dirPath = dirPath;
+  }
 
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
+  public String getFileName() {
+    return fileName;
+  }
 
-    
-    
-    
-    
-    
-    
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
+  }
+
 }

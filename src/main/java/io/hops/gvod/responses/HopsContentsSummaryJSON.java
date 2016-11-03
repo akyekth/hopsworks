@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.hops.gvod.responses;
 
 import java.util.ArrayList;
@@ -15,20 +10,21 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class HopsContentsSummaryJSON {
-    private List<ElementSummaryJSON> contents = new ArrayList<>();
 
-    public HopsContentsSummaryJSON(List<ElementSummaryJSON> contents) {
-        this.contents = contents;
-    }
+  private List<ElementSummaryJSON> contents = new ArrayList<>();
 
-    public HopsContentsSummaryJSON() {
-    }
+  public HopsContentsSummaryJSON(List<ElementSummaryJSON> contents) {
+    this.contents = contents;
+  }
 
-    public List<ElementSummaryJSON> getContents() {
-        return contents;
-    }
+  public HopsContentsSummaryJSON() {
+  }
 
-    public void setContents(List<ElementSummaryJSON> contents) {
-        this.contents = contents;
-    }
+  public List<ElementSummaryJSON> getContents() {
+    return contents;
+  }
+
+  public void setContents(List<ElementSummaryJSON> contents) {
+    this.contents = contents;
+  }
 }

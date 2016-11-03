@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.hops.gvod.resources.items;
 
 import java.util.List;
@@ -14,93 +9,90 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class ManifestJSON {
-    
-    private String datasetName;
-    
-    private String datasetDescription;
-    
-    private String creatorEmail;
-    
-    private String creatorDate;
-    
-    private boolean kafkaSupport;
-    
-    private List<FileInfo> fileInfos;
-    
-    private List<String> metaDataJsons;
 
-    public ManifestJSON() {
-    }
+  private String datasetName;
 
-    public ManifestJSON(String datasetName, String datasetDescription, String creatorEmail, String creatorDate, boolean kafkaSupport, List<FileInfo> fileInfos, List<String> metaDataJsons) {
-        this.datasetName = datasetName;
-        this.datasetDescription = datasetDescription;
-        this.creatorEmail = creatorEmail;
-        this.creatorDate = creatorDate;
-        this.kafkaSupport = kafkaSupport;
-        this.fileInfos = fileInfos;
-        this.metaDataJsons = metaDataJsons;
-    } 
+  private String datasetDescription;
 
-    public List<FileInfo> getFileInfos() {
-        return fileInfos;
-    }
+  private String creatorEmail;
 
-    public void setFileInfos(List<FileInfo> fileInfos) {
-        this.fileInfos = fileInfos;
-    }
+  private String creatorDate;
 
-    public List<String> getMetaDataJsons() {
-        return metaDataJsons;
-    }
+  private boolean kafkaSupport;
 
-    public void setMetaDataJsons(List<String> metaDataJsons) {
-        this.metaDataJsons = metaDataJsons;
-    }
+  private List<FileInfo> fileInfos;
 
-    public String getDatasetName() {
-        return datasetName;
-    }
+  private List<String> metaDataJsons;
 
-    public void setDatasetName(String datasetName) {
-        this.datasetName = datasetName;
-    }
+  public ManifestJSON() {
+  }
 
-    public String getDatasetDescription() {
-        return datasetDescription;
-    }
+  public ManifestJSON(String datasetName, String datasetDescription,
+          String creatorEmail, String creatorDate, boolean kafkaSupport,
+          List<FileInfo> fileInfos, List<String> metaDataJsons) {
+    this.datasetName = datasetName;
+    this.datasetDescription = datasetDescription;
+    this.creatorEmail = creatorEmail;
+    this.creatorDate = creatorDate;
+    this.kafkaSupport = kafkaSupport;
+    this.fileInfos = fileInfos;
+    this.metaDataJsons = metaDataJsons;
+  }
 
-    public void setDatasetDescription(String datasetDescription) {
-        this.datasetDescription = datasetDescription;
-    }
+  public List<FileInfo> getFileInfos() {
+    return fileInfos;
+  }
 
-    public String getCreatorEmail() {
-        return creatorEmail;
-    }
+  public void setFileInfos(List<FileInfo> fileInfos) {
+    this.fileInfos = fileInfos;
+  }
 
-    public void setCreatorEmail(String creatorEmail) {
-        this.creatorEmail = creatorEmail;
-    }
+  public List<String> getMetaDataJsons() {
+    return metaDataJsons;
+  }
 
-    public String getCreatorDate() {
-        return creatorDate;
-    }
+  public void setMetaDataJsons(List<String> metaDataJsons) {
+    this.metaDataJsons = metaDataJsons;
+  }
 
-    public void setCreatorDate(String creatorDate) {
-        this.creatorDate = creatorDate;
-    }
+  public String getDatasetName() {
+    return datasetName;
+  }
 
-    public boolean isKafkaSupport() {
-        return kafkaSupport;
-    }
+  public void setDatasetName(String datasetName) {
+    this.datasetName = datasetName;
+  }
 
-    public void setKafkaSupport(boolean kafkaSupport) {
-        this.kafkaSupport = kafkaSupport;
-    }
-    
-    
-    
-    
-    
-    
+  public String getDatasetDescription() {
+    return datasetDescription;
+  }
+
+  public void setDatasetDescription(String datasetDescription) {
+    this.datasetDescription = datasetDescription;
+  }
+
+  public String getCreatorEmail() {
+    return creatorEmail;
+  }
+
+  public void setCreatorEmail(String creatorEmail) {
+    this.creatorEmail = creatorEmail;
+  }
+
+  public String getCreatorDate() {
+    return creatorDate;
+  }
+
+  public void setCreatorDate(String creatorDate) {
+    this.creatorDate = creatorDate;
+  }
+
+  public boolean isKafkaSupport() {
+    return kafkaSupport;
+  }
+
+  public void setKafkaSupport(boolean kafkaSupport) {
+    this.kafkaSupport = kafkaSupport;
+  }
+
 }

@@ -33,15 +33,15 @@ angular.module('hopsWorksApp')
 
             self.logout = function () {
               AuthService.logout(self.user).then(
-                      function (success) {
-                        $location.url('/login');
-                        $cookies.remove("email");
-                        $cookies.remove("isAdmin");
-                        localStorage.removeItem("SESSIONID");
-                        sessionStorage.removeItem("SESSIONID");
-                      }, function (error) {
-                        self.errorMessage = error.data.msg;
-                      });
+                function (success) {
+                  $location.url('/login');
+                  $cookies.remove("email");
+                  $cookies.remove("isAdmin");
+                  localStorage.removeItem("SESSIONID");
+                  sessionStorage.removeItem("SESSIONID");
+                }, function (error) {
+                  self.errorMessage = error.data.msg;
+                });
             };
 
             self.profileModal = function () {
@@ -153,9 +153,9 @@ angular.module('hopsWorksApp')
               getUnreadCount();
             }, 10000);
 
-            var getPopularPublicDatasetsInterval = $interval(function () {
-              getPopularPublicDatasets();
-            }, 6000);
+//            var getPopularPublicDatasetsInterval = $interval(function () {
+//              getPopularPublicDatasets();
+//            }, 6000);
 
 
             self.getMessages = function () {
@@ -320,7 +320,7 @@ angular.module('hopsWorksApp')
 
             $scope.$on("$destroy", function () {
               $interval.cancel(getUnreadCountInterval);
-              $interval.cancel(getPopularPublicDatasetsInterval);
+              //$interval.cancel(getPopularPublicDatasetsInterval);
             });
 
 

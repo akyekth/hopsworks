@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.hops.gvod.startdownload;
 
 import io.hops.gvod.resources.HDFSEndpoint;
@@ -16,67 +11,64 @@ import java.util.List;
  * @author jsvhqr
  */
 public class HopsTorrentStartDownload {
-    
-    
-    private TorrentId torrentId;
-    private String torrentName;
-    private HDFSResource manifestHDFSResource;
-    private List<AddressJSON> partners;
-    private HDFSEndpoint hdfsEndpoint;
 
-    public HopsTorrentStartDownload(TorrentId torrentId, String torrentName, HDFSResource manifestHDFSResource, List<AddressJSON> partners, HDFSEndpoint hdfsEndpoint) {
-        this.torrentId = torrentId;
-        this.torrentName = torrentName;
-        this.manifestHDFSResource = manifestHDFSResource;
-        this.partners = partners;
-        this.hdfsEndpoint = hdfsEndpoint;
-    }
+  private TorrentId torrentId;
+  private String torrentName;
+  private HDFSResource manifestHDFSResource;
+  private List<AddressJSON> partners;
+  private HDFSEndpoint hdfsEndpoint;
 
-    
-    
-    public HopsTorrentStartDownload() {
-    }
+  public HopsTorrentStartDownload(TorrentId torrentId, String torrentName,
+          HDFSResource manifestHDFSResource, List<AddressJSON> partners,
+          HDFSEndpoint hdfsEndpoint) {
+    this.torrentId = torrentId;
+    this.torrentName = torrentName;
+    this.manifestHDFSResource = manifestHDFSResource;
+    this.partners = partners;
+    this.hdfsEndpoint = hdfsEndpoint;
+  }
 
-    public String getTorrentName() {
-        return torrentName;
-    }
+  public HopsTorrentStartDownload() {
+  }
 
-    public void setTorrentName(String torrentName) {
-        this.torrentName = torrentName;
-    }
+  public String getTorrentName() {
+    return torrentName;
+  }
 
-    public TorrentId getTorrentId() {
-        return torrentId;
-    }
+  public void setTorrentName(String torrentName) {
+    this.torrentName = torrentName;
+  }
 
-    public void setTorrentId(TorrentId torrentId) {
-        this.torrentId = torrentId;
-    }
+  public TorrentId getTorrentId() {
+    return torrentId;
+  }
 
-    public HDFSResource getManifestHDFSResource() {
-        return manifestHDFSResource;
-    }
+  public void setTorrentId(TorrentId torrentId) {
+    this.torrentId = torrentId;
+  }
 
-    public void setManifestHDFSResource(HDFSResource manifestHDFSResource) {
-        this.manifestHDFSResource = manifestHDFSResource;
-    }
+  public HDFSResource getManifestHDFSResource() {
+    return manifestHDFSResource;
+  }
 
-    public List<AddressJSON> getPartners() {
-        return partners;
-    }
+  public void setManifestHDFSResource(HDFSResource manifestHDFSResource) {
+    this.manifestHDFSResource = manifestHDFSResource;
+  }
 
-    public void setPartners(List<AddressJSON> partners) {
-        this.partners = partners;
-    }
+  public List<AddressJSON> getPartners() {
+    return partners;
+  }
 
-    public HDFSEndpoint getHdfsEndpoint() {
-        return hdfsEndpoint;
-    }
+  public void setPartners(List<AddressJSON> partners) {
+    this.partners = partners;
+  }
 
-    public void setHdfsEndpoint(HDFSEndpoint hdfsEndpoint) {
-        this.hdfsEndpoint = hdfsEndpoint;
-    }
-    
-    
-    
+  public HDFSEndpoint getHdfsEndpoint() {
+    return hdfsEndpoint;
+  }
+
+  public void setHdfsEndpoint(HDFSEndpoint hdfsEndpoint) {
+    this.hdfsEndpoint = hdfsEndpoint;
+  }
+
 }

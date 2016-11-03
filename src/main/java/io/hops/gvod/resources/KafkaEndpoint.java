@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.hops.gvod.resources;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -13,76 +8,73 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class KafkaEndpoint {
-    
-    private String brokerEndpoint;
-    private String restEndpoint;
-    private String domain;
-    private String projectId;
-    private String keyStore;
-    private String trustStore;
 
-    public KafkaEndpoint() {
-    }
-    
+  private String brokerEndpoint;
+  private String restEndpoint;
+  private String domain;
+  private String projectId;
+  private String keyStore;
+  private String trustStore;
 
-    public KafkaEndpoint(String brokerEndpoint, String restEndpoint, String domain,
-            String projectId, String keyStore, String trustStore) {
-        this.brokerEndpoint = brokerEndpoint;
-        this.restEndpoint = restEndpoint;
-        this.domain = domain;
-        this.projectId = projectId;
-        this.keyStore = keyStore;
-        this.trustStore = trustStore;
-    }
+  public KafkaEndpoint() {
+  }
 
-    public String getBrokerEndpoint() {
-        return brokerEndpoint;
-    }
+  public KafkaEndpoint(String brokerEndpoint, String restEndpoint, String domain,
+          String projectId, String keyStore, String trustStore) {
+    this.brokerEndpoint = brokerEndpoint;
+    this.restEndpoint = restEndpoint;
+    this.domain = domain;
+    this.projectId = projectId;
+    this.keyStore = keyStore;
+    this.trustStore = trustStore;
+  }
 
-    public String getRestEndpoint() {
-        return restEndpoint;
-    }
+  public String getBrokerEndpoint() {
+    return brokerEndpoint;
+  }
 
-    public String getDomain() {
-        return domain;
-    }
+  public String getRestEndpoint() {
+    return restEndpoint;
+  }
 
-    public String getProjectId() {
-        return projectId;
-    }
+  public String getDomain() {
+    return domain;
+  }
 
-    public String getKeyStore() {
-        return keyStore;
-    }
+  public String getProjectId() {
+    return projectId;
+  }
 
-    public String getTrustStore() {
-        return trustStore;
-    }
+  public String getKeyStore() {
+    return keyStore;
+  }
 
-    public void setBrokerEndpoint(String brokerEndpoint) {
-        this.brokerEndpoint = brokerEndpoint;
-    }
+  public String getTrustStore() {
+    return trustStore;
+  }
 
-    public void setRestEndpoint(String restEndpoint) {
-        this.restEndpoint = restEndpoint;
-    }
+  public void setBrokerEndpoint(String brokerEndpoint) {
+    this.brokerEndpoint = brokerEndpoint;
+  }
 
-    public void setDomain(String domain) {
-        this.domain = domain;
-    }
+  public void setRestEndpoint(String restEndpoint) {
+    this.restEndpoint = restEndpoint;
+  }
 
-    public void setProjectId(String projectId) {
-        this.projectId = projectId;
-    }
+  public void setDomain(String domain) {
+    this.domain = domain;
+  }
 
-    public void setKeyStore(String keyStore) {
-        this.keyStore = keyStore;
-    }
+  public void setProjectId(String projectId) {
+    this.projectId = projectId;
+  }
 
-    public void setTrustStore(String trustStore) {
-        this.trustStore = trustStore;
-    }
-    
-    
-    
+  public void setKeyStore(String keyStore) {
+    this.keyStore = keyStore;
+  }
+
+  public void setTrustStore(String trustStore) {
+    this.trustStore = trustStore;
+  }
+
 }

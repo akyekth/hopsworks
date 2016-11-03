@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.hops.gvod.download;
 
 import io.hops.gvod.resources.HDFSEndpoint;
@@ -18,54 +13,53 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class HopsTorrentAdvanceDownload {
 
-    private TorrentId torrentId;
-    private KafkaEndpoint kafkaEndpoint;
-    private HDFSEndpoint hdfsEndpoint;
-    private ExtendedDetails extendedDetails;
+  private TorrentId torrentId;
+  private KafkaEndpoint kafkaEndpoint;
+  private HDFSEndpoint hdfsEndpoint;
+  private ExtendedDetails extendedDetails;
 
-    public HopsTorrentAdvanceDownload() {
-    }
-    
-    public HopsTorrentAdvanceDownload(TorrentId torrentId, KafkaEndpoint kafkaEndpoint, HDFSEndpoint hdfsEndpoint, ExtendedDetails extendedDetails) {
-        this.torrentId = torrentId;
-        this.kafkaEndpoint = kafkaEndpoint;
-        this.hdfsEndpoint = hdfsEndpoint;
-        this.extendedDetails = extendedDetails;
-    }
+  public HopsTorrentAdvanceDownload() {
+  }
 
-    public TorrentId getTorrentId() {
-        return torrentId;
-    }
+  public HopsTorrentAdvanceDownload(TorrentId torrentId,
+          KafkaEndpoint kafkaEndpoint, HDFSEndpoint hdfsEndpoint,
+          ExtendedDetails extendedDetails) {
+    this.torrentId = torrentId;
+    this.kafkaEndpoint = kafkaEndpoint;
+    this.hdfsEndpoint = hdfsEndpoint;
+    this.extendedDetails = extendedDetails;
+  }
 
-    public void setTorrentId(TorrentId torrentId) {
-        this.torrentId = torrentId;
-    }
+  public TorrentId getTorrentId() {
+    return torrentId;
+  }
 
-    public KafkaEndpoint getKafkaEndpoint() {
-        return kafkaEndpoint;
-    }
+  public void setTorrentId(TorrentId torrentId) {
+    this.torrentId = torrentId;
+  }
 
-    public void setKafkaEndpoint(KafkaEndpoint kafkaEndpoint) {
-        this.kafkaEndpoint = kafkaEndpoint;
-    }
+  public KafkaEndpoint getKafkaEndpoint() {
+    return kafkaEndpoint;
+  }
 
-    public ExtendedDetails getExtendedDetails() {
-        return extendedDetails;
-    }
+  public void setKafkaEndpoint(KafkaEndpoint kafkaEndpoint) {
+    this.kafkaEndpoint = kafkaEndpoint;
+  }
 
-    public void setExtendedDetails(ExtendedDetails extendedDetails) {
-        this.extendedDetails = extendedDetails;
-    }
+  public ExtendedDetails getExtendedDetails() {
+    return extendedDetails;
+  }
 
-    public HDFSEndpoint getHdfsEndpoint() {
-        return hdfsEndpoint;
-    }
+  public void setExtendedDetails(ExtendedDetails extendedDetails) {
+    this.extendedDetails = extendedDetails;
+  }
 
-    public void setHdfsEndpoint(HDFSEndpoint hdfsEndpoint) {
-        this.hdfsEndpoint = hdfsEndpoint;
-    }
-    
-    
-    
-    
+  public HDFSEndpoint getHdfsEndpoint() {
+    return hdfsEndpoint;
+  }
+
+  public void setHdfsEndpoint(HDFSEndpoint hdfsEndpoint) {
+    this.hdfsEndpoint = hdfsEndpoint;
+  }
+
 }

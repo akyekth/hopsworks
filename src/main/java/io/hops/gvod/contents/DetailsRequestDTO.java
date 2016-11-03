@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.hops.gvod.contents;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -13,30 +8,27 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class DetailsRequestDTO {
-    
-    private String torrentId;
-    private int index;
 
-    public DetailsRequestDTO() {
-    }
+  private String torrentId;
+  private int index;
 
-    public int getIndex() {
-        return index;
-    }
+  public DetailsRequestDTO() {
+  }
 
-    public void setIndex(int index) {
-        this.index = index;
-    }
-    
+  public int getIndex() {
+    return index;
+  }
 
-    public String getTorrentId() {
-        return torrentId;
-    }
+  public void setIndex(int index) {
+    this.index = index;
+  }
 
-    public void setTorrentId(String torrentId) {
-        this.torrentId = torrentId;
-    }
-    
-    
-    
+  public String getTorrentId() {
+    return torrentId;
+  }
+
+  public void setTorrentId(String torrentId) {
+    this.torrentId = torrentId;
+  }
+
 }

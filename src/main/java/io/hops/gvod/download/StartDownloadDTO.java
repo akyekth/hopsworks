@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package io.hops.gvod.download;
 
 import io.hops.gvod.resources.items.AddressJSON;
@@ -15,56 +10,56 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement
 public class StartDownloadDTO {
-    
-    private String destinationDatasetName;
-    
-    private String publicDatasetId;
-    
-    private int projectId;
-    
-    private List<AddressJSON> partners;
 
-    public StartDownloadDTO() {}
+  private String destinationDatasetName;
 
-    public StartDownloadDTO(String destinationDatasetName, String publicDatasetId, int projectId, List<AddressJSON> partners) {
-        this.destinationDatasetName = destinationDatasetName;
-        this.publicDatasetId = publicDatasetId;
-        this.projectId = projectId;
-        this.partners = partners;
-    }
+  private String publicDatasetId;
 
-    public String getDestinationDatasetName() {
-        return destinationDatasetName;
-    }
+  private int projectId;
 
-    public void setDestinationDatasetName(String destinationDatasetName) {
-        this.destinationDatasetName = destinationDatasetName;
-    }
+  private List<AddressJSON> partners;
 
-    public int getProjectId() {
-        return projectId;
-    }
+  public StartDownloadDTO() {
+  }
 
-    public void setProjectId(int projectId) {
-        this.projectId = projectId;
-    }
+  public StartDownloadDTO(String destinationDatasetName, String publicDatasetId,
+          int projectId, List<AddressJSON> partners) {
+    this.destinationDatasetName = destinationDatasetName;
+    this.publicDatasetId = publicDatasetId;
+    this.projectId = projectId;
+    this.partners = partners;
+  }
 
-    public List<AddressJSON> getPartners() {
-        return partners;
-    }
+  public String getDestinationDatasetName() {
+    return destinationDatasetName;
+  }
 
-    public void setPartners(List<AddressJSON> partners) {
-        this.partners = partners;
-    }
+  public void setDestinationDatasetName(String destinationDatasetName) {
+    this.destinationDatasetName = destinationDatasetName;
+  }
 
-    public String getPublicDatasetId() {
-        return publicDatasetId;
-    }
+  public int getProjectId() {
+    return projectId;
+  }
 
-    public void setPublicDatasetId(String publicDatasetId) {
-        this.publicDatasetId = publicDatasetId;
-    }
-    
-    
-    
+  public void setProjectId(int projectId) {
+    this.projectId = projectId;
+  }
+
+  public List<AddressJSON> getPartners() {
+    return partners;
+  }
+
+  public void setPartners(List<AddressJSON> partners) {
+    this.partners = partners;
+  }
+
+  public String getPublicDatasetId() {
+    return publicDatasetId;
+  }
+
+  public void setPublicDatasetId(String publicDatasetId) {
+    this.publicDatasetId = publicDatasetId;
+  }
+
 }
