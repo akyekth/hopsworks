@@ -1,9 +1,5 @@
 package io.hops.gvod.resources.items;
 
-/**
- *
- * @author jsvhqr
- */
 public class KafkaResource {
 
   private String sessionId;

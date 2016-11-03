@@ -3,10 +3,6 @@ package io.hops.gvod.stop;
 import javax.xml.bind.annotation.XmlRootElement;
 import io.hops.gvod.resources.items.TorrentId;
 
-/**
- *
- * @author jsvhqr
- */
 @XmlRootElement
 public class RemoveGVodJSON {
 

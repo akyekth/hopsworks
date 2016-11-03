@@ -3,10 +3,6 @@ package io.hops.gvod.resources.items;
 import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author jsvhqr
- */
 @XmlRootElement
 public class ManifestJSON {
 

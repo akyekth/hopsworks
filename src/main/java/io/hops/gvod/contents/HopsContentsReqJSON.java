@@ -1,9 +1,5 @@
 package io.hops.gvod.contents;
 
-/**
- *
- * @author jsvhqr
- */
 public class HopsContentsReqJSON {
 
   private Integer projectId;

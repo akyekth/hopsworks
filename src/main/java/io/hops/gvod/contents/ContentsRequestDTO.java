@@ -2,10 +2,6 @@ package io.hops.gvod.contents;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author jsvhqr
- */
 @XmlRootElement
 public class ContentsRequestDTO {
 

@@ -6,10 +6,6 @@ import io.hops.gvod.resources.items.ExtendedDetails;
 import io.hops.gvod.resources.items.TorrentId;
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author jsvhqr
- */
 @XmlRootElement
 public class HopsTorrentAdvanceDownload {
 

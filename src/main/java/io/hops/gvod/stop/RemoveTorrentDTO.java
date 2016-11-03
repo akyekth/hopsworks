@@ -2,10 +2,6 @@ package io.hops.gvod.stop;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author jsvhqr
- */
 @XmlRootElement
 public class RemoveTorrentDTO {
 

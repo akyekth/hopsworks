@@ -3,10 +3,6 @@ package io.hops.gvod.resources.items;
 import io.hops.gvod.resources.HDFSResource;
 import java.util.Map;
 
-/**
- *
- * @author jsvhqr
- */
 public class ExtendedDetails {
 
   private Map<String, HDFSResource> hdfsDetails;

@@ -2,10 +2,6 @@ package io.hops.gvod.resources.items;
 
 import javax.ws.rs.core.Response;
 
-/**
- *
- * @author jsvhqr
- */
 public class ManifestResponse {
 
   private ManifestJSON manifest;

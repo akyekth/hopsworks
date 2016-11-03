@@ -1,9 +1,5 @@
 package io.hops.gvod.resources;
 
-/**
- *
- * @author jsvhqr
- */
 public class HopsResource {
 
   private final int projectId;

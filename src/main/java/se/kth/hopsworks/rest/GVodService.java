@@ -36,10 +36,6 @@ import io.hops.gvod.stop.RemoveTorrentDTO;
 import se.kth.hopsworks.hdfsUsers.controller.HdfsUsersController;
 import se.kth.hopsworks.util.Settings;
 
-/**
- *
- * @author jsvhqr
- */
 @Path("/gvod")
 @RolesAllowed({"HOPS_ADMIN", "HOPS_USER"})
 @Produces(MediaType.APPLICATION_JSON)

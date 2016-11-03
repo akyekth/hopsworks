@@ -71,10 +71,6 @@ import javax.ws.rs.client.InvocationCallback;
 import static org.elasticsearch.index.query.QueryBuilders.fuzzyQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 
-/**
- *
- * @author vangelis
- */
 @Path("/elastic")
 @RolesAllowed({"HOPS_ADMIN", "HOPS_USER"})
 @Produces(MediaType.APPLICATION_JSON)

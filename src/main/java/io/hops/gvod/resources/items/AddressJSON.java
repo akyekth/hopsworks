@@ -2,10 +2,6 @@ package io.hops.gvod.resources.items;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
-/**
- *
- * @author jsvhqr
- */
 @XmlRootElement
 public class AddressJSON {
 

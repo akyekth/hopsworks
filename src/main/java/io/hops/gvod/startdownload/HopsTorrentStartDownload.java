@@ -6,10 +6,6 @@ import io.hops.gvod.resources.items.AddressJSON;
 import io.hops.gvod.resources.items.TorrentId;
 import java.util.List;
 
-/**
- *
- * @author jsvhqr
- */
 public class HopsTorrentStartDownload {
 
   private TorrentId torrentId;

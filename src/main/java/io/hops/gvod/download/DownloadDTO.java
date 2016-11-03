@@ -4,10 +4,6 @@ import java.util.List;
 import javax.xml.bind.annotation.XmlRootElement;
 import org.json.JSONObject;
 
-/**
- *
- * @author jsvhqr
- */
 @XmlRootElement
 public class DownloadDTO {
 
