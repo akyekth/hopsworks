@@ -206,7 +206,7 @@ angular.module('hopsWorksApp')
               //ask for the project name when it is time to search
               self.projectName = UtilsService.getProjectName();
               self.currentPage = 1;
-              self.pageSize = 5;
+              self.pageSize = 16;
               self.searchResult = [];
               self.searchReturned = "";
               self.searchResultPublicSearch = [];
@@ -308,14 +308,39 @@ angular.module('hopsWorksApp')
             
             self.row = function (index) {
               var width = angular.element('#cards')[0].offsetWidth;
-              if (width === 375 && index%4 === 0 ) {
+              console.log("width----->", width);
+              if (index === self.pageSize || index === self.searchResults.length) {
+                return true;
+              } else if (width === 375 && index%4 === 0 ) {
                 return true;
               } else if (width === 500 && index%3 === 0 ) {
                 return true;
-              } else if (width === 1500) {
+              } else if (width > 1200) {
                 return true;
               }
               return false;
+            };
+            
+            self.rowIndex = function (index) {
+              var width = angular.element('#cards')[0].offsetWidth;
+              var numOfCards = Math.min(self.pageSize, self.searchResults.length);
+              if (index === numOfCards) {
+                return numOfCards;
+              } else if (width <= 400) {
+                
+              } else if (width <= 800) {
+                
+              } else if (width >= 1200) {
+                
+              }
+            };
+            
+            self.viewType = function (listView) {
+              if (listView) {
+                self.pageSize = 5;
+              } else {
+                self.pageSize = 16;
+              }
             };
 
             $scope.$on("$destroy", function () {

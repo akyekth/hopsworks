@@ -17,7 +17,7 @@
           <span class="glyphicon glyphicon-filter" aria-hidden="true"></span> Filter</a>         
       </li>
       <li>
-          <a ng-click="listView= !listView"
+          <a ng-click="listView =! listView; mainCtrl.viewType(listView)"
              data-toggle="view-type" role="button" aria-haspopup="true" aria-expanded="false">
             <span class="glyphicon" ng-class="{'glyphicon-th-list' : !listView, 'glyphicon-th': listView}" 
                   aria-hidden="true" style="font-size: 20px;"></span></a>
@@ -116,7 +116,7 @@
   <section class="search-result">
     <div class="row search-result-header">
       <div class="col-md-4 pull-left">
-        <h3>3 Results found for: search term</h3>
+        <h3>{{mainCtrl.searchResults.length}} Results found for: {{mainCtrl.searchTerm}}</h3>
       </div>
       <div class="col-xs-1 col-sm-1 col-md-1 pull-right">
         <div class="input-group spinner">  
@@ -134,7 +134,14 @@
           <hw-card card-color="results.color" card-label="results.label" card-hader="results.hader" 
                    card-details="results.details" card-index="$index"> </hw-card>
         </div>
-        <section ng-if="mainCtrl.row($index+1)" class="col-xs-12 col-sm-12 col-md-12 collapse search-result-filter" id="carddropdown-{{$index}}">
+        <section ng-show="mainCtrl.row($index+1)" class="col-xs-12 col-sm-12 col-md-12 collapse search-result-filter" id="carddropdown-{{$index}}">
+          Details 
+          Severe: Cannot retrieve topic list from Zookeeper
+          Info: 14:07:01,475  WARN [__ejb-thread-pool9-SendThread(10.0.2.15:2181)] 
+          (ClientCnxn.java:startConnect(1014))   - SASL configuration failed: javax.security.auth.login.LoginException: 
+          No JAAS configuration section named 'Client' was found in specified JAAS configuration 
+          file: '/srv/glassfish/domain1/config/login.conf'. Will continue connection to Zookeeper 
+          server without SASL authentication, if Zookeeper server allows it.
           Details 
           Severe: Cannot retrieve topic list from Zookeeper
           Info: 14:07:01,475  WARN [__ejb-thread-pool9-SendThread(10.0.2.15:2181)] 
