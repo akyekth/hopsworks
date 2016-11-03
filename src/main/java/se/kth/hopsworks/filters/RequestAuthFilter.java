@@ -61,7 +61,7 @@ public class RequestAuthFilter implements ContainerRequestFilter {
         projectId = Integer.valueOf(pathParts[1]);
       }catch(NumberFormatException ne) {
         //if the second pathparam is not a project id return.
-        log.log(Level.INFO, "No project id, leaving interceptor.");
+        log.log(Level.INFO, "api/{0} contains no project id, leaving interceptor.", path);
         return;
       }
       

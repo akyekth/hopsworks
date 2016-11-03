@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package se.kth.hopsworks.rest;
 
 import io.hops.gvod.contents.ContentsRequestDTO;
@@ -53,198 +48,215 @@ import se.kth.hopsworks.util.Settings;
 @TransactionAttribute(TransactionAttributeType.NEVER)
 public class GVodService {
 
+  @EJB
+  private Settings settings;
+  @EJB
+  private NoCacheResponse noCacheResponse;
+  @EJB
+  private GVoDController gvodController;
+  @EJB
+  private ProjectController projectController;
+  @EJB
+  private KafkaController kafkaController;
+  @EJB
+  private UserManager userBean;
+  @EJB
+  private HdfsUsersController hdfsUsersBean;
 
-    @EJB
-    private Settings settings;
-    @EJB
-    private NoCacheResponse noCacheResponse;
-    @EJB
-    private GVoDController gvodController;
-    @EJB
-    private ProjectController projectController;
-    @EJB
-    private KafkaController kafkaController;
-    @EJB
-    private UserManager userBean;
-    @EJB
-    private HdfsUsersController hdfsUsersBean;
-    
-    @PUT
-    @Path("startdownload")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @AllowedRoles(roles = {AllowedRoles.DATA_SCIENTIST, AllowedRoles.DATA_OWNER})
-    public Response startDownload(@Context SecurityContext sc,
-            @Context HttpServletRequest req, StartDownloadDTO startDownloadDTO) throws AppException {
-
-        if (settings.getCLUSTER_ID() == null) {
-            throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
-                    ResponseMessages.NOT_REGISTERD_WITH_HOPS_SITE);
-        }
-        if (settings.getGVOD_UDP_ENDPOINT() == null) {
-            throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
-                    ResponseMessages.GVOD_OFFLINE);
-        }
-
-        
-        ManifestResponse response = gvodController.startDownload(startDownloadDTO.getPublicDatasetId(), 
-                userBean.getUserByEmail(sc.getUserPrincipal().getName()), 
-                projectController.findProjectById(startDownloadDTO.getProjectId()), 
-                startDownloadDTO.getDestinationDatasetName(),
-                startDownloadDTO.getPartners());
-
-        if (response.getResponse().getStatus() == 200) {
-            return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).entity(response.getManifest()).build();
-        } else {
-            return noCacheResponse.getNoCacheResponseBuilder(Response.Status.EXPECTATION_FAILED).entity(response.getResponse().readEntity(ErrorDescJSON.class)).build();
-        }
+  @PUT
+  @Path("startdownload")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @AllowedRoles(roles = {AllowedRoles.DATA_SCIENTIST, AllowedRoles.DATA_OWNER})
+  public Response startDownload(@Context SecurityContext sc,
+          @Context HttpServletRequest req, StartDownloadDTO startDownloadDTO)
+          throws AppException {
+    if (settings.getCLUSTER_ID() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.NOT_REGISTERD_WITH_HOPS_SITE);
     }
-    
-    @PUT
-    @Path("downloadhdfs")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @AllowedRoles(roles = {AllowedRoles.DATA_SCIENTIST, AllowedRoles.DATA_OWNER})
-    public Response downloadDatasetHdfs(@Context SecurityContext sc,
-            @Context HttpServletRequest req, DownloadDTO downloadDTO) throws AppException {
-
-        if (settings.getCLUSTER_ID() == null) {
-            throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
-                    ResponseMessages.NOT_REGISTERD_WITH_HOPS_SITE);
-        }
-        if (settings.getGVOD_UDP_ENDPOINT() == null) {
-            throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
-                    ResponseMessages.GVOD_OFFLINE);
-        }
-        
-        Project project = projectController.findProjectById(downloadDTO.getProjectId());
-        Response response = gvodController.download(null, 
-                hdfsUsersBean.getHdfsUserName(project, userBean.getUserByEmail(sc.getUserPrincipal().getName())), 
-                downloadDTO.getPublicDatasetId(), 
-                Settings.getProjectPath(project.getName()) + File.separator + downloadDTO.getDestinationDatasetName(), 
-                downloadDTO.getJSONTopics(), 
-                null);
-
-        if (response != null && response.getStatus() == 200) {
-            return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).entity(response.readEntity(SuccessJSON.class)).build();
-        } else if(response != null) {
-            return noCacheResponse.getNoCacheResponseBuilder(Response.Status.EXPECTATION_FAILED).entity(response.readEntity(ErrorDescJSON.class)).build();
-        }else{
-            return noCacheResponse.getNoCacheResponseBuilder(Response.Status.EXPECTATION_FAILED).entity(null).build();
-        }
+    if (settings.getGVOD_UDP_ENDPOINT() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.GVOD_OFFLINE);
     }
-
-    @PUT
-    @Path("downloadkafka")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @AllowedRoles(roles = {AllowedRoles.DATA_SCIENTIST, AllowedRoles.DATA_OWNER})
-    public Response downloadDatasetKafka(@Context SecurityContext sc,
-            @Context HttpServletRequest req, DownloadDTO downloadDTO) throws AppException {
-        
-        if (settings.getCLUSTER_ID() == null) {
-            throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
-                    ResponseMessages.NOT_REGISTERD_WITH_HOPS_SITE);
-        }
-        if(settings.getGVOD_UDP_ENDPOINT() == null){
-            throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
-                    ResponseMessages.GVOD_OFFLINE);
-        }
-
-        Project project = projectController.findProjectById(downloadDTO.getProjectId());
-        String certPath = kafkaController.getKafkaCertPaths(project);
-        
-        Response response = gvodController.download(new KafkaEndpoint(settings.getKafkaConnectStr(), "http://" + settings.getDOMAIN() + ":" + settings.getRestPort(), settings.getDOMAIN(), String.valueOf(downloadDTO.getProjectId()), certPath + "/keystore.jks", certPath + "/truststore.jks"), 
-                hdfsUsersBean.getHdfsUserName(project, userBean.getUserByEmail(sc.getUserPrincipal().getName())), 
-                downloadDTO.getPublicDatasetId(), 
-                Settings.getProjectPath(project.getName()) + File.separator + downloadDTO.getDestinationDatasetName(), 
-                downloadDTO.getJSONTopics(), 
-                req.getSession().getId());
-
-        if (response != null && response.getStatus() == 200) {
-            return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).entity(response.readEntity(SuccessJSON.class)).build();
-        } else if(response != null) {
-            return noCacheResponse.getNoCacheResponseBuilder(Response.Status.EXPECTATION_FAILED).entity(response.readEntity(ErrorDescJSON.class)).build();
-        }else{
-            return noCacheResponse.getNoCacheResponseBuilder(Response.Status.EXPECTATION_FAILED).entity(null).build();
-        }
+    ManifestResponse response = gvodController.startDownload(startDownloadDTO.
+            getPublicDatasetId(),
+            userBean.getUserByEmail(sc.getUserPrincipal().getName()),
+            projectController.findProjectById(startDownloadDTO.getProjectId()),
+            startDownloadDTO.getDestinationDatasetName(),
+            startDownloadDTO.getPartners());
+    if (response.getResponse().getStatus() == 200) {
+      return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).
+              entity(response.getManifest()).build();
+    } else {
+      return noCacheResponse.getNoCacheResponseBuilder(
+              Response.Status.EXPECTATION_FAILED).entity(response.getResponse().
+                      readEntity(ErrorDescJSON.class)).build();
     }
-    
-    @PUT
-    @Path("contents")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @AllowedRoles(roles = {AllowedRoles.DATA_SCIENTIST, AllowedRoles.DATA_OWNER})
-    public Response getContents(@Context SecurityContext sc,
-            @Context HttpServletRequest req, ContentsRequestDTO contentsRequestDTO) throws AppException {
-        
-        if (settings.getCLUSTER_ID() == null) {
-            throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
-                    ResponseMessages.NOT_REGISTERD_WITH_HOPS_SITE);
-        }
-        if(settings.getGVOD_UDP_ENDPOINT() == null){
-            throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
-                    ResponseMessages.GVOD_OFFLINE);
-        }
-        
-        HopsContentsSummaryJSON hopsContentsSummaryJSON = gvodController.getContents(contentsRequestDTO.getProjectId());
+  }
 
-        if (hopsContentsSummaryJSON != null) {
-            return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).entity(hopsContentsSummaryJSON).build();
-        } else {
-            return noCacheResponse.getNoCacheResponseBuilder(Response.Status.EXPECTATION_FAILED).entity(null).build();
-        }
+  @PUT
+  @Path("downloadhdfs")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @AllowedRoles(roles = {AllowedRoles.DATA_SCIENTIST, AllowedRoles.DATA_OWNER})
+  public Response downloadDatasetHdfs(@Context SecurityContext sc,
+          @Context HttpServletRequest req, DownloadDTO downloadDTO) throws
+          AppException {
+    if (settings.getCLUSTER_ID() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.NOT_REGISTERD_WITH_HOPS_SITE);
     }
-    
-    @PUT
-    @Path("details")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @AllowedRoles(roles = {AllowedRoles.DATA_SCIENTIST, AllowedRoles.DATA_OWNER})
-    public Response getExtendedDetails(@Context SecurityContext sc,
-            @Context HttpServletRequest req, DetailsRequestDTO detailsRequestDTO) throws AppException {
-        
-        if (settings.getCLUSTER_ID() == null) {
-            throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
-                    ResponseMessages.NOT_REGISTERD_WITH_HOPS_SITE);
-        }
-        if(settings.getGVOD_UDP_ENDPOINT() == null){
-            throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
-                    ResponseMessages.GVOD_OFFLINE);
-        }
-        
-        TorrentExtendedStatusJSON torrentExtendedStatusJSON = gvodController.getDetails(detailsRequestDTO.getTorrentId());
-            
-        if (torrentExtendedStatusJSON != null) {
-            return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).entity(torrentExtendedStatusJSON).build();
-        } else {
-            return noCacheResponse.getNoCacheResponseBuilder(Response.Status.EXPECTATION_FAILED).entity(null).build();
-        }
+    if (settings.getGVOD_UDP_ENDPOINT() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.GVOD_OFFLINE);
     }
-    
-    @PUT
-    @Path("remove")
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
-    @AllowedRoles(roles = {AllowedRoles.DATA_SCIENTIST, AllowedRoles.DATA_OWNER})
-    public Response remove(@Context SecurityContext sc,
-            @Context HttpServletRequest req, RemoveTorrentDTO removeTorrentDTO) throws AppException {
-        
-        if (settings.getCLUSTER_ID() == null) {
-            throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
-                    ResponseMessages.NOT_REGISTERD_WITH_HOPS_SITE);
-        }
-        if(settings.getGVOD_UDP_ENDPOINT() == null){
-            throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
-                    ResponseMessages.GVOD_OFFLINE);
-        }
-        
-        String response = gvodController.removeUpload(removeTorrentDTO.getTorrentId());
+    Project project = projectController.findProjectById(downloadDTO.
+            getProjectId());
+    Response response = gvodController.download(null,
+            hdfsUsersBean.getHdfsUserName(project, userBean.getUserByEmail(sc.
+                    getUserPrincipal().getName())),
+            downloadDTO.getPublicDatasetId(),
+            Settings.getProjectPath(project.getName()) + File.separator
+            + downloadDTO.getDestinationDatasetName(),
+            downloadDTO.getJSONTopics(),
+            null);
 
-        if (response != null) {
-            return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).entity(response).build();
-        } else {
-            return noCacheResponse.getNoCacheResponseBuilder(Response.Status.EXPECTATION_FAILED).entity(null).build();
-        }
+    if (response != null && response.getStatus() == 200) {
+      return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).
+              entity(response.readEntity(SuccessJSON.class)).build();
+    } else if (response != null) {
+      return noCacheResponse.getNoCacheResponseBuilder(
+              Response.Status.EXPECTATION_FAILED).entity(response.readEntity(
+                      ErrorDescJSON.class)).build();
+    } else {
+      return noCacheResponse.getNoCacheResponseBuilder(
+              Response.Status.EXPECTATION_FAILED).entity(null).build();
     }
+  }
+
+  @PUT
+  @Path("downloadkafka")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @AllowedRoles(roles = {AllowedRoles.DATA_SCIENTIST, AllowedRoles.DATA_OWNER})
+  public Response downloadDatasetKafka(@Context SecurityContext sc,
+          @Context HttpServletRequest req, DownloadDTO downloadDTO) throws
+          AppException {
+    if (settings.getCLUSTER_ID() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.NOT_REGISTERD_WITH_HOPS_SITE);
+    }
+    if (settings.getGVOD_UDP_ENDPOINT() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.GVOD_OFFLINE);
+    }
+    Project project = projectController.findProjectById(downloadDTO.
+            getProjectId());
+    String certPath = kafkaController.getKafkaCertPaths(project);
+    Response response = gvodController.download(new KafkaEndpoint(settings.
+            getKafkaConnectStr(), "http://" + settings.getDOMAIN() + ":"
+            + settings.getRestPort(), settings.getDOMAIN(), String.valueOf(
+                    downloadDTO.getProjectId()), certPath + "/keystore.jks",
+            certPath + "/truststore.jks"),
+            hdfsUsersBean.getHdfsUserName(project, userBean.getUserByEmail(sc.
+                    getUserPrincipal().getName())),
+            downloadDTO.getPublicDatasetId(),
+            Settings.getProjectPath(project.getName()) + File.separator
+            + downloadDTO.getDestinationDatasetName(),
+            downloadDTO.getJSONTopics(),
+            req.getSession().getId());
+    if (response != null && response.getStatus() == 200) {
+      return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).
+              entity(response.readEntity(SuccessJSON.class)).build();
+    } else if (response != null) {
+      return noCacheResponse.getNoCacheResponseBuilder(
+              Response.Status.EXPECTATION_FAILED).entity(response.readEntity(
+                      ErrorDescJSON.class)).build();
+    } else {
+      return noCacheResponse.getNoCacheResponseBuilder(
+              Response.Status.EXPECTATION_FAILED).entity(null).build();
+    }
+  }
+
+  @PUT
+  @Path("contents")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @AllowedRoles(roles = {AllowedRoles.DATA_SCIENTIST, AllowedRoles.DATA_OWNER})
+  public Response getContents(@Context SecurityContext sc,
+          @Context HttpServletRequest req, ContentsRequestDTO contentsRequestDTO)
+          throws AppException {
+    if (settings.getCLUSTER_ID() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.NOT_REGISTERD_WITH_HOPS_SITE);
+    }
+    if (settings.getGVOD_UDP_ENDPOINT() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.GVOD_OFFLINE);
+    }
+    HopsContentsSummaryJSON hopsContentsSummaryJSON = gvodController.
+            getContents(contentsRequestDTO.getProjectId());
+    if (hopsContentsSummaryJSON != null) {
+      return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).
+              entity(hopsContentsSummaryJSON).build();
+    } else {
+      return noCacheResponse.getNoCacheResponseBuilder(
+              Response.Status.EXPECTATION_FAILED).entity(null).build();
+    }
+  }
+
+  @PUT
+  @Path("details")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @AllowedRoles(roles = {AllowedRoles.DATA_SCIENTIST, AllowedRoles.DATA_OWNER})
+  public Response getExtendedDetails(@Context SecurityContext sc,
+          @Context HttpServletRequest req, DetailsRequestDTO detailsRequestDTO)
+          throws AppException {
+    if (settings.getCLUSTER_ID() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.NOT_REGISTERD_WITH_HOPS_SITE);
+    }
+    if (settings.getGVOD_UDP_ENDPOINT() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.GVOD_OFFLINE);
+    }
+    TorrentExtendedStatusJSON torrentExtendedStatusJSON = gvodController.
+            getDetails(detailsRequestDTO.getTorrentId());
+    if (torrentExtendedStatusJSON != null) {
+      return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).
+              entity(torrentExtendedStatusJSON).build();
+    } else {
+      return noCacheResponse.getNoCacheResponseBuilder(
+              Response.Status.EXPECTATION_FAILED).entity(null).build();
+    }
+  }
+
+  @PUT
+  @Path("remove")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @AllowedRoles(roles = {AllowedRoles.DATA_SCIENTIST, AllowedRoles.DATA_OWNER})
+  public Response remove(@Context SecurityContext sc,
+          @Context HttpServletRequest req, RemoveTorrentDTO removeTorrentDTO)
+          throws AppException {
+    if (settings.getCLUSTER_ID() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.NOT_REGISTERD_WITH_HOPS_SITE);
+    }
+    if (settings.getGVOD_UDP_ENDPOINT() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.GVOD_OFFLINE);
+    }
+    String response = gvodController.removeUpload(removeTorrentDTO.
+            getTorrentId());
+    if (response != null) {
+      return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).
+              entity(response).build();
+    } else {
+      return noCacheResponse.getNoCacheResponseBuilder(
+              Response.Status.EXPECTATION_FAILED).entity(null).build();
+    }
+  }
 }

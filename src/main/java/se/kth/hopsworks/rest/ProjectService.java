@@ -796,24 +796,22 @@ public class ProjectService {
   }
   
   @GET
-    @Path("populardatasets")
-    @Produces(MediaType.APPLICATION_JSON)
-    @AllowedRoles(roles = {AllowedRoles.DATA_OWNER})
-    public Response popularDatasets(@Context SecurityContext sc,
-            @Context HttpServletRequest req) throws AppException {
-
-        List<PopularDatasetJSON> popularDatasets = this.manageGlobalClusterParticipation.getPopularDatasets();
-
-        if (popularDatasets != null) {
-
-            return Response.ok(popularDatasets.toString(), MediaType.APPLICATION_JSON).build();
-
-        } else {
-
-            return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).build();
-        }
+  @Path("populardatasets")
+  @Produces(MediaType.APPLICATION_JSON)
+  @AllowedRoles(roles = {AllowedRoles.DATA_OWNER})
+  public Response popularDatasets(@Context SecurityContext sc,
+          @Context HttpServletRequest req) throws AppException {
+    List<PopularDatasetJSON> popularDatasets
+            = this.manageGlobalClusterParticipation.getPopularDatasets();
+    if (popularDatasets != null) {
+      return Response.ok(popularDatasets.toString(), MediaType.APPLICATION_JSON).
+              build();
+    } else {
+      return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).
+              build();
     }
-    
+  }
+
   @Path("{id}/workflows")
   @AllowedRoles(roles = {AllowedRoles.DATA_OWNER, AllowedRoles.DATA_SCIENTIST})
   public WorkflowService workflows(@PathParam("id") Integer id) throws
