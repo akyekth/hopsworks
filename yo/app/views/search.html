@@ -132,9 +132,9 @@
       <div ng-repeat="results in mainCtrl.searchResults| startFrom:(mainCtrl.currentPage - 1) * mainCtrl.pageSize | limitTo: mainCtrl.pageSize   track by $index ">
         <div id="cards" class="col-xs-12" ng-class="{'col-sm-4 col-md-3': !listView, 'col-sm-12 col-md-12': listView}">
           <hw-card card-color="results.color" card-label="results.label" card-hader="results.hader" 
-                   card-details="results.details" card-index="$index"> </hw-card>
+                   card-details="results.details" card-index="mainCtrl.rowIndex($index+1)-1"> </hw-card>
         </div>
-        <section ng-show="mainCtrl.row($index+1)" class="col-xs-12 col-sm-12 col-md-12 collapse search-result-filter" id="carddropdown-{{$index}}">
+        <section ng-show="mainCtrl.rowIndex($index+1)-1 === $index" class="col-xs-12 col-sm-12 col-md-12 collapse card-dropdown-menu" id="carddropdown-{{$index}}">
           Details 
           Severe: Cannot retrieve topic list from Zookeeper
           Info: 14:07:01,475  WARN [__ejb-thread-pool9-SendThread(10.0.2.15:2181)] 

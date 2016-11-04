@@ -324,20 +324,31 @@ angular.module('hopsWorksApp')
             self.rowIndex = function (index) {
               var width = angular.element('#cards')[0].offsetWidth;
               var numOfCards = Math.min(self.pageSize, self.searchResults.length);
+              var newIndex;
               if (index === numOfCards) {
                 return numOfCards;
               } else if (width <= 400) {
-                
+                if (index % 4 === 0) {
+                  return index;
+                } else {
+                  newIndex = 4 - (index % 4) + index;
+                  return Math.min(numOfCards, newIndex);
+                }
               } else if (width <= 800) {
-                
+                if (index % 3 === 0) {
+                  return index;
+                } else {
+                  newIndex = 3 - (index % 3) + index;
+                  return Math.min(numOfCards, newIndex);
+                }
               } else if (width >= 1200) {
-                
+                return index;
               }
             };
             
             self.viewType = function (listView) {
               if (listView) {
-                self.pageSize = 5;
+                self.pageSize = 4;
               } else {
                 self.pageSize = 16;
               }
