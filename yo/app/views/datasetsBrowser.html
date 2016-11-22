@@ -30,7 +30,7 @@
               <div class="ds-content" ng-class="{'sidenav-open': datasetsCtrl.tgState}"  style="margin-top: -5px; margin-left:-7px;">
                 <!--Tool bar -->
                 <div class="row"  style="padding-right:30px;">
-                  <div class="col-lg-4 col-md-4 col-sm-4">
+                  <div class="col-lg-4 col-md-6 col-sm-8">
                     <div class="btn-toolbar" role="toolbar" aria-label="Toolbar with button groups">
                       <div class="btn-group" role="group" aria-label="First group">
                         <button type="button" class="btn btn-default fa fa-level-up" title="Go to parent directory" 
@@ -43,6 +43,8 @@
                       <div class="btn-group" role="group" aria-label="Second group" ng-show="datasetsCtrl.isSelectedFiles() > 0">
                         <button type="button" class="btn btn-default fa fa-trash-o" title="Delete"
                                 ng-click="datasetsCtrl.deleteSelected();"></button>
+                        <button type="button" class="btn btn-default fa fa-edit" title="Rename"
+                                ng-click="datasetsCtrl.renameSelected();" ng-if="datasetsCtrl.isSelectedFiles() === 1"></button>
                         <button type="button" class="btn btn-default fa fa-arrows" title="Move"
                                 ng-click="datasetsCtrl.moveSelected();"></button>
                       </div>
@@ -51,22 +53,22 @@
                         <button type="button" class="btn btn-default fa fa-cloud-download" title="Download file"
                                 ng-click="datasetsCtrl.openDir(datasetsCtrl.selectedFiles[datasetsCtrl.selected])"></button>
                         <button type="button" class="btn btn-default fa fa-camera" title="Preview"
-                                ng-click="datasetsCtrl.filePreview(datasetsCtrl.selected, true)"></button>
+                                ng-click="datasetsCtrl.filePreview(datasetsCtrl.selected, true, false)"></button>
                       </div>
                     </div>
                   </div>
-                  <div class="col-lg-8 col-md-8 col-sm-8">
+                  <div class="col-lg-6 col-lg-offset-2 col-md-6 col-sm-4">
                     <div class="row">
-                      <div class="col-md-4 pull-right">
+                      <div class="col-md-6 pull-right">
                         <div class="input-group">
                           <input type="text" class="form-control" 
-                                 ng-model="search"placeholder="Filter...">
+                                 ng-model="search" placeholder="Filter...">
                           <span class="input-group-btn">
                             <button class="btn btn-default fa fa-filter icon-resize-small" type="button" title="Filter"></button>
                           </span>
                         </div>
                       </div>
-                      <div class="col-md-4 pull-right" ng-show="datasetsCtrl.isSelectedFiles() === 1">
+                      <div class="col-md-6 pull-right" ng-show="datasetsCtrl.isSelectedFiles() === 1">
                         <div class=" input-group">
                           <input id="fileRef" type="text" class="form-control" 
                                  value="{{datasetsCtrl.getSelectedPath(projectCtrl.endpoint, datasetsCtrl.selectedFiles[datasetsCtrl.selected])}}">
@@ -175,8 +177,8 @@
                             <li ng-show="datasetsCtrl.isSelectedFiles() <= 1" ng-hide="file.dir">
                               <a class="pointer"
                                  role="menuitem"
-                                 tabindex="5"
-                                 ng-click="datasetsCtrl.filePreview(file.name, true)"
+                                 tabindex="1"
+                                 ng-click="datasetsCtrl.filePreview(file.name, true, false)"
                                  data-toggle="uib-tooltip" title="Click to display a preview of a text file."
                                  >
                                 <span><i class="fa fa-camera-retro" ></i>
@@ -187,7 +189,7 @@
                             <li ng-show="datasetsCtrl.isSelectedFiles() === 0">
                               <a class="pointer"
                                  role="menuitem"
-                                 tabindex="5"
+                                 tabindex="2"
                                  ng-click="datasetsCtrl.deleteFile(file.name)">
                                 <span><i class="fa fa-trash"></i>
                                   Remove</span>
@@ -196,7 +198,7 @@
                             <li ng-if="datasetsCtrl.isSelectedFiles() > 0">
                               <a class="pointer"
                                  role="menuitem"
-                                 tabindex="5"
+                                 tabindex="2"
                                  ng-click="datasetsCtrl.deleteSelected()">
                                 <span><i class="fa fa-trash"></i>
                                   Remove</span>
@@ -206,8 +208,7 @@
                             <li ng-if="datasetsCtrl.isSelectedFiles() === 0">
                               <a class="pointer"
                                  role="menuitem"
-                                 tabindex="5"
-
+                                 tabindex="3"
                                  ng-click="datasetsCtrl.move(file.id, file.name)">
                                 <span><i class="fa fa-arrows"></i>
                                   Move</span>
@@ -216,7 +217,7 @@
                             <li ng-if="datasetsCtrl.isSelectedFiles() > 0">
                               <a class="pointer"
                                  role="menuitem"
-                                 tabindex="5"
+                                 tabindex="3"
                                  ng-click="datasetsCtrl.moveSelected()">
                                 <span><i class="fa fa-arrows"></i>
                                   Move</span>
@@ -225,8 +226,8 @@
                             <li ng-show="datasetsCtrl.isSelectedFiles() <= 1">
                               <a class="pointer"
                                  role="menuitem"
-                                 tabindex="5"
-                                 ng-click="datasetsCtrl.rename(file.id)">
+                                 tabindex="4"
+                                 ng-click="datasetsCtrl.rename(file.id, file.name)">
                                 <span><i class="fa fa-edit"></i>
                                   Rename</span>
                               </a>
@@ -244,7 +245,7 @@
                             <li ng-show="datasetsCtrl.isSelectedFiles() <= 1">
                               <a class="pointer"
                                  role="menuitem"
-                                 tabindex="3"
+                                 tabindex="5"
                                  ng-click="metadataCtrl.attachTemplate(file); $event.stopPropagation();">
                                 <span><i class="fa fa-upload"></i>
                                   Add metadata</span>
@@ -253,7 +254,7 @@
                             <li ng-show="datasetsCtrl.isSelectedFiles() <= 1">
                               <a class="pointer"
                                  role="menuitem"
-                                 tabindex="4"
+                                 tabindex="6"
                                  ng-click="metadataCtrl.detachTemplate(file); $event.stopPropagation();">
                                 <span><i class="fa fa-download"></i>
                                   Remove metadata</span>

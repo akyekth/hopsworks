@@ -480,3 +480,11 @@ md-input-container {
 *:focus {
     outline: none;
 }
+
+.btn-group {
+  display: flex;
+}
+
+.btn-toolbar {
+  display: flex;
+}

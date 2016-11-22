@@ -353,16 +353,28 @@ This will make all its files unavailable to other projects unless you share it e
             /**
              * Preview the requested file in a Modal. If the file is README.md
              * and the preview flag is false, preview the file in datasets.
-             * @param {type} fileName
+             * @param {type} dataset
              * @param {type} preview
              * @returns {undefined}
              */
-            self.filePreview = function (fileName, preview) {
+            self.filePreview = function (dataset, preview, readme) {
+              var fileName="";
+              //handle README.md filename for datasets browser viewing here
+              if (readme && !preview){
+                if(dataset.shared === true){
+                  fileName = dataset.selectedIndex + "/README.md";
+                } else {
+                  fileName = dataset.path.substring(dataset.path.lastIndexOf('/')).replace('/', '') + "/README.md";
+                }
+              } else {
+                fileName = dataset;
+              }
+              
               var previewPathArray = self.pathArray.slice(0);
               previewPathArray.push(fileName);
               var filePath = getPath(previewPathArray);
               //If filename is README.md then try fetching it without the modal
-              if (fileName.endsWith("README.md") && !preview) {
+              if (readme && !preview) {
                 dataSetService.filePreview(filePath, "head").then(
                         function (success) {
                           var fileDetails = JSON.parse(success.data.data);
@@ -370,6 +382,7 @@ This will make all its files unavailable to other projects unless you share it e
                           $scope.readme = $showdown.makeHtml(content);
                         }, function (error) {
                   //To hide README from UI
+                  growl.error(error.data.errorMsg, {title: 'Error retrieving README file', ttl: 5000, referenceId: 3});
                   $scope.readme = null;
                 });
               } else {
@@ -458,23 +471,57 @@ This will make all its files unavailable to other projects unless you share it e
               }
             };
 
-            self.rename = function (inodeId) {
-
+            self.rename = function (inodeId, name) {
               var pathComponents = self.pathArray.slice(0);
               var newPath = getPath(pathComponents);
               var destPath = newPath + '/';
-              var newName = "New Name";
-              ModalService.enterName('lg', "Rename File or Directory", newName).then(
+              ModalService.enterName('lg', "Rename File or Directory", name).then(
                       function (success) {
                         var fullPath = destPath + success.newName;
                         dataSetService.move(inodeId, fullPath).then(
                                 function (success) {
                                   getDirContents();
+                                  self.all_selected = false;
+                                  self.selectedFiles = {};
+                                  self.selected = null;
                                 }, function (error) {
                           growl.error(error.data.errorMsg, {title: 'Error', ttl: 5000});
+                                  self.all_selected = false;
+                                  self.selectedFiles = {};
+                                  self.selected = null;
                         });
 
                       });
+            };
+            self.renameSelected = function () {
+              if(self.isSelectedFiles() === 1){
+                var inodeId, inodeName;
+                for (var name in self.selectedFiles) {
+                  inodeName = name;
+                }
+                inodeId = self.selectedFiles[inodeName]['id'];
+                var pathComponents = self.pathArray.slice(0);
+                var newPath = getPath(pathComponents);
+                var destPath = newPath + '/';
+               
+                ModalService.enterName('lg', "Rename File or Directory", inodeName).then(
+                        function (success) {
+                          var fullPath = destPath + success.newName;
+                          dataSetService.move(inodeId, fullPath).then(
+                                  function (success) {
+                                    getDirContents();
+                                    self.all_selected = false;
+                                    self.selectedFiles = {};
+                                    self.selected = null;
+                                  }, function (error) {
+                                    self.all_selected = false;
+                                    self.selectedFiles = {};
+                                    self.selected = null;
+                            growl.error(error.data.errorMsg, {title: 'Error', ttl: 5000});
+                          });
+
+                });
+              }
             };
             /**
              * Opens a modal dialog for file upload.
