@@ -119,9 +119,6 @@
 
 .card-footer .card-footer-icons {
     float: right;
-}
-
-.card-footer .card-footer-icon {
     margin: 5px;
 }
 
@@ -130,7 +127,7 @@
 }
 
 .card-footer-icons > span > i:hover{
-  color: #777;
+  color: #000;
 }
 
 .card-item-content .details {

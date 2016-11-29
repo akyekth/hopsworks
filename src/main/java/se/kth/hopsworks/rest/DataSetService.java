@@ -156,13 +156,13 @@ public class DataSetService {
     InodeView inodeView;
     Users user;
     List<InodeView> kids = new ArrayList<>();
-
     String projPath = Settings.getProjectPath(this.project.getName());
-
+    boolean notebookDirExists = false;
     Collection<Dataset> dsInProject = this.project.getDatasetCollection();
     for (Dataset ds : dsInProject) {
       parent = inodes.findParent(ds.getInode());
-      inodeView = new InodeView(parent, ds, projPath + "/" + ds.getInode()
+      inodeView = new InodeView(parent, ds, projPath + File.separator + ds.
+              getInode()
               .getInodePK().getName());
       user = userfacade.findByUsername(inodeView.getOwner());
       if (user != null) {
@@ -170,6 +170,34 @@ public class DataSetService {
         inodeView.setEmail(user.getEmail());
       }
       kids.add(inodeView);
+      if (inodeView.getName().
+              equals(Settings.DefaultDataset.NOTEBOOKS.getName())) {
+        notebookDirExists = true;
+      }
+    }
+    //if there is a notebook datasets in project dir but not in Dataset table
+    if (!notebookDirExists) {
+      Inode projectInode = inodes.getInodeAtPath(projPath);
+      Inode ds = inodes.findByInodePK(projectInode,
+              Settings.DefaultDataset.NOTEBOOKS.getName(),
+              HopsUtils.dataSetPartitionId(projectInode,
+                      Settings.DefaultDataset.NOTEBOOKS.getName()));
+      if (ds != null) {
+        logger.log(Level.INFO, "Notebook dir not in datasets, adding.");
+        Dataset newDS = new Dataset(ds, this.project);
+        newDS.setSearchable(false);
+        newDS.setDescription(Settings.DefaultDataset.NOTEBOOKS.getDescription());
+        datasetFacade.persistDataset(newDS);
+
+        inodeView = new InodeView(projectInode, newDS, projPath + File.separator
+                + ds.getInodePK().getName());
+        user = userfacade.findByUsername(inodeView.getOwner());
+        if (user != null) {
+          inodeView.setOwner(user.getFname() + " " + user.getLname());
+          inodeView.setEmail(user.getEmail());
+        }
+        kids.add(inodeView);
+      }
     }
 
     GenericEntity<List<InodeView>> inodViews
@@ -256,7 +284,7 @@ public class DataSetService {
               ResponseMessages.PROJECT_NOT_FOUND);
     }
     Inode inode = inodes.findByInodePK(parent, dataSet.getName(),
-        HopsUtils.dataSetPartitionId(parent, dataSet.getName()));
+            HopsUtils.dataSetPartitionId(parent, dataSet.getName()));
     Dataset ds = datasetFacade.findByProjectAndInode(this.project, inode);
     if (ds == null) {//if parent id and project are not the same it is a shared ds.
       throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
@@ -289,6 +317,8 @@ public class DataSetService {
     if (dsReq == null || dsReq.getProjectTeam().getTeamRole().equals(
             AllowedRoles.DATA_SCIENTIST)) {
       newDS.setStatus(Dataset.PENDING);
+    } else {
+      hdfsUsersBean.shareDataset(proj, ds);
     }
     datasetFacade.persistDataset(newDS);
     if (dsReq != null) {
@@ -578,12 +608,14 @@ public class DataSetService {
     }
     //remove the group associated with this dataset if the dataset is toplevel ds 
     if (filePath.endsWith(this.dataset.getInode().getInodePK().getName())) {
-        try {
-            hdfsUsersBean.deleteDatasetGroup(this.dataset);
-        } catch (IOException ex) {
-            //FIXME: take an action?
-            logger.log(Level.WARNING, "Error while trying to delete a dataset group", ex);
-        }
+      try {
+        hdfsUsersBean.deleteDatasetGroup(this.dataset);
+      } catch (IOException ex) {
+        //FIXME: take an action?
+        logger.
+                log(Level.WARNING,
+                        "Error while trying to delete a dataset group", ex);
+      }
     }
     json.setSuccessMessage(ResponseMessages.DATASET_REMOVED_FROM_HDFS);
     return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).entity(
@@ -1098,7 +1130,7 @@ public class DataSetService {
       dsName = shardDS[1];
       Inode parent = inodes.getProjectRoot(projectName);
       Inode dsInode = inodes.findByInodePK(parent, dsName,
-          HopsUtils.dataSetPartitionId(parent, dsName));
+              HopsUtils.dataSetPartitionId(parent, dsName));
       this.dataset = datasetFacade.findByProjectAndInode(this.project, dsInode);
       if (this.dataset == null) {
         throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
@@ -1114,7 +1146,8 @@ public class DataSetService {
     } else if (parts != null) {
       dsName = parts[0];
       Inode parent = inodes.getProjectRoot(this.project.getName());
-      Inode dsInode = inodes.findByInodePK(parent, dsName, HopsUtils.dataSetPartitionId(parent, dsName));
+      Inode dsInode = inodes.findByInodePK(parent, dsName, HopsUtils.
+              dataSetPartitionId(parent, dsName));
       this.dataset = datasetFacade.findByProjectAndInode(this.project, dsInode);
       if (this.dataset == null) {
         throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),

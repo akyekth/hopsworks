@@ -1,5 +1,6 @@
 /*jshint undef: false, unused: false, indent: 2*/
 /*global angular: false */
+
 'use strict';
 
 angular.module('hopsWorksApp')
@@ -58,79 +59,16 @@ angular.module('hopsWorksApp')
 
             self.getUser = function () {
               return self.email.substring(0, self.email.indexOf("@"));
-            };
-
-            self.view = function (name, id, dataType) {
-
-              if (dataType === 'project') {
-                ProjectService.getProjectInfo({projectName: name}).$promise.then(
-                        function (success) {
-
-                          ModalService.viewSearchResult('md', success, dataType)
-                                  .then(function (success) {
-                                    growl.success(success.data.successMessage, {title: 'Success', ttl: 1000});
-                                  }, function (error) {
-
-                                  });
-                        }, function (error) {
-                  growl.error(error.data.errorMsg, {title: 'Error', ttl: 10000});
-                });
-              } else if (dataType === 'dataset') {
-                //fetch the dataset
-                ProjectService.getDatasetInfo({inodeId: id}).$promise.then(
-                        function (response) {
-                          var projects;
-
-                          //fetch the projects to pass them in the modal. Fixes empty projects array on ui-select initialization
-                          ProjectService.query().$promise.then(
-                                  function (success) {
-                                    projects = success;
-
-                                    //show dataset
-                                    ModalService.viewSearchResult('md', response, dataType, projects)
-                                            .then(function (success) {
-                                                growl.success(success.data.successMessage, {title: 'Success', ttl: 1000});
-                                            }, function (error) {
-
-                                            });
-                                }, function (error) {
-                            growl.error(error.data.errorMsg, {title: 'Error', ttl: 10000});
-                                    });
-                          });
-              } else if (dataType === 'ds') {
-                //fetch the dataset
-                        ProjectService.getDatasetInfo({inodeId: id}).$promise.then(
-                        function (response) {
-                          var projects;
-                          //fetch the projects to pass them in the modal. Fixes empty projects array on ui-select initialization
-                          ProjectService.query().$promise.then(
-                                  function (success) {
-                                    projects = success;
-
-                                    //show dataset
-                                    ModalService.viewSearchResult('md', response, dataType, projects)
-                                            .then(function (success) {
-                                                            growl.success(success.data.successMessage, {title: 'Success', ttl: 1000});
-                                            }, function (error) {
-
-                                            });
-                                            }, function (error) {
-                                    console.log('Error: ' + error);
-                                  });
-
-                                }, function (error) {
-                          growl.error(error.data.errorMsg, {title: 'Error', ttl: 10000});
-                        });
-              }
-            };
+            };            
 
             var getUnreadCount = function () {
               MessageService.getUnreadCount().then(
                       function (success) {
                         self.unreadMessages = success.data.data.value;
-                            }, function (error) {
+                      }, function (error) {
               });
             };
+            
             var getMessages = function () {//
               MessageService.getMessages().then(
                       function (success) {
@@ -148,7 +86,7 @@ angular.module('hopsWorksApp')
             getPopularPublicDatasets();
             getUnreadCount();
             getMessages();
-            //this might be a bit to frequent for refresh rate 
+ 
             var getUnreadCountInterval = $interval(function () {
               getUnreadCount();
             }, 10000);
@@ -157,18 +95,19 @@ angular.module('hopsWorksApp')
 //              getPopularPublicDatasets();
 //            }, 6000);
 
-
             self.getMessages = function () {
               getMessages();
             };
+            
             self.openMessageModal = function (selected) {
               if (selected !== undefined) {
                 MessageService.markAsRead(selected.id);
               };
               ModalService.messages('lg', selected)
                       .then(function (success) {
-                                growl.success(success.data.successMessage, {title: 'Success', ttl: 1000})
-                            }, function (error) { });
+                        growl.success(success.data.successMessage,
+                                {title: 'Success', ttl: 1000});
+                      }, function (error) { });
             };
 
             self.searchTerm = "";
@@ -190,15 +129,14 @@ angular.module('hopsWorksApp')
             };
 
             self.keyTyped = function (evt) {
-
-              if (self.searchTerm.length > 3 || (self.searchResult.length > 0 && self.searchTerm.length > 0)) {
+              if (self.searchTerm.length > 3 
+                  || (self.searchResult.length > 0 && self.searchTerm.length > 0)) {
                 self.search();
               } else {
                 self.searchResult = [];
                 self.searchReturned = "";
                 self.searchResultPublicSearch = [];
                 self.searchReturnedPublicSearch = "";
-
               }
             };
 
@@ -218,7 +156,6 @@ angular.module('hopsWorksApp')
               
               if (self.searchType === "global") {
                 //triggering a global search
-
                 var local_data;
                 var global_data;
                 //triggering a global search
@@ -249,9 +186,8 @@ angular.module('hopsWorksApp')
               } else if (self.searchType === "projectCentric") {
                 elasticService.projectSearch(UtilsService.getProjectName(), self.searchTerm)
                         .then(function (response) {
-
                           var searchHits = response.data;
-                          //console.log("RECEIVED RESPONSE " + JSON.stringify(response));
+                          //console.log("RECEIVED RESPONSE ", response);
                           if (searchHits.length > 0) {
                             self.searchReturned = "Result for <b>" + self.searchTerm + "</b>";
                             self.searchResult = searchHits;
@@ -261,16 +197,14 @@ angular.module('hopsWorksApp')
                           }
                           self.resultPages = Math.ceil(self.searchResult.length / self.pageSize);
                           self.resultItems = self.searchResult.length;
-
                         }, function (error) {
                                     growl.error(error.data.errorMsg, {title: 'Error', ttl: 10000});
                   });
               } else if (self.searchType === "datasetCentric") {
                 elasticService.datasetSearch($routeParams.projectID, UtilsService.getDatasetName(), self.searchTerm)
                         .then(function (response) {
-
                           var searchHits = response.data;
-                          //console.log("RECEIVED RESPONSE " + JSON.stringify(response));
+                          //console.log("RECEIVED RESPONSE ", response);
                           if (searchHits.length > 0) {
                             self.searchReturned = "Result for <b>" + self.searchTerm + "</b>";
                             self.searchResult = searchHits;
@@ -280,12 +214,11 @@ angular.module('hopsWorksApp')
                           }
                           self.resultPages = Math.ceil(self.searchResult.length / self.pageSize);
                           self.resultItems = self.searchResult.length;
-
                         }, function (error) {
                             growl.error(error.data.errorMsg, {title: 'Error', ttl: 10000});
                 });
               }
-              datePicker(); // this will load the function so that the date picker can call it.
+              datePicker();// this will load the function so that the date picker can call it.
             };
 
             var datePicker = function () {
@@ -359,83 +292,52 @@ angular.module('hopsWorksApp')
               //$interval.cancel(getPopularPublicDatasetsInterval);
             });
 
-
             self.downloadPublicDataset = function (datasetId, defaultDatasetName, partners) {
-
               ModalService.selectProject('md', true, "/[^]*/",
                       "Select a Project as download destination.").then(
                       function (success) {
                         var destProj = success.projectId;
                         ModalService.setupDownload('md', destProj, datasetId, defaultDatasetName, partners)
                                 .then(function (success) {
-
                                 }, function (error) {
                                   growl.error(error, {title: 'Error', ttl: 1000});
                                 });
                       }, function (error) {
-                growl.error(error, {title: 'Error', ttl: 1000});
+                           growl.error(error, {title: 'Error', ttl: 1000});
               });
             };
             
             self.incrementPage = function () {
-              self.pageSize = self.pageSize+1;
+              self.pageSize = self.pageSize + 1;
             };
 
             self.decrementPage = function () {
               if (self.pageSize < 2) {
                 return;
               }
-              self.pageSize=self.pageSize-1;
+              self.pageSize = self.pageSize - 1;
             };
             
-            self.searchResults = [
-              {color: "green", label: "public", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "blue", label: "project", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "red", label: "dataset", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "yellow", label: "public", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "gold", label: "project", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "cyan", label: "dataset", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "hotPink", label: "public", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "green", label: "public", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "green", label: "public", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "blue", label: "project", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "red", label: "dataset", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "yellow", label: "public", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "gold", label: "project", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "cyan", label: "dataset", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "hotPink", label: "public", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "green", label: "public", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "green", label: "public", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "blue", label: "project", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "red", label: "dataset", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "yellow", label: "public", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "gold", label: "project", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "cyan", label: "dataset", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "hotPink", label: "public", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"},
-              {color: "green", label: "public", hader: "A glimpse inside the mind of a data scientist",
-                details: "<div><label>source</label><div class='value'>IBM</div></div><div><label>Date</label><div class='value'>Aug 16, 2016</div></div>"}
-            ];
-          }]);
+            self.viewDelail = function(result) {
+              if (result.type === 'proj') {
+                ProjectService.getProjectInfo({projectName: result.name}).$promise.then(
+                  function (response) {
+                    ModalService.viewSearchResult('md', response, result.type);
+                  }, function (error) {
+                    growl.error(error.data.errorMsg, {title: 'Error', ttl: 5000});
+                });
+              } else if (result.type === 'ds') {
+                ProjectService.getDatasetInfo({inodeId: result.id}).$promise.then(
+                  function (response) {
+                    var projects;
+                    ProjectService.query().$promise.then(
+                      function (success) {
+                        projects = success;
+                        ModalService.viewSearchResult('md', response, result.type, projects);
+                      }, function (error) {
+                      growl.error(error.data.errorMsg, {title: 'Error', ttl: 5000});
+                    });
+                  });
+              }
+            };            
+}]);

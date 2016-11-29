@@ -1,11 +1,10 @@
 <div class="container" ng-controller="MainCtrl as mainCtrl" style="padding-top:25px; width: 1500px;">
-    <div ng-include="'nav.html'"></div>
-    <div ng-show="mainCtrl.searchReturned !== ''" class="row">
-        <div id="projectSearchResults">
-            <div ng-include="'views/search.html'"></div>
-        </div>
+  <div ng-include="'nav.html'"></div>
+  <div ng-show="mainCtrl.searchReturned !== ''" class="row">
+    <div id="projectSearchResults">
+      <div ng-include="'views/search.html'"></div>
     </div>
-
+  </div>
 
   <div ng-show="mainCtrl.searchReturned === ''" class="row" ng-controller="HomeCtrl as homeCtrl">
     <div class="col-sm-6 col-md-2 col-lg-2">
@@ -50,7 +49,10 @@
           </a>
             </div>
         </div>
+
+
     </div>
+
 
     <div class="col-sm-6 col-md-2 col-lg-5">
       <div class="widget-body">

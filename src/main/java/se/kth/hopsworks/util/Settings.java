@@ -1005,11 +1005,9 @@ public class Settings {
 
   //Project creation: default datasets
   public static enum DefaultDataset {
-
-    LOGS("Logs",
-            "Contains the logs for jobs that have been run through the Hopsworks platform."),
-    RESOURCES("Resources",
-            "Contains resources used by jobs, for example, jar files.");
+    LOGS("Logs", "Contains the logs for jobs that have been run through the Hopsworks platform."),
+    RESOURCES("Resources", "Contains resources used by jobs, for example, jar files."),
+    NOTEBOOKS("notebook", "Contains zeppelin notebooks.");   
     private final String name;
     private final String description;
 

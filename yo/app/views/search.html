@@ -93,7 +93,7 @@
         <ul>
           <li class="dropdown-header">Source</li> 
           <li>
-            <div class="input-group">
+            <div>
               <label class="sr-only" for="email">Email address</label>
               <input type="email" class="form-control" id="email" placeholder="Enter email">
             </div>
@@ -115,8 +115,9 @@
   </section> 
   <section class="search-result">
     <div class="row search-result-header">
-      <div class="col-md-4 pull-left">
-        <h3>{{mainCtrl.searchResults.length}} Results found for: {{mainCtrl.searchTerm}}</h3>
+      <div class="col-md-11 pull-left">
+        <h3>{{mainCtrl.searchResult.length}} Results found for: {{mainCtrl.searchTerm | limitTo: 85 }}
+            {{ mainCtrl.searchTerm.length > 85 ? '...' : ''}}</h3>
       </div>
       <div class="col-xs-1 col-sm-1 col-md-1 pull-right">
         <div class="input-group spinner">  
@@ -129,33 +130,16 @@
       </div>
     </div>
     <div class="search-result-body row">
-      <div ng-repeat="results in mainCtrl.searchResults| startFrom:(mainCtrl.currentPage - 1) * mainCtrl.pageSize | limitTo: mainCtrl.pageSize   track by $index ">
+      <div ng-repeat="result in mainCtrl.searchResult | startFrom:(mainCtrl.currentPage - 1) * mainCtrl.pageSize | limitTo: mainCtrl.pageSize   track by $index ">
         <div id="cards" class="col-xs-12" ng-class="{'col-sm-4 col-md-3': !listView, 'col-sm-12 col-md-12': listView}">
-          <hw-card card-color="results.color" card-label="results.label" card-hader="results.hader" 
-                   card-details="results.details" card-index="mainCtrl.rowIndex($index+1)-1"> </hw-card>
+          <hw-card content="result" details-fn="mainCtrl.viewDelail(result)" card-index="mainCtrl.rowIndex($index+1)-1"> </hw-card>
         </div>
-        <section ng-show="mainCtrl.rowIndex($index+1)-1 === $index" class="col-xs-12 col-sm-12 col-md-12 collapse card-dropdown-menu" id="carddropdown-{{$index}}">
-          Details 
-          Severe: Cannot retrieve topic list from Zookeeper
-          Info: 14:07:01,475  WARN [__ejb-thread-pool9-SendThread(10.0.2.15:2181)] 
-          (ClientCnxn.java:startConnect(1014))   - SASL configuration failed: javax.security.auth.login.LoginException: 
-          No JAAS configuration section named 'Client' was found in specified JAAS configuration 
-          file: '/srv/glassfish/domain1/config/login.conf'. Will continue connection to Zookeeper 
-          server without SASL authentication, if Zookeeper server allows it.
-          Details 
-          Severe: Cannot retrieve topic list from Zookeeper
-          Info: 14:07:01,475  WARN [__ejb-thread-pool9-SendThread(10.0.2.15:2181)] 
-          (ClientCnxn.java:startConnect(1014))   - SASL configuration failed: javax.security.auth.login.LoginException: 
-          No JAAS configuration section named 'Client' was found in specified JAAS configuration 
-          file: '/srv/glassfish/domain1/config/login.conf'. Will continue connection to Zookeeper 
-          server without SASL authentication, if Zookeeper server allows it.
-        </section>
       </div>
     </div>
     <div class="row divider"></div>
     <div class="row">
-        <ul uib-pagination ng-show="(mainCtrl.searchResults.length /mainCtrl.pageSize) > 1 "
-            total-items="mainCtrl.searchResults.length" 
+        <ul uib-pagination ng-show="(mainCtrl.searchResult.length /mainCtrl.pageSize) > 1 "
+            total-items="mainCtrl.searchResult.length" 
             ng-model="mainCtrl.currentPage" 
             items-per-page="mainCtrl.pageSize" 
             boundary-links="true"
