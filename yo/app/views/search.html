@@ -131,8 +131,8 @@
     </div>
     <div class="search-result-body row">
       <div ng-repeat="result in mainCtrl.searchResult | startFrom:(mainCtrl.currentPage - 1) * mainCtrl.pageSize | limitTo: mainCtrl.pageSize   track by $index ">
-        <div id="cards" class="col-xs-12" ng-class="{'col-sm-4 col-md-3': !listView, 'col-sm-12 col-md-12': listView}">
-          <hw-card content="result" details-fn="mainCtrl.viewDelail(result)" card-index="mainCtrl.rowIndex($index+1)-1"> </hw-card>
+        <div id="cards-{{mainCtrl.currentPage}}-{{$index}}" class="col-xs-12" ng-class="{'col-sm-4 col-md-3': !listView, 'col-sm-12 col-md-12': listView}">
+          <hw-card id="{{mainCtrl.currentPage}}-{{$index}}" content="result" limit="listView ? 255:55" details-fn="mainCtrl.viewDelail(result)" page-no="mainCtrl.currentPage" card-index="$index"> </hw-card>
         </div>
       </div>
     </div>
@@ -145,6 +145,6 @@
             boundary-links="true"
             class="pagination-sm pull-right">
         </ul>
-      </div>
+    </div>
   </section>
 </div>

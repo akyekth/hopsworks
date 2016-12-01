@@ -144,7 +144,7 @@ angular.module('hopsWorksApp')
               //ask for the project name when it is time to search
               self.projectName = UtilsService.getProjectName();
               self.currentPage = 1;
-              self.pageSize = 16;
+              self.pageSize = 6;
               self.searchResult = [];
               self.searchReturned = "";
               self.searchResultPublicSearch = [];
@@ -237,53 +237,13 @@ angular.module('hopsWorksApp')
                   $('#datepicker3').data("DateTimePicker").maxDate(e.date);
                 });
               });
-            };
-            
-            self.row = function (index) {
-              var width = angular.element('#cards')[0].offsetWidth;
-              console.log("width----->", width);
-              if (index === self.pageSize || index === self.searchResults.length) {
-                return true;
-              } else if (width === 375 && index%4 === 0 ) {
-                return true;
-              } else if (width === 500 && index%3 === 0 ) {
-                return true;
-              } else if (width > 1200) {
-                return true;
-              }
-              return false;
-            };
-            
-            self.rowIndex = function (index) {
-              var width = angular.element('#cards')[0].offsetWidth;
-              var numOfCards = Math.min(self.pageSize, self.searchResults.length);
-              var newIndex;
-              if (index === numOfCards) {
-                return numOfCards;
-              } else if (width <= 400) {
-                if (index % 4 === 0) {
-                  return index;
-                } else {
-                  newIndex = 4 - (index % 4) + index;
-                  return Math.min(numOfCards, newIndex);
-                }
-              } else if (width <= 800) {
-                if (index % 3 === 0) {
-                  return index;
-                } else {
-                  newIndex = 3 - (index % 3) + index;
-                  return Math.min(numOfCards, newIndex);
-                }
-              } else if (width >= 1200) {
-                return index;
-              }
-            };
+            };                       
             
             self.viewType = function (listView) {
               if (listView) {
                 self.pageSize = 4;
               } else {
-                self.pageSize = 16;
+                self.pageSize = 6;
               }
             };
 

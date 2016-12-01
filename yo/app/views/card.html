@@ -1,4 +1,4 @@
-<div class="card-item">
+<div id="card-{{pageNo}}-{{cardIndex}}" class="card-item">
   <div class="card-item-content 
        {{content.type === 'ds'? 'red': ''}} 
        {{content.type === 'proj'? 'blue': ''}}
@@ -12,7 +12,16 @@
     </div>
     <div class="card-body">
       <div class="details">
-        <div ng-bind-html="content.details"></div>
+        <div class="desc">{{cardCtrl.detail.description | limitTo: limit}}
+                          {{cardCtrl.detail.description.length > limit ? '...':''}}</div>
+        <div>
+          <label>source</label>
+          <div class="value">{{cardCtrl.detail.user || '--'}}</div>            
+        </div>
+        <div>
+          <label>Date</label>
+          <div class="value">Aug 16, 2016</div>        
+        </div>
       </div>
     </div>
     <div class="card-footer">

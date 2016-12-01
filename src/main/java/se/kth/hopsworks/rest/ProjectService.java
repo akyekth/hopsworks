@@ -52,6 +52,7 @@ import se.kth.hopsworks.hdfsUsers.controller.HdfsUsersController;
 import io.hops.hopssite.io.populardatasets.PopularDatasetJSON;
 import io.hops.hopssite.rest.ManageGlobalClusterParticipation;
 import se.kth.hopsworks.controller.DatasetController;
+import se.kth.hopsworks.controller.MoreInfoDTO;
 import se.kth.hopsworks.user.model.Users;
 import se.kth.hopsworks.util.LocalhostServices;
 import se.kth.hopsworks.util.Settings;
@@ -109,7 +110,7 @@ public class ProjectService {
   private ManageGlobalClusterParticipation manageGlobalClusterParticipation;
   @EJB
   private DistributedFsService dfs;
-  
+
   private final static Logger logger = Logger.getLogger(ProjectService.class.
           getName());
 
@@ -158,6 +159,24 @@ public class ProjectService {
 
     return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).entity(
             proj).build();
+  }
+
+  @GET
+  @Path("/getMoreInfo/{type}/{id}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @AllowedRoles(roles = {AllowedRoles.ALL})
+  public Response getMoreInfo(@PathParam("type") String type,
+          @PathParam("inodeId") Integer id) throws AppException {
+    MoreInfoDTO info = null;
+    if ("proj".equals(type)) {
+      Project proj = projectFacade.find(id);
+      info = new MoreInfoDTO(proj);
+    } else if ("ds".equals(type)) {
+      //Dataset ds = datasetFacade.find(id);
+      //info = new MoreInfoDTO(ds);
+    }
+    return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).entity(
+            info).build();
   }
 
   @GET
@@ -365,7 +384,8 @@ public class ProjectService {
 
       } catch (ProjectInternalFoldersFailedException ee) {
         try {
-          projectController.removeByID(project.getId(), owner, true, udfso, dfso);
+          projectController.
+                  removeByID(project.getId(), owner, true, udfso, dfso);
           throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
                   "Could not create project resources");
         } catch (IOException e) {
@@ -374,7 +394,8 @@ public class ProjectService {
         }
       } catch (IOException ex) {
         try {
-          projectController.removeByID(project.getId(), owner, true, udfso, dfso);
+          projectController.
+                  removeByID(project.getId(), owner, true, udfso, dfso);
           throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
                   "Could not add project folder owner in HDFS");
         } catch (IOException e) {
@@ -542,9 +563,9 @@ public class ProjectService {
       throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
               ResponseMessages.PROJECT_FOLDER_NOT_REMOVED);
     } finally {
-        if(udfso != null){
-            udfso.close();
-        }
+      if (udfso != null) {
+        udfso.close();
+      }
     }
     if (success) {
       json.setSuccessMessage(ResponseMessages.PROJECT_REMOVED);
@@ -778,7 +799,7 @@ public class ProjectService {
 
     return this.kafka;
   }
-  
+
   @GET
   @Path("populardatasets")
   @Produces(MediaType.APPLICATION_JSON)
