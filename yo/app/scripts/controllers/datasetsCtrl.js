@@ -169,9 +169,9 @@ angular.module('hopsWorksApp')
                         //Reset the selected file
                         self.selected = null;
                         //Set the current files and path
+                        self.working = false;
                         self.files = success.data;
                         self.pathArray = newPathArray;
-                        self.working = false;
                         console.log(success);
 //                        alert('Execution time: ' + (new Date().getTime() - self.dir_timing)); 
                         console.log('Execution time: ' + (new Date().getTime() - self.dir_timing));
