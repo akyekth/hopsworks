@@ -130,9 +130,13 @@
   color: #000;
 }
 
+.card-footer-icon {
+  margin: 0px 2px;
+}
 .card-item-content .details {
-    bottom: 25px;
+    bottom: 30px;
     position: absolute;
+    width: 95%;
 }
 
 .card-item-content .details label {
@@ -153,6 +157,12 @@
     font-size: 12px;
     font-weight: 700;
     line-height: 1;
+}
+
+.card-footer .progress {
+    height: 8px;
+    width: 45%;
+    margin-top: 10px;
 }
 
 

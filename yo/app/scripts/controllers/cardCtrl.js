@@ -14,10 +14,16 @@ angular.module('hopsWorksApp')
                 self.detail[element.key] = element.value;
               });
 
-              ProjectService.getMoreInfo({type: content.type, inodeId: content.id}).$promise.then(
-                function (response) {
-
+              ProjectService.getMoreInfo({type: content.type, inodeId: content.id})
+                .$promise.then( function (success) {
+                  //console.log("More info ", success);
+                  self.detail["createDate"] = success.createDate;
+                  self.detail["downloads"] = success.downloads;
+                  self.detail["size"] = success.size;
+                  self.detail["user"] = success.user;
+                  self.detail["votes"] = success.votes;
                 }, function (error) {
+                  console.log("More info error ", error);
               });
 
               content.details = self.detail;
@@ -27,6 +33,10 @@ angular.module('hopsWorksApp')
             $scope.$watch("content", function (newValue, oldValue) {
               init(newValue);
             });
+            
+            self.sizeOnDisk = function (fileSizeInBytes) {
+              return convertSize(fileSizeInBytes);
+            };
           }]);
 
 

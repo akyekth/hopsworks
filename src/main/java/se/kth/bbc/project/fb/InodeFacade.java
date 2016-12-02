@@ -75,6 +75,27 @@ public class InodeFacade extends AbstractFacade<Inode> {
   public List<Inode> getChildren(Inode parent) {
     return findByParent(parent);
   }
+  
+  /**
+   * Return the size of an inode
+   * @param inode
+   * @return 
+   */
+  @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+  public long getSize(Inode inode) {
+    if (!inode.isDir()) {
+      return inode.getSize();
+    }
+    long size = 0;
+    for (Inode i : getChildren(inode)) {
+      if (!i.isDir()) {
+        size += i.getSize();
+      } else {
+        size += getSize(i);
+      }
+    }
+    return size;
+  }
 
   /**
    * Get a list of the names of the child files (so no directories) of the given

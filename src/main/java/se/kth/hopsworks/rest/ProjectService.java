@@ -166,17 +166,31 @@ public class ProjectService {
   @Produces(MediaType.APPLICATION_JSON)
   @AllowedRoles(roles = {AllowedRoles.ALL})
   public Response getMoreInfo(@PathParam("type") String type,
-          @PathParam("inodeId") Integer id) throws AppException {
+          @PathParam("id") Integer id) throws AppException {
     MoreInfoDTO info = null;
-    if ("proj".equals(type)) {
-      Project proj = projectFacade.find(id);
-      info = new MoreInfoDTO(proj);
-    } else if ("ds".equals(type)) {
-      //Dataset ds = datasetFacade.find(id);
-      //info = new MoreInfoDTO(ds);
-    }
+    if (id != null) {
+      if ("proj".equals(type)) {
+        Project proj = projectFacade.find(id);
+        info = new MoreInfoDTO(proj);
+      } else if ("ds".equals(type)) {
+        info = datasetInfo(id);
+      }
+    }    
     return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).entity(
             info).build();
+  }
+
+
+  private MoreInfoDTO datasetInfo(Integer inodeId) {
+    Inode inode = inodes.findById(inodeId);
+    if (inode == null) {
+      return null;
+    }
+    MoreInfoDTO info = new MoreInfoDTO(inode);
+    Users user = userManager.getUserByUsername(info.getUser());
+    info.setUser(user.getEmail());
+    info.setSize(inodes.getSize(inode));
+    return info;
   }
 
   @GET

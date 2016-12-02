@@ -43,6 +43,13 @@
     height: 120px;
 }
 
+.loader.loader-md {
+    border: 10px solid #f3f3f3;
+    border-top: 10px solid #69717d; 
+    width: 80px;
+    height: 80px;
+}
+
 .loader.loader-sm {
     border: 8px solid #f3f3f3;
     border-top: 8px solid #69717d;  

@@ -1,4 +1,4 @@
-<div >
+<div>
   <nav class="navbar navbar-default">
     <div class="container-fluid">
     <!-- Brand and toggle get grouped for better mobile display -->
@@ -31,13 +31,16 @@
           <li class="dropdown-header">Type</li>
           <li><a class="filter-menu-uppercase"
                  data-toggle="collapse" data-target="#filterdropdown"
-                 style="color: #5DA51D;">public</a></li>
+                 style="color: #5DA51D;"
+                 ng-click="local = false;">public</a></li>
           <li><a class="filter-menu-uppercase" 
                  data-toggle="collapse" data-target="#filterdropdown"
-                 style="color: #4178BE;">project</a></li>
+                 style="color: #4178BE;"
+                 ng-click="type = 'proj';">project</a></li>
           <li><a class="filter-menu-uppercase" 
                  data-toggle="collapse" data-target="#filterdropdown"
-                 style="color: #FC5120;">dataset</a></li>
+                 style="color: #FC5120;"
+                 ng-click="type = 'ds';">dataset</a></li>
           <li class="divider"></li>
           <li class="dropdown-header">Tops</li>
           <li><a >Votes </a>
@@ -102,8 +105,8 @@
           <li class="dropdown-header">Sort by</li>
           <li><a data-toggle="collapse" data-target="#filterdropdown">Votes</a></li>
           <li><a data-toggle="collapse" data-target="#filterdropdown">Downloads</a></li>
-          <li><a data-toggle="collapse" data-target="#filterdropdown">Date</a></li>
-          <li><a data-toggle="collapse" data-target="#filterdropdown">Size</a></li>
+          <li><a data-toggle="collapse" data-target="#filterdropdown" ng-click="size = false; date = true;">Date</a></li>
+          <li><a data-toggle="collapse" data-target="#filterdropdown" ng-click="size = true; date = false;">Size</a></li>
         </ul>
       </li>
     </div>
@@ -130,7 +133,8 @@
       </div>
     </div>
     <div class="search-result-body row">
-      <div ng-repeat="result in mainCtrl.searchResult | startFrom:(mainCtrl.currentPage - 1) * mainCtrl.pageSize | limitTo: mainCtrl.pageSize   track by $index ">
+      <div class="loader loader-md" ng-show="mainCtrl.searching"></div>
+      <div dir-paginate="result in mainCtrl.searchResult | orderBy:sortKey:reverse | filter:search | itemsPerPage:mainCtrl.pageSize">
         <div id="cards-{{mainCtrl.currentPage}}-{{$index}}" class="col-xs-12" ng-class="{'col-sm-4 col-md-3': !listView, 'col-sm-12 col-md-12': listView}">
           <hw-card id="{{mainCtrl.currentPage}}-{{$index}}" content="result" limit="listView ? 255:55" details-fn="mainCtrl.viewDelail(result)" page-no="mainCtrl.currentPage" card-index="$index"> </hw-card>
         </div>
@@ -138,13 +142,12 @@
     </div>
     <div class="row divider"></div>
     <div class="row">
-        <ul uib-pagination ng-show="(mainCtrl.searchResult.length /mainCtrl.pageSize) > 1 "
-            total-items="mainCtrl.searchResult.length" 
-            ng-model="mainCtrl.currentPage" 
-            items-per-page="mainCtrl.pageSize" 
+        <dir-pagination-controls ng-show="(mainCtrl.searchResult.length /mainCtrl.pageSize) > 1 "
+            max-size="15"
+            direction-links="true"
             boundary-links="true"
-            class="pagination-sm pull-right">
-        </ul>
+            class="pagination pull-right" style="margin: 0px">
+        </dir-pagination-controls>
     </div>
   </section>
 </div>

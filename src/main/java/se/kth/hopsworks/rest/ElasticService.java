@@ -159,7 +159,9 @@ public class ElasticService {
         SearchHit[] hits = response.getHits().getHits();
 
         for (SearchHit hit : hits) {
-          elasticHits.add(new ElasticHit(hit));
+          ElasticHit eHit = new ElasticHit(hit);
+          eHit.setLocalDataset(true);
+          elasticHits.add(eHit);
         }
       }
 
@@ -313,6 +315,7 @@ public class ElasticService {
             Dataset ds = datasetFacade.findByInode(i).get(0);
             ElasticHit elasticHit = new ElasticHit(hit);
             elasticHit.setPublicId(ds.getPublicDsId());
+            elasticHit.setLocalDataset(true);
             elasticHit.setOriginalGvodEndpoint(settings.getGVOD_UDP_ENDPOINT());
             elasticHits.add(elasticHit);
           }
@@ -401,9 +404,10 @@ public class ElasticService {
       List<ElasticHit> elasticHits = new LinkedList<>();
       if (response.getHits().getHits().length > 0) {
         SearchHit[] hits = response.getHits().getHits();
-
         for (SearchHit hit : hits) {
-          elasticHits.add(new ElasticHit(hit));
+          ElasticHit eHit = new ElasticHit(hit);
+          eHit.setLocalDataset(true);
+          elasticHits.add(eHit);
         }
       }
 
@@ -424,6 +428,7 @@ public class ElasticService {
   /**
    * Searches for content inside a specific dataset. Hits 'dataset' index
    * <p/>
+   * @param projectId
    * @param datasetName
    * @param searchTerm
    * @param sc
@@ -492,7 +497,9 @@ public class ElasticService {
         SearchHit[] hits = response.getHits().getHits();
 
         for (SearchHit hit : hits) {
-          elasticHits.add(new ElasticHit(hit));
+          ElasticHit eHit = new ElasticHit(hit);
+          eHit.setLocalDataset(true);
+          elasticHits.add(eHit);
         }
       }
 

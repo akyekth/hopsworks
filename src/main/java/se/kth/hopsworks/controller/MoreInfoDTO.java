@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Objects;
 import javax.xml.bind.annotation.XmlRootElement;
 import se.kth.bbc.project.Project;
+import se.kth.bbc.project.fb.Inode;
 import se.kth.hopsworks.dataset.Dataset;
 
 @XmlRootElement
@@ -28,11 +29,11 @@ public class MoreInfoDTO {
     this.uploadDate = null;
   }
 
-  public MoreInfoDTO(Dataset ds) {
-    this.inodeid = ds.getInode().getId();
-    this.user = ds.getProjectId().getOwner().getEmail();
-    this.size = ds.getInode().getSize();
-    this.createDate = new Date(ds.getInode().getModificationTime().longValue());
+  public MoreInfoDTO(Inode inode) {
+    this.inodeid = inode.getId();
+    this.user = inode.getHdfsUser().getUsername();
+    this.size = inode.getSize();
+    this.createDate = new Date(inode.getModificationTime().longValue());
     this.uploadDate = null;
   }
 

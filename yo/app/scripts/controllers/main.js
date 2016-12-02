@@ -111,6 +111,7 @@ angular.module('hopsWorksApp')
             };
 
             self.searchTerm = "";
+            self.searching = false;
             self.globalClusterBoundary = false;
             self.searchReturned = "";
             self.searchReturnedPublicSearch = "";
@@ -131,6 +132,7 @@ angular.module('hopsWorksApp')
             self.keyTyped = function (evt) {
               if (self.searchTerm.length > 3 
                   || (self.searchResult.length > 0 && self.searchTerm.length > 0)) {
+                self.searchReturned = "Searching for <b>" + self.searchTerm + "<b> ...";
                 self.search();
               } else {
                 self.searchResult = [];
@@ -153,15 +155,15 @@ angular.module('hopsWorksApp')
               if (self.searchTerm === undefined || self.searchTerm === "" || self.searchTerm === null) {
                 return;
               }
-              
+              self.searching = true;
               if (self.searchType === "global") {
-                //triggering a global search
                 var local_data;
                 var global_data;
                 //triggering a global search
                 elasticService.globalSearch(self.searchTerm).then(function (response) {
                   local_data = response.data;
                   if (local_data.length > 0) {
+                    self.searching = false;
                     self.searchReturned = "Result for <b>" + self.searchTerm + "</b>";
                     self.searchResult = local_data;
                   } else {
@@ -173,19 +175,28 @@ angular.module('hopsWorksApp')
                   elasticService.publicSearch(self.searchTerm).then(function (response2) {
                     global_data = response2.data;
                     if (global_data.length > 0) {
+                      self.searching = false;
                       self.searchReturnedPublicSearch = "Public search results for <b>" + self.searchTerm + "</b>";
                       self.searchResultPublicSearch = global_data;
+                      self.searchResult.push(global_data);
                     } else {
+                      self.searching = false;
                       self.searchResultPublicSearch = [];
                       self.searchReturnedPublicSearch = "No public search results found for <b>" + self.searchTerm + "</b>";
                     }
                     self.resultPagesPublicSearch = Math.ceil(Math.max(self.searchResultPublicSearch.length, self.searchResult.length) / self.pageSize);
                     self.resultItemsPublicSearch = self.searchResultPublicSearch.length;
+                    self.resultPages = Math.ceil(self.searchResult.length / self.pageSize);
+                    self.resultItems = self.searchResult.length;
                   });
+                }, function (error) {
+                  self.searching = false;
+                  growl.error(error.data.errorMsg, {title: 'Error', ttl: 5000});
                 });
               } else if (self.searchType === "projectCentric") {
                 elasticService.projectSearch(UtilsService.getProjectName(), self.searchTerm)
                         .then(function (response) {
+                          self.searching = false;
                           var searchHits = response.data;
                           //console.log("RECEIVED RESPONSE ", response);
                           if (searchHits.length > 0) {
@@ -198,11 +209,13 @@ angular.module('hopsWorksApp')
                           self.resultPages = Math.ceil(self.searchResult.length / self.pageSize);
                           self.resultItems = self.searchResult.length;
                         }, function (error) {
-                                    growl.error(error.data.errorMsg, {title: 'Error', ttl: 10000});
+                          self.searching = false;
+                          growl.error(error.data.errorMsg, {title: 'Error', ttl: 5000});
                   });
               } else if (self.searchType === "datasetCentric") {
                 elasticService.datasetSearch($routeParams.projectID, UtilsService.getDatasetName(), self.searchTerm)
                         .then(function (response) {
+                          self.searching = false;
                           var searchHits = response.data;
                           //console.log("RECEIVED RESPONSE ", response);
                           if (searchHits.length > 0) {
@@ -215,7 +228,8 @@ angular.module('hopsWorksApp')
                           self.resultPages = Math.ceil(self.searchResult.length / self.pageSize);
                           self.resultItems = self.searchResult.length;
                         }, function (error) {
-                            growl.error(error.data.errorMsg, {title: 'Error', ttl: 10000});
+                          self.searching = false;
+                          growl.error(error.data.errorMsg, {title: 'Error', ttl: 5000});
                 });
               }
               datePicker();// this will load the function so that the date picker can call it.
