@@ -72,6 +72,27 @@ public class InodeFacade extends AbstractFacade<Inode> {
   public List<Inode> getChildren(Inode parent) {
     return findByParent(parent);
   }
+  
+  /**
+   * Return the size of an inode
+   * @param inode
+   * @return 
+   */
+  @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
+  public long getSize(Inode inode) {
+    if (!inode.isDir()) {
+      return inode.getSize();
+    }
+    long size = 0;
+    for (Inode i : getChildren(inode)) {
+      if (!i.isDir()) {
+        size += i.getSize();
+      } else {
+        size += getSize(i);
+      }
+    }
+    return size;
+  }
 
   /**
    * Get all the children of <i>parent</i>. Alias of findByParent().
@@ -89,29 +110,6 @@ public class InodeFacade extends AbstractFacade<Inode> {
         getAllChildren(inode, children);
       }
     }
-  }
-
-  /**
-   * Return the size of an inode
-   *
-   * @param inode
-   * @return
-   */
-  @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
-  public long getSize(Inode inode) {
-    if (!inode.isDir()) {
-      return inode.getSize();
-    }
-    long size = 0;
-    List<Inode> children = getChildren(inode);
-    for (Inode i : children) {
-      if (!i.isDir()) {
-        size += i.getSize();
-      } else {
-        size += getSize(i);
-      }
-    }
-    return size;
   }
 
   /**

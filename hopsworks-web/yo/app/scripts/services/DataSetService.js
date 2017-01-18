@@ -23,6 +23,7 @@ angular.module('hopsWorksApp')
                 getContents: function (relativePath) {
                   return $http.get('/api/project/' + id + '/dataset/' + relativePath);
                 },
+                
                 /**
                  * Checks the existence of a file. Should be caled before fileDownload.
                  * @param {type} fileName is a path relative to the current ds to the file
@@ -31,13 +32,7 @@ angular.module('hopsWorksApp')
                 checkFileExist: function (fileName) {
                   return $http.get('/api/project/' + id + '/dataset/fileExists/' + fileName);
                 },
-                /**
-                 * Downloads a file using location.href. This can replace the
-                 * page with error page if the download is unsuccessful. So use checkFileExist
-                 * before calling this to minimize the risk of an error page being showed. 
-                 * @param {type} fileName is a path relative to the current ds to the file 
-                 * @returns {undefined}
-                 */
+                
                 fileDownload: function (fileName) {
                   location.href=getPathname() + '/api/project/' + id + '/dataset/fileDownload/' + fileName;
                 },
@@ -163,7 +158,10 @@ angular.module('hopsWorksApp')
                 },             
                 removePublic: function (inodeId) {
                   return $http.get('/api/project/' + id + '/dataset/removePublic/' + inodeId);
-                },             
+                },
+                showManifest: function (inodeId) {
+                  return $http.get('/api/project/' + id + '/dataset/showManifest/' + inodeId);
+                }, 
                 fetchMetadata: function (inodePid, inodeName, tableId) {
                   return $http.get('/api/metadata/fetchmetadata/' + inodePid + '/' + inodeName + '/' + tableId);
                 },

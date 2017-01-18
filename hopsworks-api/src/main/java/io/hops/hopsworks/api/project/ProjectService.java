@@ -56,6 +56,8 @@ import io.hops.hopsworks.common.dao.user.security.ua.UserManager;
 import io.hops.hopsworks.common.dataset.DatasetController;
 import io.hops.hopsworks.common.dataset.FilePreviewDTO;
 import io.hops.hopsworks.common.exception.AppException;
+import io.hops.hopsworks.common.gvod.ManageGlobalClusterParticipation;
+import io.hops.hopsworks.common.gvod.hopssite.PopularDatasetJSON;
 import io.hops.hopsworks.common.hdfs.DistributedFileSystemOps;
 import io.hops.hopsworks.common.hdfs.DistributedFsService;
 import io.hops.hopsworks.common.hdfs.HdfsUsersController;
@@ -120,6 +122,8 @@ public class ProjectService {
   @EJB
   private Settings settings;
   @EJB
+  private ManageGlobalClusterParticipation manageGlobalClusterParticipation;
+  @EJB
   private DistributedFsService dfs;
 
   private final static Logger logger = Logger.getLogger(ProjectService.class.
@@ -173,6 +177,7 @@ public class ProjectService {
   @GET
   @Path("/getMoreInfo/{type}/{id}")
   @Produces(MediaType.APPLICATION_JSON)
+  @AllowedRoles(roles = {AllowedRoles.ALL})
   public Response getMoreInfo(@PathParam("type") String type,
           @PathParam("id") Integer id) throws AppException {
     MoreInfoDTO info = null;
@@ -867,6 +872,23 @@ public class ProjectService {
     this.kafka.setProjectId(id);
 
     return this.kafka;
+  }
+
+  @GET
+  @Path("populardatasets")
+  @Produces(MediaType.APPLICATION_JSON)
+  @AllowedRoles(roles = {AllowedRoles.DATA_OWNER})
+  public Response popularDatasets(@Context SecurityContext sc,
+          @Context HttpServletRequest req) throws AppException {
+    List<PopularDatasetJSON> popularDatasets
+            = this.manageGlobalClusterParticipation.getPopularDatasets();
+    if (popularDatasets != null) {
+      return Response.ok(popularDatasets.toString(), MediaType.APPLICATION_JSON).
+              build();
+    } else {
+      return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).
+              build();
+    }
   }
 
   @Path("{id}/workflows")

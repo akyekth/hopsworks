@@ -4,7 +4,7 @@
 'use strict';
 
 angular.module('hopsWorksApp')
-        .controller('MainCtrl', ['$interval','$cookies', '$location','$scope', 'AuthService', 'UtilsService', 'ElasticService', 'md5', 'ModalService','ProjectService','growl','MessageService','$routeParams', '$window',
+        .controller('MainCtrl', ['$interval', '$cookies', '$location', '$scope', 'AuthService', 'UtilsService', 'ElasticService', 'md5', 'ModalService', 'ProjectService', 'growl', 'MessageService', '$routeParams', '$window',
           function ($interval, $cookies, $location, $scope, AuthService, UtilsService, ElasticService, md5, ModalService, ProjectService, growl, MessageService, $routeParams, $window) {
 
             var self = this;
@@ -19,7 +19,7 @@ angular.module('hopsWorksApp')
             } else {
               self.searchType = "global";
             }
-            
+
             self.isAdmin = function () {
               return $cookies.get('isAdmin');
             };
@@ -31,18 +31,18 @@ angular.module('hopsWorksApp')
             self.getEmailHash = function(email) {
               return md5.createHash(email || '');
             };
-            
+
             self.logout = function () {
               AuthService.logout(self.user).then(
-                      function (success) {
-                        $location.url('/login');
-                        $cookies.remove("email");
-                        $cookies.remove("isAdmin");
-                        localStorage.removeItem("SESSIONID");
-                        sessionStorage.removeItem("SESSIONID");
-                      }, function (error) {
-                self.errorMessage = error.data.msg;
-              });
+                function (success) {
+                  $location.url('/login');
+                  $cookies.remove("email");
+                  $cookies.remove("isAdmin");
+                  localStorage.removeItem("SESSIONID");
+                  sessionStorage.removeItem("SESSIONID");
+                }, function (error) {
+                  self.errorMessage = error.data.msg;
+                });
             };
 
             self.profileModal = function () {
@@ -56,10 +56,10 @@ angular.module('hopsWorksApp')
             self.getHostname = function () {
               return $location.host();
             };
-            
+
             self.getUser = function () {
               return self.email.substring(0, self.email.indexOf("@"));
-            };
+            };            
 
             var getUnreadCount = function () {
               MessageService.getUnreadCount().then(
@@ -76,22 +76,37 @@ angular.module('hopsWorksApp')
                       }, function (error) {
               });
             };
+
+            var getPopularPublicDatasets = function () {
+              ProjectService.getPopularPublicDatasets().$promise.then(function (result) {
+                self.popularDatasets = result;
+              });
+            };
+
+            getPopularPublicDatasets();
             getUnreadCount();
             getMessages();
-            //this might be a bit to frequent for refresh rate 
+ 
             var getUnreadCountInterval = $interval(function () {
               getUnreadCount();
             }, 10000);
+
+//            var getPopularPublicDatasetsInterval = $interval(function () {
+//              getPopularPublicDatasets();
+//            }, 6000);
+
             self.getMessages = function () {
               getMessages();
             };
+            
             self.openMessageModal = function (selected) {
               if (selected !== undefined) {
                 MessageService.markAsRead(selected.id);
               };
               ModalService.messages('lg', selected)
                       .then(function (success) {
-                        growl.success(success.data.successMessage, {title: 'Success', ttl: 1000})
+                        growl.success(success.data.successMessage,
+                                {title: 'Success', ttl: 1000});
                       }, function (error) { });
             };
 
@@ -99,9 +114,13 @@ angular.module('hopsWorksApp')
             self.searching = false;
             self.globalClusterBoundary = false;
             self.searchReturned = "";
+            self.searchReturnedPublicSearch = "";
             self.searchResult = [];
+            self.searchResultPublicSearch = [];
             self.resultPages = 0;
+            self.resultPagesPublicSearch = 0;
             self.resultItems = 0;
+            self.resultItemsPublicSearch = 0;
             self.currentPage = 1;
             self.pageSize = 16;
             self.hitEnter = function (evt) {
@@ -111,12 +130,15 @@ angular.module('hopsWorksApp')
             };
 
             self.keyTyped = function (evt) {
-
-              if (self.searchTerm.length > 3) {
+              if (self.searchTerm.length > 3 
+                  || (self.searchResult.length > 0 && self.searchTerm.length > 0)) {
+                self.searchReturned = "Searching for <b>" + self.searchTerm + "<b> ...";
                 self.search();
               } else {
                 self.searchResult = [];
                 self.searchReturned = "";
+                self.searchResultPublicSearch = [];
+                self.searchReturnedPublicSearch = "";
               }
             };
 
@@ -127,12 +149,16 @@ angular.module('hopsWorksApp')
               self.pageSize = 16;
               self.searchResult = [];
               self.searchReturned = "";
+              self.searchResultPublicSearch = [];
+              self.searchReturnedPublicSearch = "";
 
               if (self.searchTerm === undefined || self.searchTerm === "" || self.searchTerm === null) {
                 return;
               }
               self.searching = true;
               if (self.searchType === "global") {
+                var local_data;
+                var global_data;
                 //triggering a global search
                 elasticService.globalSearch(self.searchTerm)
                         .then(function (response) {
@@ -202,7 +228,6 @@ angular.module('hopsWorksApp')
               }
               datePicker();// this will load the function so that the date picker can call it.
             };
-                
             var datePicker = function () {
               $(function () {
                 $('[type="datepicker"]').datetimepicker({format: 'DD/MM/YYYY'});
@@ -225,14 +250,38 @@ angular.module('hopsWorksApp')
               if (listView) {
                 self.pageSize = 4;
               } else {
-                self.pageSize = 16;
+                self.pageSize = 6;
               }
             };
 
             $scope.$on("$destroy", function () {
               $interval.cancel(getUnreadCountInterval);
+              //$interval.cancel(getPopularPublicDatasetsInterval);
             });
-                              
+
+            self.downloadPublicDataset = function (datasetId, defaultDatasetName, partners) {
+              ModalService.selectProject('md', true, "/[^]*/",
+                      "Select a Project as download destination.").then(
+                      function (success) {
+                        var destProj = success.projectId;
+                        ModalService.setupDownload('md', destProj, datasetId, defaultDatasetName, partners)
+                                .then(function (success) {
+                                }, function (error) {
+                                  growl.error(error, {title: 'Error', ttl: 1000});
+                                });
+                      }, function (error) {
+                           growl.error(error, {title: 'Error', ttl: 1000});
+              });
+            };                       
+            
+            self.viewType = function (listView) {
+              if (listView) {
+                self.pageSize = 4;
+              } else {
+                self.pageSize = 16;
+              }
+            };
+
             self.incrementPage = function () {
               self.pageSize = self.pageSize + 1;
             };

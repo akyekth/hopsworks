@@ -54,6 +54,24 @@ angular.module('hopsWorksApp')
                 });
                 return modalInstance.result;
               },
+              
+              json: function (size, title, json) {
+                var modalInstance = $modal.open({
+                  templateUrl: 'views/json.html',
+                  controller: 'JSONCtrl as jsonCtrl',
+                  size: size,
+                  resolve: {
+                    title: function () {
+                      return title;
+                    },
+                    json: function () {
+                      return json;
+                    }
+                  }
+                });
+                return modalInstance.result;
+              },
+              
               confirmShare: function (size, title, msg) {
                 var modalInstance = $uibModal.open({
                   templateUrl: 'views/confirmShareModal.html',
@@ -862,6 +880,44 @@ angular.module('hopsWorksApp')
                 });
                 return modalInstance.result;
               },
+              
+              
+              setupDownload: function (size, projectId, datasetId, defaultDatasetName, partners) {
+                var modalInstance = $modal.open({
+                  templateUrl: 'views/setupDownload.html',
+                  controller: 'SetupDownloadCtrl as setupDownloadCtrl',
+                  size: size,
+                  resolve: {
+                    
+                    projectId : function(){
+                        return projectId;
+                    },
+                    datasetId : function(){
+                        return datasetId;
+                    },
+                    defaultDatasetName : function(){
+                        return defaultDatasetName;
+                    },
+                    partners : function(){
+                        return partners;
+                    },
+                    auth: ['$q', '$location', 'AuthService',
+                      function ($q, $location, AuthService) {
+                        return AuthService.session().then(
+                            function (success) {
+                            },
+                            function (err) {
+                              $location.path('/login');
+                              $location.replace();
+                              return $q.reject(err);
+                            });
+                      }]
+                  }
+                });
+                return modalInstance.result;
+              },
+              
+              
               noteName: function (size, title, msg, val ) {
                 var modalInstance = $uibModal.open({
                   templateUrl: 'views/noteNameModal.html',

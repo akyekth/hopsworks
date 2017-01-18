@@ -1,13 +1,23 @@
 package io.hops.hopsworks.common.dataset;
 
 import java.io.DataInputStream;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import io.hops.hopsworks.common.constants.message.ResponseMessages;
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.validation.ValidationException;
+import javax.ws.rs.core.Response;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.Path;
@@ -30,8 +40,13 @@ import io.hops.hopsworks.common.metadata.exception.DatabaseException;
 import io.hops.hopsworks.common.dao.log.operation.OperationType;
 import io.hops.hopsworks.common.dao.log.operation.OperationsLog;
 import io.hops.hopsworks.common.dao.log.operation.OperationsLogFacade;
+import io.hops.hopsworks.common.dao.user.UserFacade;
 import io.hops.hopsworks.common.util.Settings;
 import io.hops.hopsworks.common.dao.user.Users;
+import io.hops.hopsworks.common.exception.AppException;
+import io.hops.hopsworks.common.gvod.resources.FileInfo;
+import io.hops.hopsworks.common.gvod.resources.ManifestJSON;
+import io.hops.hopsworks.common.hdfs.DistributedFsService;
 import io.hops.hopsworks.common.util.HopsUtils;
 
 /**
@@ -57,6 +72,12 @@ public class DatasetController {
   private HdfsUsersController hdfsUsersBean;
   @EJB
   private OperationsLogFacade operationsLogFacade;
+  @EJB
+  private InodeFacade inodeFacade;
+  @EJB
+  private DistributedFsService dfs;
+  @EJB
+  private UserFacade userFacade;
 
   /**
    * Create a new DataSet. This is, a folder right under the project home
@@ -76,13 +97,14 @@ public class DatasetController {
    * @param defaultDataset
    * @param dfso
    * @param udfso
+   * @return Dataset
    * @throws NullPointerException If any of the given parameters is null.
    * @throws IllegalArgumentException If the given DataSetDTO contains invalid
    * folder names, or the folder already exists.
    * @throws IOException if the creation of the dataset failed.
    * @see FolderNameValidator.java
    */
-  public void createDataset(Users user, Project project, String dataSetName,
+  public Dataset createDataset(Users user, Project project, String dataSetName,
           String datasetDescription, int templateId, boolean searchable,
           boolean defaultDataset, DistributedFileSystemOps dfso,
           DistributedFileSystemOps udfso)
@@ -145,7 +167,7 @@ public class DatasetController {
                 project, user);
         // creates a dataset and adds user as owner.
         hdfsUsersBean.addDatasetUsersGroups(user, project, newDS, dfso);
-
+        return newDS;
       } catch (Exception e) {
         IOException failed = new IOException("Failed to create dataset at path "
                 + dsPath + ".", e);
@@ -462,6 +484,185 @@ public class DatasetController {
       return;
     }
     operationsLogFacade.persist(new OperationsLog(dataset, type));
+  }
+
+  private boolean isCsv(String s) {
+    return true;
+  }
+
+  private long getLength(String pathToFile) {
+    return dfs.getDfsOps().getlength(pathToFile);
+  }
+
+  public void makeDatasetPublicAndImmutable(Dataset ds, String id) {
+
+    ds.setPublicDs(true);
+    ds.setPublicDsId(id);
+    ds.setEditable(false);
+    datasetFacade.merge(ds);
+  }
+
+  public ManifestJSON getManifestForThisDataset(String datasetPath) {
+
+    ManifestJSON manifestJSON;
+
+    byte[] jsonBytes = readJsonFromHdfs(datasetPath + Settings.MANIFEST_NAME);
+    manifestJSON = getManifestJSON(jsonBytes);
+    return manifestJSON;
+  }
+
+  public ManifestJSON createAndPersistManifestJson(String dsPath,
+          String description, String name, String email, Project project) throws
+          AppException {
+
+    ManifestJSON manifestJson = new ManifestJSON();
+    manifestJson.setDatasetName(name);
+    manifestJson.setDatasetDescription(description);
+    manifestJson.setKafkaSupport(false);
+    manifestJson.setFileInfos(new ArrayList<FileInfo>());
+    Inode inode = inodeFacade.getInodeAtPath(dsPath);
+    List<Inode> inodekids = inodeFacade.getChildren(inode);
+    List<String> childrenOfDataset = new ArrayList<>(inodekids.size());
+    for (Inode i : inodekids) {
+      if (!i.isDir()) {
+        childrenOfDataset.add(i.getInodePK().getName());
+      } else {
+        throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+                ResponseMessages.ONLY_SINGLE_LEVEL_PUBLIC_DATASETS);
+      }
+    }
+
+    for (String child : childrenOfDataset) {
+
+      FileInfo fileInfo = null;
+
+      if (!isAvro(child)) {
+        fileInfo = new FileInfo();
+        fileInfo.setFileName(child);
+        if (childrenOfDataset.contains(child + ".avro")) {
+          String hdfsPath = dsPath + child + ".avro";
+          fileInfo.setSchema(new String(this.readJsonFromHdfs(hdfsPath)));
+          fileInfo.setLength(this.getLength(dsPath + child));
+        } else {
+          fileInfo.setSchema("");
+          fileInfo.setLength(this.getLength(dsPath + child));
+        }
+
+      }
+      if (fileInfo != null) {
+        manifestJson.getFileInfos().add(fileInfo);
+      }
+    }
+    for (FileInfo f : manifestJson.getFileInfos()) {
+      if (!f.getSchema().equals("")) {
+        manifestJson.setKafkaSupport(true);
+        break;
+      }
+    }
+
+    DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    Date date = new Date();
+    manifestJson.setCreatorDate(dateFormat.format(date));
+    manifestJson.setCreatorEmail(email);
+
+    //TODO other schemas
+    manifestJson.setMetaDataJsons(new ArrayList<>());
+
+    Users user = userFacade.findByEmail(email);
+
+    String username = hdfsUsersBean.getHdfsUserName(project, user);
+
+    this.writeManifestJsonToHdfs(manifestJson, dsPath + "manifest.json",
+            username);
+
+    return manifestJson;
+  }
+
+  public byte[] readJsonFromHdfs(String pathToJson) {
+    long jsonLength = dfs.getDfsOps().getlength(pathToJson);
+    if (jsonLength != -1) {
+      FSDataInputStream fdi = null;
+      try {
+        fdi = dfs.getDfsOps().open(new Path(pathToJson));
+        byte[] manifestByte = new byte[(int) jsonLength];
+        fdi.readFully(manifestByte);
+        return manifestByte;
+      } catch (IOException ex) {
+        Logger.getLogger(DatasetController.class.getName()).log(Level.SEVERE,
+                null, ex);
+      } finally {
+        if (fdi != null) {
+          try {
+            fdi.close();
+          } catch (IOException ex) {
+            Logger.getLogger(DatasetController.class.getName()).
+                    log(Level.SEVERE, null, ex);
+          }
+        }
+      }
+    }
+    return null;
+  }
+
+  private void writeManifestJsonToHdfs(ManifestJSON manifest, String path,
+          String username) {
+
+    FSDataOutputStream out = null;
+    try {
+      byte[] manifestBytes = getManifestByte(manifest);
+      out = dfs.getDfsOps(username).create(path);
+      out.write(manifestBytes);
+      out.flush();
+    } catch (IOException ex) {
+      Logger.getLogger(DatasetController.class.getName()).
+              log(Level.SEVERE, null, ex);
+    } finally {
+      if (out != null) {
+        try {
+          out.close();
+        } catch (IOException ex) {
+          Logger.getLogger(DatasetController.class.getName()).log(Level.SEVERE,
+                  null, ex);
+        }
+      }
+    }
+  }
+
+  public byte[] getManifestByte(ManifestJSON manifest) {
+    Gson gson = new GsonBuilder().create();
+    String jsonString = gson.toJson(manifest);
+    byte[] jsonByte;
+    try {
+      jsonByte = jsonString.getBytes("UTF-8");
+    } catch (UnsupportedEncodingException ex) {
+      throw new RuntimeException(ex);
+    }
+    if (jsonByte.length > 1200) {
+      throw new RuntimeException("manifest is too long");
+    }
+    return jsonByte;
+  }
+
+  public ManifestJSON getManifestJSON(byte[] jsonByte) {
+    String jsonString;
+    try {
+      jsonString = new String(jsonByte, "UTF-8");
+    } catch (UnsupportedEncodingException ex) {
+      throw new RuntimeException(ex);
+    }
+    Gson gson = new GsonBuilder().create();
+    ManifestJSON manifest = gson.fromJson(jsonString, ManifestJSON.class);
+    return manifest;
+  }
+
+  private boolean isAvro(String s) {
+    String remove_spaces = s.replaceAll(" ", "");
+    String[] split = remove_spaces.split("\\.");
+    if (split.length == 2) {
+      return split[1].equals("avro");
+    } else {
+      return false;
+    }
   }
 
 }

@@ -27,26 +27,24 @@ import io.hops.hopsworks.common.dao.hdfs.inode.Inode;
 @XmlRootElement
 @NamedQueries({
   @NamedQuery(name = "Dataset.findAll",
-          query
-          = "SELECT d FROM Dataset d"),
+          query = "SELECT d FROM Dataset d"),
   @NamedQuery(name = "Dataset.findById",
-          query
-          = "SELECT d FROM Dataset d WHERE d.id = :id"),
+          query = "SELECT d FROM Dataset d WHERE d.id = :id"),
   @NamedQuery(name = "Dataset.findByInode",
-          query
-          = "SELECT d FROM Dataset d WHERE d.inode = :inode"),
+          query = "SELECT d FROM Dataset d WHERE d.inode = :inode"),
   @NamedQuery(name = "Dataset.findByProjectAndInode",
           query
           = "SELECT d FROM Dataset d WHERE d.projectId = :projectId AND d.inode = :inode"),
   @NamedQuery(name = "Dataset.findByProject",
-          query
-          = "SELECT d FROM Dataset d WHERE d.projectId = :projectId"),
+          query = "SELECT d FROM Dataset d WHERE d.projectId = :projectId"),
   @NamedQuery(name = "Dataset.findAllPublic",
-          query
-          = "SELECT d FROM Dataset d WHERE d.publicDs = 1 AND d.shared = 0"),
+          query = "SELECT d FROM Dataset d WHERE d.publicDs = true"),//AND d.shared = 0
   @NamedQuery(name = "Dataset.findByDescription",
-          query
-          = "SELECT d FROM Dataset d WHERE d.description = :description"),
+          query = "SELECT d FROM Dataset d WHERE d.description = :description"),
+  @NamedQuery(name = "Dataset.findByPublicDsId",
+          query = "SELECT d FROM Dataset d WHERE d.publicDsId = :publicDsId"),
+  @NamedQuery(name = "Dataset.findByName",
+          query = "SELECT d FROM Dataset d WHERE d.name = :name"),
   @NamedQuery(name = "Dataset.findByNameAndProjectId",
           query
           = "SELECT d FROM Dataset d WHERE d.name = :name AND d.projectId = :projectId")})
@@ -103,6 +101,9 @@ public class Dataset implements Serializable {
   @NotNull
   @Column(name = "public_ds")
   private boolean publicDs;
+  @Size(max = 1000)
+  @Column(name = "public_ds_id")
+  private String publicDsId;
   @Basic(optional = false)
   @NotNull
   @Column(name = "shared")
@@ -131,6 +132,10 @@ public class Dataset implements Serializable {
     this.projectId = project;
     this.idForInode = inode.getId();
     this.name = inode.getInodePK().getName();
+  }
+
+  public String getName() {
+    return name;
   }
 
   public Integer getId() {
@@ -195,6 +200,14 @@ public class Dataset implements Serializable {
 
   public void setPublicDs(boolean publicDs) {
     this.publicDs = publicDs;
+  }
+
+  public String getPublicDsId() {
+    return publicDsId;
+  }
+
+  public void setPublicDsId(String publicDsId) {
+    this.publicDsId = publicDsId;
   }
 
   public boolean isShared() {

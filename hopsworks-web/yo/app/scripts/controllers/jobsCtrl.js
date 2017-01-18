@@ -134,8 +134,8 @@ angular.module('hopsWorksApp')
               $location.path('project/' + self.projectId + '/newjob');
             };
 
-
-
+            
+            
             var getAllJobs = function () {
               JobService.getAllJobsInProject(self.projectId).then(
                       function (success) {

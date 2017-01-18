@@ -59,12 +59,16 @@ angular.module('hopsWorksApp')
               "getDatasetInfo": {
                 url: '/api/project/getDatasetInfo/:inodeId',
                 'method': 'GET'                  
-              },
+              },              
+              "getPopularPublicDatasets":{                
+                url: '/api/project/populardatasets',
+                'method' : 'GET',
+                isArray: true                        
+              },              
               "importPublicDataset": {
                 url: '/api/project/:id/importPublicDataset/:projectName/:inodeId',
                 'method': 'GET'                  
-              }
-              
+              }             
             }
             );
           }]);

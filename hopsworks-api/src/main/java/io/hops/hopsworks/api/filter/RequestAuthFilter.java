@@ -99,7 +99,8 @@ public class RequestAuthFilter implements ContainerRequestFilter {
         return;
       }
 
-      //if the resource is only allowed for some roles check if the user have the requierd role for the resource.
+      //if the resource is only allowed for some roles check if the user have the 
+      // requierd role for the resource.
       String userEmail = requestContext.getSecurityContext().getUserPrincipal().
               getName();
 

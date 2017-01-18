@@ -1,16 +1,19 @@
 package io.hops.hopsworks.api.elastic;
 
 import io.hops.hopsworks.api.filter.NoCacheResponse;
+import com.google.common.util.concurrent.SettableFuture;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.servlet.http.HttpServletRequest;
@@ -18,8 +21,11 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
+import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
@@ -39,6 +45,7 @@ import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.transport.InetSocketTransportAddress;
 import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
 import static org.elasticsearch.index.query.QueryBuilders.queryStringQuery;
 import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
 import static org.elasticsearch.index.query.QueryBuilders.hasParentQuery;
@@ -50,11 +57,20 @@ import io.hops.hopsworks.api.filter.AllowedRoles;
 import io.hops.hopsworks.common.constants.message.ResponseMessages;
 import io.hops.hopsworks.common.dao.dataset.Dataset;
 import io.hops.hopsworks.common.dao.dataset.DatasetFacade;
+import io.hops.hopsworks.common.dao.hdfs.inode.Inode;
+import io.hops.hopsworks.common.dao.hdfs.inode.InodeFacade;
 import io.hops.hopsworks.common.dao.project.Project;
 import io.hops.hopsworks.common.dao.project.ProjectFacade;
+import io.hops.hopsworks.common.dataset.DatasetController;
 import io.hops.hopsworks.common.exception.AppException;
+import io.hops.hopsworks.common.gvod.ManageGlobalClusterParticipation;
+import io.hops.hopsworks.common.gvod.hopssite.RegisteredClusterJSON;
 import io.hops.hopsworks.common.util.Ip;
 import io.hops.hopsworks.common.util.Settings;
+import io.swagger.annotations.Api;
+import java.util.concurrent.ExecutionException;
+import javax.ejb.Stateless;
+import javax.ws.rs.client.InvocationCallback;
 import static org.elasticsearch.index.query.QueryBuilders.fuzzyQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
 import static org.elasticsearch.index.query.QueryBuilders.wildcardQuery;
@@ -64,23 +80,29 @@ import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 @RolesAllowed({"HOPS_ADMIN", "HOPS_USER"})
 @Produces(MediaType.APPLICATION_JSON)
 @Stateless
+@Api(value = "Elastic",
+        description = "Elastic service")
 @TransactionAttribute(TransactionAttributeType.NEVER)
 public class ElasticService {
 
+  private WebTarget target;
+  private javax.ws.rs.client.Client rest_client;
   private final static Logger logger = Logger.getLogger(ElasticService.class.
           getName());
-
   @EJB
   private NoCacheResponse noCacheResponse;
-
   @EJB
   private Settings settings;
-
   @EJB
   private ProjectFacade projectFacade;
-
   @EJB
   private DatasetFacade datasetFacade;
+  @EJB
+  private InodeFacade inodeFacade;
+  @EJB
+  ManageGlobalClusterParticipation manageGlobalClusterParticipation;
+  @EJB
+  DatasetController datasetController;
 
   /**
    * Searches for content composed of projects and datasets. Hits two elastic
@@ -118,15 +140,6 @@ public class ElasticService {
     }
 
     logger.log(Level.INFO, "Found elastic index, now executing the query.");
-
-    /*
-     * If projects contain a searchable field then the client can hit both
-     * indices (projects, datasets) with a single query. Right now the single
-     * query fails because of the lack of a searchable field in the projects.
-     * ADDED MANUALLY A SEARCHABLE FIELD IN THE RIVER. MAKES A PROJECT
-     * SEARCHABLE BY DEFAULT. NEEDS REFACTORING
-     */
-    //hit the indices - execute the queries
     SearchRequestBuilder srb = client.prepareSearch(Settings.META_INDEX);
     srb = srb.setTypes(Settings.META_PROJECT_TYPE,
             Settings.META_DATASET_TYPE);
@@ -145,11 +158,14 @@ public class ElasticService {
         SearchHit[] hits = response.getHits().getHits();
 
         for (SearchHit hit : hits) {
-          elasticHits.add(new ElasticHit(hit));
+          ElasticHit eHit = new ElasticHit(hit);
+          eHit.setLocalDataset(true);
+          elasticHits.add(eHit);
         }
       }
 
       this.clientShutdown(client);
+      Collections.sort(elasticHits, new ElasticHit());
       GenericEntity<List<ElasticHit>> searchResults
               = new GenericEntity<List<ElasticHit>>(elasticHits) {};
       return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).
@@ -161,6 +177,162 @@ public class ElasticService {
     this.clientShutdown(client);
     throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.
             getStatusCode(), ResponseMessages.ELASTIC_SERVER_NOT_FOUND);
+  }
+
+  @GET
+  @Path("publicsearch/{searchTerm}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @AllowedRoles(roles = {AllowedRoles.DATA_SCIENTIST, AllowedRoles.DATA_OWNER})
+  public Response publicSearch(
+          @PathParam("searchTerm") String searchTerm,
+          @Context SecurityContext sc,
+          @Context HttpServletRequest req) throws AppException {
+    if (searchTerm == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              "Incomplete request!");
+    } else if (settings.getCLUSTER_ID() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.NOT_REGISTERD_WITH_HOPS_SITE);
+    } else if (settings.getGVOD_UDP_ENDPOINT() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.GVOD_OFFLINE);
+    }
+    final HashMap<String, ElasticHit> results = new HashMap<>();
+    final List<RegisteredClusterJSON> registeredClusters
+            = manageGlobalClusterParticipation.getRegisteredClusters();
+    final SettableFuture<Boolean> futureResult = SettableFuture.create();
+    if (registeredClusters != null && registeredClusters.size() > 0) {
+      final List<Boolean> responded = new LinkedList<>();
+      rest_client = ClientBuilder.newClient();
+      for (int i = 0; i < registeredClusters.size(); i++) {
+        if (registeredClusters.get(i).getHeartbeatsMissed() < 5) {
+          target = rest_client.target(registeredClusters.get(i).
+                  getSearchEndpoint()).path("/" + searchTerm);
+          target.request().accept(MediaType.APPLICATION_JSON).async()
+                  .get(new InvocationCallback<Response>() {
+                    @Override
+                    public void completed(Response response) {
+                      if (response.getStatus() == 200 && response.hasEntity()) {
+                        List<ElasticHit> elasticHits = response.readEntity(
+                                new GenericType<List<ElasticHit>>() {});
+                        for (ElasticHit ehit : elasticHits) {
+                          if (!results.containsKey(ehit.getPublicId())) {
+                            if (settings.getGVOD_UDP_ENDPOINT().getId() == ehit.
+                                    getOriginalGvodEndpoint().getId()) {
+                              ehit.setLocalDataset(true);
+                            } else {
+                              ehit.setLocalDataset(false);
+                            }
+                            ehit.appendEndpoint(ehit.getOriginalGvodEndpoint());
+                            results.put(ehit.getPublicId(), ehit);
+                          } else {
+                            results.get(ehit.getPublicId()).appendEndpoint(ehit.
+                                    getOriginalGvodEndpoint());
+                          }
+                        }
+                        responded.add(Boolean.TRUE);
+                        if (responded.size() == registeredClusters.size()) {
+                          futureResult.set(Boolean.TRUE);
+                        }
+                      }
+                    }
+
+                    @Override
+                    public void failed(Throwable throwable) {
+                      //TODO
+                    }
+                  });
+        }
+      }
+      try {
+        futureResult.get();
+      } catch (InterruptedException | ExecutionException ex) {
+        Logger.getLogger(ElasticService.class.getName()).log(Level.SEVERE, null,
+                ex);
+      }
+      List<ElasticHit> list = new ArrayList<>(results.values());
+      Collections.sort(list, new ElasticHit());
+      GenericEntity<List<ElasticHit>> searchResults
+              = new GenericEntity<List<ElasticHit>>(list) {};
+      return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).
+              entity(searchResults).build();
+    }
+    return noCacheResponse.getNoCacheResponseBuilder(Response.Status.NOT_FOUND).
+            entity(null).build();
+  }
+
+  @GET
+  @Path("publicdatasets/{searchTerm}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @AllowedRoles(roles = {AllowedRoles.ALL})
+  public Response publicDatasets(
+          @PathParam("searchTerm") String searchTerm,
+          @Context SecurityContext sc,
+          @Context HttpServletRequest req) throws AppException {
+
+    if (searchTerm == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              "Incomplete request!");
+    }
+
+    //some necessary client settings
+    Client client = getClient();
+
+    //check if the index are up and running
+    if (!this.indexExists(client, Settings.META_INDEX)) {
+
+      logger.log(Level.INFO, ResponseMessages.ELASTIC_INDEX_NOT_FOUND);
+      throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.
+              getStatusCode(), ResponseMessages.ELASTIC_INDEX_NOT_FOUND);
+    }
+
+    logger.log(Level.INFO, "Found elastic index, now executing the query.");
+    SearchRequestBuilder srb = client.prepareSearch(Settings.META_INDEX);
+    srb = srb.setTypes(Settings.META_PROJECT_TYPE,
+            Settings.META_DATASET_TYPE);
+    srb = srb.setQuery(this.publicSearchQuery(searchTerm));
+    srb = srb.addHighlightedField("name");
+    logger.
+            log(Level.INFO, "Global search Elastic query is: {0}", srb.
+                    toString());
+    ListenableActionFuture<SearchResponse> futureResponse = srb.execute();
+    SearchResponse response = futureResponse.actionGet();
+
+    if (response.status().getStatus() == 200) {
+      //construct the response
+      List<ElasticHit> elasticHits = new LinkedList<>();
+      if (response.getHits().getHits().length > 0) {
+        SearchHit[] hits = response.getHits().getHits();
+
+        for (SearchHit hit : hits) {
+          String inode_id = hit.getId();
+          Inode i = inodeFacade.findById(Integer.parseInt(inode_id));
+          if (i != null) {
+
+            Dataset ds = datasetFacade.findByInode(i).get(0);
+            ElasticHit elasticHit = new ElasticHit(hit);
+            elasticHit.setPublicId(ds.getPublicDsId());
+            elasticHit.setLocalDataset(true);
+            elasticHit.setOriginalGvodEndpoint(settings.getGVOD_UDP_ENDPOINT());
+            elasticHits.add(elasticHit);
+          }
+        }
+      }
+
+      this.clientShutdown(client);
+      GenericEntity<List<ElasticHit>> searchResults
+              = new GenericEntity<List<ElasticHit>>(elasticHits) {};
+
+      return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).
+              entity(searchResults).build();
+    }
+    logger.log(Level.WARNING, "Elasticsearch error code: {0}",
+            response.status().getStatus());
+    //something went wrong so throw an exception
+    this.clientShutdown(client);
+    throw new AppException(Response.Status.INTERNAL_SERVER_ERROR.
+            getStatusCode(), ResponseMessages.ELASTIC_SERVER_NOT_FOUND);
+
   }
 
   private Client getClient() throws AppException {
@@ -228,13 +400,15 @@ public class ElasticService {
       List<ElasticHit> elasticHits = new LinkedList<>();
       if (response.getHits().getHits().length > 0) {
         SearchHit[] hits = response.getHits().getHits();
-
         for (SearchHit hit : hits) {
-          elasticHits.add(new ElasticHit(hit));
+          ElasticHit eHit = new ElasticHit(hit);
+          eHit.setLocalDataset(true);
+          elasticHits.add(eHit);
         }
       }
 
       this.clientShutdown(client);
+      Collections.sort(elasticHits, new ElasticHit());
       GenericEntity<List<ElasticHit>> searchResults
               = new GenericEntity<List<ElasticHit>>(elasticHits) {};
       return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).
@@ -316,12 +490,12 @@ public class ElasticService {
       List<ElasticHit> elasticHits = new LinkedList<>();
       if (response.getHits().getHits().length > 0) {
         SearchHit[] hits = response.getHits().getHits();
-
         for (SearchHit hit : hits) {
-          elasticHits.add(new ElasticHit(hit));
+          ElasticHit eHit = new ElasticHit(hit);
+          eHit.setLocalDataset(true);
+          elasticHits.add(eHit);
         }
       }
-
       this.clientShutdown(client);
       GenericEntity<List<ElasticHit>> searchResults
               = new GenericEntity<List<ElasticHit>>(elasticHits) {};
@@ -342,9 +516,13 @@ public class ElasticService {
   private QueryBuilder globalSearchQuery(String searchTerm) {
     //FIXME: consider metadata search as well
     QueryBuilder nameDescQuery = getNameDescriptionMetadataQuery(searchTerm);
+    QueryBuilder descriptionQuery = getDescriptionQuery(searchTerm);
+    QueryBuilder metadataQuery = getMetadataQuery(searchTerm);
 
     QueryBuilder query = boolQuery()
-            .must(nameDescQuery);
+            .should(nameDescQuery)
+            .should(descriptionQuery)
+            .should(metadataQuery);
 
     return query;
   }
@@ -381,9 +559,32 @@ public class ElasticService {
     return cq;
   }
 
+  private QueryBuilder publicSearchQuery(String searchTerm) {
+
+    QueryBuilder nameQuery = getNameQuery(searchTerm);
+    QueryBuilder descriptionQuery = getDescriptionQuery(searchTerm);
+    QueryBuilder metadataQuery = getMetadataQuery(searchTerm);
+    QueryBuilder publicQuery = matchPublicQuery();
+
+    QueryBuilder textCondition = boolQuery()
+            .should(nameQuery)
+            .should(descriptionQuery)
+            .should(metadataQuery)
+            .must(publicQuery);
+
+    return textCondition;
+
+  }
+
+  private QueryBuilder matchPublicQuery() {
+    QueryBuilder q = QueryBuilders.termQuery(Settings.META_PUBLIC_FIELD, "true");
+    return q;
+  }
+
   /**
-   * Creates the main query condition. Applies filters on the texts describing a
-   * document i.e. on the description
+   * Creates the main query condition. Applies filters on the texts
+   * describing
+   * a document i.e. on the description
    * <p/>
    * @param searchTerm
    * @return
@@ -409,26 +610,20 @@ public class ElasticService {
    * @return
    */
   private QueryBuilder getNameQuery(String searchTerm) {
-
     //prefix name match
     QueryBuilder namePrefixMatch = prefixQuery(Settings.META_NAME_FIELD,
             searchTerm);
-
     QueryBuilder namePhraseMatch = matchPhraseQuery(Settings.META_NAME_FIELD,
             searchTerm);
-
     QueryBuilder nameFuzzyQuery = fuzzyQuery(
             Settings.META_NAME_FIELD, searchTerm);
-
     QueryBuilder wildCardQuery = wildcardQuery(Settings.META_NAME_FIELD,
             String.format("*%s*", searchTerm));
-
     QueryBuilder nameQuery = boolQuery()
             .should(namePrefixMatch)
             .should(namePhraseMatch)
             .should(nameFuzzyQuery)
             .should(wildCardQuery);
-
     return nameQuery;
   }
 
@@ -445,29 +640,23 @@ public class ElasticService {
     //a full sentence
     QueryBuilder descriptionPrefixMatch = prefixQuery(
             Settings.META_DESCRIPTION_FIELD, searchTerm);
-
     //a phrase query to match the dataset description
     QueryBuilder descriptionMatch = termsQuery(
             Settings.META_DESCRIPTION_FIELD, searchTerm);
-
     //add a phrase match query to enable results to popup while typing phrases
     QueryBuilder descriptionPhraseMatch = matchPhraseQuery(
             Settings.META_DESCRIPTION_FIELD, searchTerm);
-
     //add a fuzzy search on description field
     QueryBuilder descriptionFuzzyQuery = fuzzyQuery(
             Settings.META_DESCRIPTION_FIELD, searchTerm);
-
     QueryBuilder wildCardQuery = wildcardQuery(Settings.META_DESCRIPTION_FIELD,
             String.format("*%s*", searchTerm));
-
     QueryBuilder descriptionQuery = boolQuery()
             .should(descriptionPrefixMatch)
             .should(descriptionMatch)
             .should(descriptionPhraseMatch)
             .should(descriptionFuzzyQuery)
             .should(wildCardQuery);
-
     return descriptionQuery;
   }
 
@@ -479,14 +668,12 @@ public class ElasticService {
    * @return
    */
   private QueryBuilder getMetadataQuery(String searchTerm) {
-
     QueryBuilder metadataQuery = queryStringQuery(String.format("*%s*",
             searchTerm))
             .lenient(Boolean.TRUE)
             .field(Settings.META_DATA_FIELDS);
     QueryBuilder nestedQuery = nestedQuery(Settings.META_DATA_NESTED_FIELD,
             metadataQuery);
-
     return nestedQuery;
   }
 
@@ -548,7 +735,6 @@ public class ElasticService {
    * Boots up a previously closed index
    */
   private void bootIndices(Client client) {
-
     client.admin().indices().open(new OpenIndexRequest(
             Settings.META_INDEX));
   }

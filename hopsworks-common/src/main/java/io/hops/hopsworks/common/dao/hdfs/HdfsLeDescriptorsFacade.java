@@ -37,7 +37,8 @@ public class HdfsLeDescriptorsFacade extends AbstractFacade<HdfsLeDescriptors> {
    */
   public HdfsLeDescriptors findEndpoint() {
     try {
-//            return em.createNamedQuery("HdfsLeDescriptors.findEndpoint", HdfsLeDescriptors.class).getSingleResult();
+//      return em.createNamedQuery("HdfsLeDescriptors.findEndpoint",
+//              HdfsLeDescriptors.class).getSingleResult();
       List<HdfsLeDescriptors> res = em.createNamedQuery(
               "HdfsLeDescriptors.findEndpoint", HdfsLeDescriptors.class).
               getResultList();

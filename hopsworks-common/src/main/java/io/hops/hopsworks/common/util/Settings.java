@@ -1,6 +1,7 @@
 package io.hops.hopsworks.common.util;
 
 import io.hops.hopsworks.common.dao.util.Variables;
+import io.hops.hopsworks.common.gvod.resources.AddressJSON;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -10,6 +11,11 @@ import javax.ejb.Singleton;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 @Singleton
 @ConcurrencyManagement(ConcurrencyManagementType.BEAN)
@@ -112,6 +118,18 @@ public class Settings {
           = "hopsworks_master_password";
   private static final String VARIABLE_GLASSFISH_CERT_CENERATED
           = "glassfish_cert";
+
+  private static final String VARIABLE_CLUSTER_ID = "cluster_id";
+  private Client restClient = null;
+  private WebTarget target = null;
+  //private static final String VARIABLE_GVOD_REST_ENDPOINT = "dela_endpoint";
+  private static final String VARIABLE_BASE_URI_HOPS_SITE = "hops_site_endpoint";
+  private static final String VARIABLE_ELASTIC_PUBLIC_RESTENDPOINT
+          = "public_search_endpoint";
+  private static final String VARIABLE_CLUSTER_CERT = "hopsworks_certificate";
+
+  private static final String VARIABLE_DOMAIN = "hopsworks_domain";
+  //private static final String VARIABLE_REST_PORT = "hopsworks_public_port";
 
   private String setVar(String varName, String defaultValue) {
     Variables userName = findById(varName);
@@ -250,6 +268,15 @@ public class Settings {
               HOPSWORKS_DEFAULT_SSL_MASTER_PASSWORD);
       GLASSFISH_CERT_GENERATED = setVar(VARIABLE_GLASSFISH_CERT_CENERATED,
               GLASSFISH_CERT_GENERATED);
+      BASE_URI_HOPS_SITE = setVar(VARIABLE_BASE_URI_HOPS_SITE,
+              BASE_URI_HOPS_SITE);
+      CLUSTER_CERT = setVar(VARIABLE_CLUSTER_CERT, CLUSTER_CERT);
+      GVOD_REST_ENDPOINT = setVar(VARIABLE_GVOD_REST_ENDPOINT,
+              GVOD_REST_ENDPOINT);
+      GVOD_UDP_ENDPOINT = getGVoDUDPEndpoint();
+      ELASTIC_PUBLIC_RESTENDPOINT = setVar(VARIABLE_ELASTIC_PUBLIC_RESTENDPOINT,
+              ELASTIC_PUBLIC_RESTENDPOINT);
+      DOMAIN = setVar(VARIABLE_DOMAIN, DOMAIN);
       FILE_PREVIEW_IMAGE_SIZE = setIntVar(VARIABLE_FILE_PREVIEW_IMAGE_SIZE,
               10000000);
       FILE_PREVIEW_TXT_SIZE = setIntVar(VARIABLE_FILE_PREVIEW_TXT_SIZE, 100);
@@ -330,6 +357,10 @@ public class Settings {
     return SPARK_CONF_DIR;
   }
 
+  public synchronized String getSparkExampleDir() {
+    checkCache();
+    return SPARK_EXAMPLES_DIR;
+  }
   private String SPARK_CONF_FILE = SPARK_CONF_DIR + "/spark-defaults.conf";
 
   public synchronized String getSparkConfFile() {
@@ -356,6 +387,7 @@ public class Settings {
     String flinkDir = getFlinkDir();
     return flinkDir + File.separator + FLINK_CONF_DIR;
   }
+
   private final String FLINK_CONF_FILE = "flink-conf.yaml";
 
   public String getFlinkConfFile() {
@@ -382,7 +414,7 @@ public class Settings {
   }
 
   private String HADOOP_DIR = "/srv/hops/hadoop";
-  
+
   public synchronized String getHadoopDir() {
     checkCache();
     return HADOOP_DIR;
@@ -861,6 +893,96 @@ public class Settings {
     return DRELEPHANT_DB;
   }
 
+  private String ELASTIC_PUBLIC_RESTENDPOINT
+          = "http://bbc1.sics.se:14003/hopsworks/api/elastic/publicdatasets/";
+
+  public synchronized String getELASTIC_PUBLIC_RESTENDPOINT() {
+    checkCache();
+    return ELASTIC_PUBLIC_RESTENDPOINT;
+  }
+
+  private String CLUSTER_CERT = "asdasxasx8as6dx8a7sx7asdta8dtasxa8";
+
+  public synchronized String getCLUSTER_CERT() {
+    checkCache();
+    return CLUSTER_CERT;
+  }
+
+  private String BASE_URI_HOPS_SITE
+          = "http://bbc1.sics.se:14003/hops-site/webresources";
+
+  public synchronized String getBASE_URI_HOPS_SITE() {
+    checkCache();
+    return BASE_URI_HOPS_SITE;
+  }
+
+  private String CLUSTER_ID = null;
+
+  public void setCLUSTER_ID(String id) {
+    em.persist(new Variables("cluster_id", id));
+    CLUSTER_ID = id;
+  }
+
+  public synchronized String getCLUSTER_ID() {
+    if (CLUSTER_ID != null) {
+      return CLUSTER_ID;
+    } else {
+      Variables v = findById(VARIABLE_CLUSTER_ID);
+      if (v != null) {
+        return v.getValue();
+      }
+      return null;
+    }
+  }
+
+  public synchronized String getGVOD_REST_ENDPOINT() {
+    checkCache();
+    return GVOD_REST_ENDPOINT;
+  }
+
+  private AddressJSON GVOD_UDP_ENDPOINT = null;
+
+  public synchronized AddressJSON getGVOD_UDP_ENDPOINT() {
+    checkCache();
+    return this.getGVoDUDPEndpoint();
+  }
+
+  private AddressJSON getGVoDUDPEndpoint() {
+    if (GVOD_UDP_ENDPOINT != null) {
+      return GVOD_UDP_ENDPOINT;
+    } else {
+      if (restClient == null || target == null) {
+        restClient = ClientBuilder.newClient();
+        target = restClient.target(GVOD_REST_ENDPOINT).path("/vod/endpoint");
+      }
+      try {
+        Response r = target.request().accept(MediaType.APPLICATION_JSON).get();
+        if (r != null && r.getStatus() == 200) {
+          return r.readEntity(AddressJSON.class);
+        } else {
+          return null;
+        }
+      } catch (Exception e) {
+        return null;
+      }
+    }
+  }
+
+  public static String getPublicDatasetId(String clusterId, String projectName,
+          String datasetName) {
+    return clusterId + "_" + projectName + "_" + datasetName + Long.toString(
+            System.currentTimeMillis() / 1000L);
+  }
+
+  private static String DOMAIN = "bbc1.sics.se";
+
+  public static final String MANIFEST_NAME = "manifest.json";
+
+  public synchronized String getDOMAIN() {
+    checkCache();
+    return DOMAIN;
+  }
+
   // Hopsworks
   public static final Charset ENCODING = StandardCharsets.UTF_8;
   public static final String HOPS_USERS_HOMEDIR = "/home/";
@@ -874,6 +996,7 @@ public class Settings {
   public static final int MAX_USERNAME_SUFFIX = 99;
   public static final int MAX_RETRIES = 500;
   public static final String META_NAME_FIELD = "name";
+  public static String META_PUBLIC_FIELD = "public_ds";
   public static final String META_DESCRIPTION_FIELD = "description";
   public static final String META_INDEX = "projects";
   public static final String META_PROJECT_TYPE = "proj";
@@ -896,7 +1019,12 @@ public class Settings {
   public static final String KAFKA_DEFAULT_CONSUMER_GROUP = "default";
   public static final String KAFKA_K_CERTIFICATE = "kafka_k_certificate";
   public static final String KAFKA_T_CERTIFICATE = "kafka_t_certificate";
-  
+
+  public static final String KAFKA_TMP_CERT_STORE_LOCAL
+          = "/srv/glassfish/kafkacerts";
+  public static final String KAFKA_TMP_CERT_STORE_REMOTE
+          = "/user/glassfish/kafkacerts";
+
   public static final String TMP_CERT_STORE_REMOTE
           = "/user/glassfish/kafkacerts";
   public static final String KAFKA_SESSIONID_ENV_VAR = "hopsworks.sessionid";

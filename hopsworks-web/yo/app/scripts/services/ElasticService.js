@@ -17,6 +17,15 @@ angular.module('hopsWorksApp')
                   return $http.get('/api/elastic/globalsearch/' + searchTerm);
                 },
                 /**
+                 * Do a cluster wide search for datasets in all hops-site registered clusters
+                 * 
+                 * @param {type} searchTerm
+                 * @returns {unresolved}
+                 */
+                publicSearch: function (searchTerm) {
+                  return $http.get('/api/elastic/publicsearch/' + searchTerm);
+                },
+                /**
                  * Search under a project hitting hitting 'project' index
                  * 
                  * @param {type} projectName

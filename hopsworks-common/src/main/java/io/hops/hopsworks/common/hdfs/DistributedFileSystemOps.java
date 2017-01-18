@@ -92,6 +92,10 @@ public class DistributedFileSystemOps {
     return cat(path);
   }
 
+  public void copyFromHDFSToLocal(String src, String dest) throws IOException {
+    dfs.copyToLocalFile(new Path(src), new Path(dest));
+  }
+
   /**
    * Create a new folder on the given path only if the parent folders exist
    * <p/>
@@ -598,6 +602,15 @@ public class DistributedFileSystemOps {
     } catch (IOException ex) {
       logger.log(Level.SEVERE, "Error while closing file system.", ex);
     }
+  }
+
+  public long getlength(String path) {
+    try {
+      return dfs.getLength(new Path(path));
+    } catch (IOException ex) {
+      logger.log(Level.SEVERE, "Error while getting length of file", ex);
+    }
+    return -1;
   }
 
 }

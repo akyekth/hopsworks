@@ -1,0 +1,45 @@
+
+<div class="panel panel-filter">
+    <div class="panel-heading">
+        <p>Filters</p>
+        <button class="btn btn-lightgrey pull-right"
+                style="height: 42px;margin-right: -16px;margin-top: -46px;width: 70px; border-radius: 0px;"
+                ng-click="">
+            <span style="margin-left:3px;">Apply</span>
+        </button>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="form-group"><br>
+                <div>
+                    <label class="muted">By Date</label>
+                    <br>
+                    <div class='input-group date' id='datetimepicker1'>
+                        <input type='text' class="form-control"/>
+                        <span class="input-group-addon">
+                            <span class="glyphicon glyphicon-calendar"></span>
+                        </span>
+                    </div>
+
+                </div>
+                <br>
+                <div>
+                    <label class="muted">By Size</label>
+                    <br>
+                    <p>
+                    <div class="col-md-6">
+                        <label class="text-muted">from</label>
+                        <br>
+                        <input class="form-control" type="number" name="points" min="0" step="0.1" value="30">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="text-muted">to</label><br>
+                        <input type="number" name="points" min="0" step="0.1" value="30" class="form-control"/>
+                    </div>
+                    <br><br>
+                </div>
+            </div></div>
+    </div><br><br>
+    <div class="panel-footer">
+    </div>
+</div>

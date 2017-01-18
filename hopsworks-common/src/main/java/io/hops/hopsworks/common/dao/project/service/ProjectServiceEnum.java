@@ -9,7 +9,9 @@ public enum ProjectServiceEnum {
   TENSORFLOW("Tensorflow"),
   HISTORY("History"),
   //  BIOBANKING("Biobanking"),
-  JOBS("Jobs");
+  //  CHARON("Charon"),
+  JOBS("Jobs"),
+  P2P("P2p");
 
   private final String readable;
 

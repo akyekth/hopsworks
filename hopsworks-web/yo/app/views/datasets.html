@@ -152,6 +152,14 @@
                                 Remove Public</span>
                             </a>
                           </li>
+                          <li ng-if="dataset.name.indexOf('::') === -1" ng-show="projectCtrl.role === 'Data owner' && dataset.publicDs === true">
+                            <a class="pointer"
+                               role="menuitem"
+                               tabindex="6"
+                               ng-click="datasetsCtrl.showManifest(dataset.id); $event.stopPropagation();">
+                              <span>Show Manifest</span>
+                            </a>
+                          </li>
                         </ul>
                       </div>
                     </div> <!-- end repeat -->

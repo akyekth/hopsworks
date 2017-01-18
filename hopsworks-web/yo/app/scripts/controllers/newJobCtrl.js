@@ -419,9 +419,6 @@ angular.module('hopsWorksApp')
               }
             };
 
-
-
-
             /**
              * Callback method for when the main job file has been selected.
              * @param {type} path
@@ -554,7 +551,6 @@ angular.module('hopsWorksApp')
                 //The user changed their mind.
               });
             };
-
 
             /**
              * Get a list of ADAM commands from the server.

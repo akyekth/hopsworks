@@ -32,7 +32,6 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.hadoop.fs.FSDataInputStream;
-import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.permission.FsAction;
 import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.security.AccessControlException;
@@ -65,6 +64,8 @@ import io.hops.hopsworks.common.dao.user.security.ua.UserManager;
 import io.hops.hopsworks.common.dataset.DatasetController;
 import io.hops.hopsworks.common.dataset.FilePreviewDTO;
 import io.hops.hopsworks.common.exception.AppException;
+import io.hops.hopsworks.common.gvod.GVoDController;
+import io.hops.hopsworks.common.gvod.resources.ManifestJSON;
 import io.hops.hopsworks.common.hdfs.DistributedFileSystemOps;
 import io.hops.hopsworks.common.hdfs.DistributedFsService;
 import io.hops.hopsworks.common.hdfs.HdfsUsersController;
@@ -78,6 +79,8 @@ import io.hops.hopsworks.common.jobs.jobhistory.JobType;
 import io.hops.hopsworks.common.metadata.exception.DatabaseException;
 import io.hops.hopsworks.common.util.HopsUtils;
 import io.hops.hopsworks.common.util.Settings;
+import org.apache.hadoop.fs.FSDataOutputStream;
+
 
 @RequestScoped
 @TransactionAttribute(TransactionAttributeType.NEVER)
@@ -122,6 +125,10 @@ public class DataSetService {
   private DownloadService downloader;
   @EJB
   private HdfsLeDescriptorsFacade hdfsLeDescriptorsFacade;
+  @EJB
+  private GVoDController gvodController;
+  @EJB
+  private HdfsUsersController hdfsUsersController;
 
   private Integer projectId;
   private Project project;
@@ -1312,32 +1319,77 @@ public class DataSetService {
   public Response makePublic(@PathParam("inodeId") Integer inodeId,
           @Context SecurityContext sc,
           @Context HttpServletRequest req) throws AppException {
+
     JsonResponse json = new JsonResponse();
     if (inodeId == null) {
       throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
               "Incomplete request!");
     }
     Inode inode = inodes.findById(inodeId);
+    this.dataset = datasetFacade.findByProjectAndInode(this.project, inode);
     if (inode == null) {
       throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
               ResponseMessages.DATASET_NOT_FOUND);
     }
 
-    Dataset ds = datasetFacade.findByProjectAndInode(this.project, inode);
-    if (ds == null) {
+    if (inodes.getChildren(inode).isEmpty()) {
+      json.setErrorMsg("There is no reason to share an empty dataset");
+      return noCacheResponse.getNoCacheResponseBuilder(
+              Response.Status.EXPECTATION_FAILED).entity(
+                      json).build();
+    }
+    if (dataset == null) {
       throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
               ResponseMessages.DATASET_NOT_FOUND);
     }
-    if (ds.isPublicDs()) {
+    if (dataset.isPublicDs()) {
       throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
               ResponseMessages.DATASET_ALREADY_PUBLIC);
     }
-    ds.setPublicDs(true);
-    datasetFacade.merge(ds);
-    datasetController.logDataset(ds, OperationType.Update);
-    json.setSuccessMessage("The Dataset is now public.");
-    return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).entity(
-            json).build();
+    if (settings.getCLUSTER_ID() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.NOT_REGISTERD_WITH_HOPS_SITE);
+    }
+    if (settings.getGVOD_UDP_ENDPOINT() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.GVOD_OFFLINE);
+    }
+    String publicDsId = Settings.getPublicDatasetId(settings.getCLUSTER_ID(),
+            project.getName(), dataset.getName());
+    datasetController.createAndPersistManifestJson(
+            path + dataset.getName() + File.separator,
+            dataset.getDescription(),
+            dataset.getName(),
+            sc.getUserPrincipal().getName(),
+            project);
+
+    String response = gvodController.uploadToGVod(
+            project.getName(),
+            dataset.getName(),
+            hdfsUsersController.getHdfsUserName(project, userBean.findByEmail(
+                    sc.getUserPrincipal().getName())),
+            path + dataset.getName() + File.separator,
+            publicDsId);
+
+    if (response == null) {
+      json.setErrorMsg("The Dataset could not be shared with gvod");
+      return noCacheResponse.getNoCacheResponseBuilder(
+              Response.Status.EXPECTATION_FAILED).entity(
+                      json).build();
+    } else {
+
+      dataset.setPublicDs(true);
+      dataset.setPublicDsId(publicDsId);
+      datasetFacade.merge(dataset);
+      datasetController.logDataset(dataset, OperationType.Update);
+      json.setSuccessMessage("The Dataset is now public.");
+      json.setData(response);
+      //manageGlobalCLusterParticipation.notifyHopsSiteAboutNewDataset(manifestJson,
+      //Settings.getPublicDatasetId(settings.getCLUSTER_ID(), dataset.getName(), 
+      //project.getName()), 0, 1);
+      return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).
+              entity(json).build();
+    }
   }
 
   @GET
@@ -1357,22 +1409,83 @@ public class DataSetService {
       throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
               ResponseMessages.DATASET_NOT_FOUND);
     }
-
-    Dataset ds = datasetFacade.findByProjectAndInode(this.project, inode);
-    if (ds == null) {
+    this.dataset = datasetFacade.findByProjectAndInode(this.project, inode);
+    if (dataset == null) {
       throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
               ResponseMessages.DATASET_NOT_FOUND);
     }
-    if (ds.isPublicDs() == false) {
+    if (dataset.isPublicDs() == false) {
       throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
               ResponseMessages.DATASET_NOT_PUBLIC);
     }
-    ds.setPublicDs(false);
-    datasetFacade.merge(ds);
-    datasetController.logDataset(ds, OperationType.Update);
-    json.setSuccessMessage("The Dataset is no longer public.");
-    return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).entity(
-            json).build();
+    if (settings.getGVOD_UDP_ENDPOINT() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.GVOD_OFFLINE);
+    }
+
+    String result = gvodController.removeUpload(dataset.getPublicDsId());
+
+    if (result == null) {
+      json.setErrorMsg("GVoD could not remove upload at this time");
+      return noCacheResponse.getNoCacheResponseBuilder(
+              Response.Status.EXPECTATION_FAILED).entity(
+                      json).build();
+    } else {
+      dataset.setPublicDs(false);
+      datasetFacade.merge(dataset);
+      datasetController.logDataset(dataset, OperationType.Update);
+      json.setSuccessMessage("The Dataset is no longer public.");
+      return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).
+              entity(
+                      json).build();
+    }
+
+  }
+
+  @GET
+  @Path("/showManifest/{inodeId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  @AllowedRoles(roles = {AllowedRoles.DATA_OWNER})
+  public Response showManifest(@PathParam("inodeId") Integer inodeId,
+          @Context SecurityContext sc,
+          @Context HttpServletRequest req) throws AppException {
+    JsonResponse json = new JsonResponse();
+    if (inodeId == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              "Incomplete request!");
+    }
+    Inode inode = inodes.findById(inodeId);
+    if (inode == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.DATASET_NOT_FOUND);
+    }
+    this.dataset = datasetFacade.findByProjectAndInode(this.project, inode);
+    if (dataset == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.DATASET_NOT_FOUND);
+    }
+    if (dataset.isPublicDs() == false) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.DATASET_NOT_PUBLIC);
+    }
+
+    if (settings.getGVOD_UDP_ENDPOINT() == null) {
+      throw new AppException(Response.Status.BAD_REQUEST.getStatusCode(),
+              ResponseMessages.GVOD_OFFLINE);
+    }
+
+    ManifestJSON manifestJSON = datasetController.getManifestForThisDataset(path
+            + File.separator + dataset.getName() + File.separator);
+
+    if (manifestJSON == null) {
+      json.setErrorMsg("No manifest");
+      return noCacheResponse.getNoCacheResponseBuilder(
+              Response.Status.EXPECTATION_FAILED).entity(
+                      json).build();
+    } else {
+      return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).
+              entity(manifestJSON).build();
+    }
   }
 
 }

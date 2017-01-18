@@ -273,6 +273,16 @@ angular.module('hopsWorksApp')
               removePathArray.push(fileName);
               removeInode(getPath(removePathArray));
             };
+            
+
+            self.isPublic = function (id) {
+              dataSetService.isPublic(id).then(
+                      function (success) {
+                          return success.data;
+                      }, function (error) {
+                      growl.error(error.data.errorMsg, {title: 'Error', ttl: 1000});
+              });
+            };
 
 //            self.deleteSelected = function () {
 //              var removePathArray = self.pathArray.slice(0);
@@ -301,7 +311,15 @@ This will make all its files available for any registered user to download and p
 
                       }
               );
-
+            };
+            
+            self.showManifest = function(id){
+                dataSetService.showManifest(id).then(function(success){
+                    var manifest = success.data;
+                    ModalService.json('md','Manifest', manifest).then(function(){
+                        
+                    });
+                });
             };
 
             self.removePublic = function (id) {

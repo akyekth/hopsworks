@@ -32,23 +32,23 @@
             <div ng-show="homeCtrl.showPublicDatasets" ng-repeat="dataset in homeCtrl.publicDatasets">
               <div>
                 <button style="padding-bottom: 2px; padding-top: 2px; padding-left: 0px; padding-right: 0px;" 
-                        uib-popover="Add this public dataset to one of your projects."
-                        type="button" class="btn btn-default btn-block" ng-click="homeCtrl.addPublicDatasetModal(dataset.inodeId, dataset.name, dataset.description);">
-                  <span>{{dataset.name}}</span>
-                </button>
-              </div>
-              <div ng-show="homeCtrl.publicDatasets.length === 0" >
-                None available.
-              </div>
-            </div>
-          </a>
+                                    uib-popover="Add this public dataset to one of your projects."
+                                    type="button" class="btn btn-default btn-block" ng-click="homeCtrl.addPublicDatasetModal(dataset.inodeId, dataset.name, dataset.description);">
+                                <span>{{dataset.name}}</span>
+                            </button>
+                        </div>
+                        <div ng-show="homeCtrl.publicDatasets.length === 0" >
+                            None available.
+                        </div>
+                    </div>
+                </a>
           <a href="https://groups.google.com/forum/#!forum/hopshadoop" class="list-group-item">
             <span class="glyphicon glyphicon-user"></span>
             Need support?
             <span class="glyphicon glyphicon-earphone pull-right" style="margin-right: 1px;"></span>
           </a>
+            </div>
         </div>
-      </div>
 
 
     </div>
@@ -157,18 +157,18 @@
       </div>
       <ul uib-pager total-items="homeCtrl.totalItemsProjects" ng-model="homeCtrl.currentPageProjects" ></ul>
     </div>
-  </div>
-  <tour class="ng-scope" step="homeCtrl.tourService.currentStep_TourOne" post-tour="closeTour()" ng-if="homeCtrl.loadedView">
-    <virtual-step
-      class="ng-scope"
-      tourtip="Begin the tour by clicking Next, OR when {{homeCtrl.tourService.alive_TourOne}} seconds passed, click on the project"
-      tourtip-step="0"
-      tourtip-element="#true.list-group-item"
-      tourtip-placement="left"
-      tourtip-next-label="Next"
-      on-proceed="homeCtrl.EnterExampleProject(homeCtrl.exampleProjectID)"
-      tourtip-offset-vertical="-17"
-      tourtip-offset-horizontal="13"
-      ></virtual-step>
-  </tour>
+    </div>
+    <tour class="ng-scope" step="homeCtrl.tourService.currentStep_TourOne" post-tour="closeTour()" ng-if="homeCtrl.loadedView">
+        <virtual-step
+            class="ng-scope"
+            tourtip="Begin the tour by clicking Next, OR when {{homeCtrl.tourService.alive_TourOne}} seconds passed, click on the project"
+            tourtip-step="0"
+            tourtip-element="#true.list-group-item"
+            tourtip-placement="left"
+            tourtip-next-label="Next"
+            on-proceed="homeCtrl.EnterExampleProject(homeCtrl.exampleProjectID)"
+            tourtip-offset-vertical="-17"
+            tourtip-offset-horizontal="13"
+            ></virtual-step>
+    </tour>
 </div>
