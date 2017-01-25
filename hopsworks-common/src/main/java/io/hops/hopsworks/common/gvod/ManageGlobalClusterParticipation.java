@@ -10,6 +10,8 @@ import io.hops.hopsworks.common.gvod.resources.AddressJSON;
 import io.hops.hopsworks.common.gvod.resources.ManifestJSON;
 import io.hops.hopsworks.common.util.Settings;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -31,6 +33,9 @@ import javax.mail.Session;
 @Singleton
 public class ManageGlobalClusterParticipation {
 
+  private final static Logger logger = Logger.getLogger(
+          ManageGlobalClusterParticipation.class.
+          getName());
   private List<RegisteredClusterJSON> registeredClusters = null;
   private List<PopularDatasetJSON> popularDatasets = null;
   private WebTarget webTarget = null;
@@ -146,14 +151,19 @@ public class ManageGlobalClusterParticipation {
           AddressJSON gvodEndpoint) {
 
     WebTarget resource = webTarget.path("register");
-
+    logger.log(Level.INFO, "Trying to register to: {0}", webTarget.getUri());
+    RegisterJSON reg = new RegisterJSON(searchEndpoint, gvodEndpoint, email,
+            cert);
     Response r = resource.request().accept(MediaType.APPLICATION_JSON).post(
-            Entity.json(new RegisterJSON(searchEndpoint, gvodEndpoint, email,
-                    cert)));
-
+            Entity.json(reg));
+    logger.log(Level.INFO, "Trying to register with payload: {0}", reg);
     if (r != null && r.getStatus() == 200) {
+      logger.log(Level.INFO, "Registered with: {0} ", webTarget.getUri());
       return r.readEntity(RegisteredJSON.class).getClusterId();
     } else {
+      if (r != null){
+        logger.log(Level.INFO, "Recived response: {0}", r.getStatus());
+      }
       return null;
     }
 

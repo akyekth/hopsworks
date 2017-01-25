@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('hopsWorksApp')
-        .controller('CardCtrl', ['$scope', 'ProjectService',
-          function ($scope, ProjectService) {
+        .controller('CardCtrl', ['$scope', 'ProjectService', 'PublicSearchService',
+          function ($scope, ProjectService, PublicSearchService) {
             var self = this;
             self.detail = [];
             var init = function (content) {
@@ -10,25 +10,45 @@ angular.module('hopsWorksApp')
                 console.log("No need to get detail: ", content);
                 return;
               }
-              content.hits.entry.forEach(function (element) {
+              console.log("Get detail: ", content);
+              content.map.entry.forEach(function (element) {
                 self.detail[element.key] = element.value;
               });
-
-              ProjectService.getMoreInfo({type: content.type, inodeId: content.id})
-                .$promise.then( function (success) {
-                  //console.log("More info ", success);
-                  self.detail["createDate"] = success.createDate;
-                  self.detail["downloads"] = success.downloads;
-                  self.detail["size"] = success.size;
-                  self.detail["user"] = success.user;
-                  self.detail["votes"] = success.votes;
-                  self.detail["path"] = success.path;
-                  content.user = self.detail.user;
-                  content.createDate = self.detail.createDate;
-                  content.size = self.detail.size;
-                }, function (error) {
-                  console.log("More info error ", error);
-              });
+              
+              if (content.localDataset) {
+                ProjectService.getMoreInfo({type: content.type, inodeId: content.id})
+                        .$promise.then(function (success) {
+                          //console.log("More info ", success);
+                          self.detail["createDate"] = success.createDate;
+                          self.detail["downloads"] = success.downloads;
+                          self.detail["size"] = success.size;
+                          self.detail["user"] = success.user;
+                          self.detail["votes"] = success.votes;
+                          self.detail["path"] = success.path;
+                          content.user = self.detail.user;
+                          content.createDate = self.detail.createDate;
+                          content.size = self.detail.size;
+                        }, function (error) {
+                          console.log("More info error ", error);
+                        });
+              } else {
+                if (content.searchEndpoint !== undefined) {                  
+                  PublicSearchService.getMoreInfo(content.searchEndpoint, content.id)
+                          .then(function (success) {
+                          self.detail["createDate"] = success.createDate;
+                          self.detail["downloads"] = success.downloads;
+                          self.detail["size"] = success.size;
+                          self.detail["user"] = success.user;
+                          self.detail["votes"] = success.votes;
+                          self.detail["path"] = success.path;
+                          content.user = self.detail.user;
+                          content.createDate = self.detail.createDate;
+                          content.size = self.detail.size;
+                  }, function (error) {
+                    console.log("Error getting more info ", error);
+                  });
+                }
+              }     
 
               content.public_ds = self.detail.public_ds;
               content.details = self.detail;

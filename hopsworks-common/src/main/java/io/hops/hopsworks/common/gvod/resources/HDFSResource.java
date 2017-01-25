@@ -32,4 +32,10 @@ public class HDFSResource {
     this.fileName = fileName;
   }
 
+  @Override
+  public String toString() {
+    return "HDFSResource{" + "dirPath=" + dirPath + ", fileName=" + fileName +
+            '}';
+  }
+
 }

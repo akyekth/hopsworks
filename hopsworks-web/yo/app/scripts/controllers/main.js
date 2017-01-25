@@ -4,8 +4,13 @@
 'use strict';
 
 angular.module('hopsWorksApp')
-        .controller('MainCtrl', ['$interval', '$cookies', '$location', '$scope', 'AuthService', 'UtilsService', 'ElasticService', 'md5', 'ModalService', 'ProjectService', 'growl', 'MessageService', '$routeParams', '$window',
-          function ($interval, $cookies, $location, $scope, AuthService, UtilsService, ElasticService, md5, ModalService, ProjectService, growl, MessageService, $routeParams, $window) {
+        .controller('MainCtrl', ['$interval', '$cookies', '$location', '$scope', 
+                                 'AuthService', 'UtilsService', 'ElasticService', 
+                                 'md5', 'ModalService', 'ProjectService', 'growl',
+                                 'MessageService', '$routeParams', '$window', 'PublicSearchService',
+          function ($interval, $cookies, $location, $scope, AuthService, UtilsService, 
+                     ElasticService, md5, ModalService, ProjectService, growl, 
+                     MessageService, $routeParams, $window, PublicSearchService) {
 
             var self = this;
             self.email = $cookies.get('email');
@@ -162,7 +167,6 @@ angular.module('hopsWorksApp')
                 //triggering a global search
                 elasticService.globalSearch(self.searchTerm)
                         .then(function (response) {
-                          self.searching = false;
                           var searchHits = response.data;
                           //console.log("RECEIVED RESPONSE ", response);
                           if (searchHits.length > 0) {
@@ -182,10 +186,26 @@ angular.module('hopsWorksApp')
                           }
                           self.resultPages = Math.ceil(self.searchResult.length / self.pageSize);
                           self.resultItems = self.searchResult.length;
-
+                          elasticService.publicSearch(self.searchTerm).then(function (response2) {
+                            global_data = response2.data;
+                            if (global_data.length > 0) {
+                              self.searchReturnedPublicSearch = "Public search results for <b>" + self.searchTerm + "</b>";
+                              self.searchResultPublicSearch = global_data;
+                              self.searchResult.push(global_data);
+                              self.searching = false;
+                            } else {
+                              self.searching = false;
+                              self.searchResultPublicSearch = [];
+                              self.searchReturnedPublicSearch = "No public search results found for <b>" + self.searchTerm + "</b>";
+                            }
+                            self.resultPagesPublicSearch = Math.ceil(Math.max(self.searchResultPublicSearch.length, self.searchResult.length) / self.pageSize);
+                            self.resultItemsPublicSearch = self.searchResultPublicSearch.length;
+                            self.resultPages = Math.ceil(self.searchResult.length / self.pageSize);
+                            self.resultItems = self.searchResult.length;
+                          });
                         }, function (error) {
-                  self.searching = false;
-                  growl.error(error.data.errorMsg, {title: 'Error', ttl: 5000});
+                          self.searching = false;
+                          growl.error(error.data.errorMsg, {title: 'Error', ttl: 5000});
                         });
               } else if (self.searchType === "projectCentric") {
                 elasticService.projectSearch(UtilsService.getProjectName(), self.searchTerm)
@@ -294,26 +314,37 @@ angular.module('hopsWorksApp')
             };
             
             self.viewDelail = function(result) {
-              if (result.type === 'proj') {
-                ProjectService.getProjectInfo({projectName: result.name}).$promise.then(
-                  function (response) {
-                    ModalService.viewSearchResult('lg', response, result);
-                  }, function (error) {
+              if (result.localDataset) {
+                if (result.type === 'proj') {
+                  ProjectService.getProjectInfo({projectName: result.name}).$promise.then(
+                          function (response) {
+                            ModalService.viewSearchResult('lg', response, result);
+                          }, function (error) {
                     growl.error(error.data.errorMsg, {title: 'Error', ttl: 5000});
-                });
-              } else if (result.type === 'ds') {
-                ProjectService.getDatasetInfo({inodeId: result.id}).$promise.then(
-                  function (response) {
-                    var projects;
-                    console.log(response);
-                    ProjectService.query().$promise.then(
-                      function (success) {
-                        projects = success;
-                        ModalService.viewSearchResult('lg', response, result, projects);
-                      }, function (error) {
-                      growl.error(error.data.errorMsg, {title: 'Error', ttl: 5000});
-                    });
                   });
-              }
+                } else if (result.type === 'ds') {
+                  ProjectService.getDatasetInfo({inodeId: result.id}).$promise.then(
+                          function (response) {
+                            var projects;
+                            console.log(response);
+                            ProjectService.query().$promise.then(
+                                    function (success) {
+                                      projects = success;
+                                      ModalService.viewSearchResult('lg', response, result, projects);
+                                    }, function (error) {
+                              growl.error(error.data.errorMsg, {title: 'Error', ttl: 5000});
+                            });
+                          });
+                }
+              } else {
+                if (content.searchEndpoint !== undefined) {                  
+                  PublicSearchService.getMoreInfo(content.searchEndpoint, content.id)
+                          .then(function (success) {
+                          
+                  }, function (error) {
+                    console.log("Error getting more info ", error);
+                  });
+                }
+              }             
             };            
 }]);

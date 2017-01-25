@@ -41,6 +41,8 @@ import io.hops.hopsworks.common.util.Settings;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import org.json.JSONException;
@@ -50,6 +52,7 @@ import org.json.JSONObject;
 @TransactionAttribute(TransactionAttributeType.NEVER)
 public class GVoDController {
 
+  private Logger logger = Logger.getLogger(GVoDController.class.getName());
   @EJB
   Settings settings;
 
@@ -75,6 +78,7 @@ public class GVoDController {
             new HDFSEndpoint(settings.getHadoopConfDir() + File.separator
                     + Settings.DEFAULT_HADOOP_CONFFILE_NAME, username)
     );
+    logger.log(Level.SEVERE, "Json to upload ==> {0}", hopsTorrentUpload);
     rest_client = ClientBuilder.newClient();
 
     webTarget = rest_client.target(settings.getGVOD_REST_ENDPOINT()).path(

@@ -10,8 +10,8 @@ angular.module('hopsWorksApp')
                 var RESOURCE_NAME = 'api';
 
                 var isApi = config.url.indexOf(RESOURCE_NAME);
-
-                if (isApi !== -1) {
+                var isFullPath = config.url.indexOf('http://');
+                if (isApi !== -1 && isFullPath === -1) {
                   config.url = RESOURCE_SERVER + config.url;
                   return config || $q.when(config);
                 } else {

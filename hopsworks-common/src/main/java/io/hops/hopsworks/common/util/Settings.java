@@ -103,12 +103,8 @@ public class Settings {
   private static final String VARIABLE_FILE_PREVIEW_IMAGE_SIZE
           = "file_preview_image_size";
   private static final String VARIABLE_FILE_PREVIEW_TXT_SIZE
-          = "file_preview_txt_size";
-  private static final String VARIABLE_GVOD_REST_ENDPOINT = "gvod_rest_endpoint";
-  private static final String VARIABLE_PUBLIC_SEARCH_ENDPOINT
-          = "public_search_endpoint";
+          = "file_preview_txt_size";;
   private static final String VARIABLE_REST_PORT = "rest_port";
-
   public static final String ERASURE_CODING_CONFIG = "erasure-coding-site.xml";
 
   private static final String VARIABLE_KAFKA_NUM_PARTITIONS
@@ -119,17 +115,18 @@ public class Settings {
   private static final String VARIABLE_GLASSFISH_CERT_CENERATED
           = "glassfish_cert";
 
+  //---------Dela------
   private static final String VARIABLE_CLUSTER_ID = "cluster_id";
   private Client restClient = null;
   private WebTarget target = null;
-  //private static final String VARIABLE_GVOD_REST_ENDPOINT = "dela_endpoint";
+  private static final String VARIABLE_GVOD_REST_ENDPOINT = "dela_endpoint";
   private static final String VARIABLE_BASE_URI_HOPS_SITE = "hops_site_endpoint";
   private static final String VARIABLE_ELASTIC_PUBLIC_RESTENDPOINT
           = "public_search_endpoint";
   private static final String VARIABLE_CLUSTER_CERT = "hopsworks_certificate";
-
   private static final String VARIABLE_DOMAIN = "hopsworks_domain";
-  //private static final String VARIABLE_REST_PORT = "hopsworks_public_port";
+  private static final String VARIABLE_PUBLIC_SEARCH_ENDPOINT
+          = "public_search_endpoint";
 
   private String setVar(String varName, String defaultValue) {
     Variables userName = findById(varName);
@@ -817,7 +814,7 @@ public class Settings {
   }
 
   private String PUBLIC_SEARCH_ENDPOINT
-          = "http://10.0.2.15:8080/hopsworks/api/elastic/publicdatasets/";
+          = "http://10.0.2.15:8080/hopsworks-api/api/elastic/publicdatasets/";
 
   public synchronized String getPublicSearchEndpoint() {
     checkCache();
@@ -894,7 +891,7 @@ public class Settings {
   }
 
   private String ELASTIC_PUBLIC_RESTENDPOINT
-          = "http://bbc1.sics.se:14003/hopsworks/api/elastic/publicdatasets/";
+          = "http://bbc1.sics.se:14003/hopsworks-api/api/elastic/publicdatasets/";
 
   public synchronized String getELASTIC_PUBLIC_RESTENDPOINT() {
     checkCache();

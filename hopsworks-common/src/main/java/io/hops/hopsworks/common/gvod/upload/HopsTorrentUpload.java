@@ -56,4 +56,11 @@ public class HopsTorrentUpload {
     this.hdfsEndpoint = hdfsEndpoint;
   }
 
+  @Override
+  public String toString() {
+    return "HopsTorrentUpload{" + "torrentId=" + torrentId + ", torrentName=" +
+            torrentName + ", manifestHDFSResource=" + manifestHDFSResource +
+            ", hdfsEndpoint=" + hdfsEndpoint + '}';
+  }
+
 }

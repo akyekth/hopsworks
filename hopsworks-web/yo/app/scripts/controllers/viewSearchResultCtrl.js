@@ -1,6 +1,9 @@
 angular.module('hopsWorksApp')
-        .controller('ViewSearchResultCtrl', ['$scope', '$uibModalInstance', 'RequestService', 'DataSetService',  'growl', 'response', 'result', 'projects','$showdown',
-          function ($scope, $uibModalInstance, RequestService, DataSetService, growl, response, result, projects, $showdown) {
+        .controller('ViewSearchResultCtrl', ['$scope', '$uibModalInstance', 
+                    'RequestService', 'DataSetService',  'growl', 'response', 
+                    'result', 'projects','$showdown', 'PublicSearchService',
+          function ($scope, $uibModalInstance, RequestService, DataSetService, 
+                    growl, response, result, projects, $showdown, PublicSearchService) {
             var self = this;
             self.request = {'inodeId': "", 'projectId': "", 'message': ""};
             self.projects = projects;
@@ -53,15 +56,30 @@ angular.module('hopsWorksApp')
                 return;
               }
               filePath = filePath + '/README.md';
-              dataSetService.getReadme(filePath).then(
+              if (self.content.localDataset) {
+                 dataSetService.getReadme(filePath).then(
                         function (success) {
                           var content = success.data.content;
                           $scope.readme = $showdown.makeHtml(content);
                         }, function (error) {
                   //To hide README from UI
-                  growl.error(error.data.errorMsg, {title: 'Error retrieving README file', ttl: 5000, referenceId: 3});
+                  growl.error(error.data.errorMsg, {title: 
+                            'Error retrieving README file', ttl: 5000, referenceId: 3});
                   $scope.readme = null;
                 });
+              } else {
+                if (self.content.searchEndpoint !== undefined) {                  
+                  PublicSearchService.getReadme(content.searchEndpoint, filePath)
+                          .then(function (success) {
+                          var content = success.data.content;
+                          $scope.readme = $showdown.makeHtml(content);
+                  }, function (error) {
+                    growl.error(error.data.errorMsg, {title: 
+                              'Error retrieving README file', ttl: 5000, referenceId: 3});
+                    $scope.readme = null;
+                  });
+                }
+              }
             };
 
             self.sizeOnDisk = function (fileSizeInBytes) {

@@ -43,4 +43,9 @@ public class AddressJSON {
     this.id = id;
   }
 
+  @Override
+  public String toString() {
+    return "AddressJSON{" + "ip=" + ip + ", port=" + port + ", id=" + id + '}';
+  }
+
 }

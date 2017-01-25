@@ -21,6 +21,7 @@ import io.hops.hopsworks.common.dao.host.HostEJB;
 import io.hops.hopsworks.common.dao.role.Role;
 import io.hops.hopsworks.common.dao.role.RoleEJB;
 import io.hops.hopsworks.common.dao.host.Status;
+import io.swagger.annotations.Api;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -34,6 +35,7 @@ import javax.ws.rs.core.SecurityContext;
 @Path("/agentresource")
 @Stateless
 @RolesAllowed({"HOPS_ADMIN", "AGENT"})
+@Api(value = "AgentResource", description = "AgentResource service")
 public class AgentResource {
 
   @EJB

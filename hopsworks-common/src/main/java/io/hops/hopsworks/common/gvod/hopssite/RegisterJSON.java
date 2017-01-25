@@ -57,4 +57,10 @@ public class RegisterJSON {
     return cert;
   }
 
+  @Override
+  public String toString() {
+    return "RegisterJSON{" + "searchEndpoint=" + searchEndpoint
+            + ", gvodEndpoint=" + gvodEndpoint + ", email=" + email + ", cert="
+            + cert + '}';
+  }
 }

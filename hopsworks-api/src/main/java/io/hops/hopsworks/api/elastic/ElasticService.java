@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -69,7 +68,7 @@ import io.hops.hopsworks.common.util.Ip;
 import io.hops.hopsworks.common.util.Settings;
 import io.swagger.annotations.Api;
 import java.util.concurrent.ExecutionException;
-import javax.ejb.Stateless;
+import javax.enterprise.context.RequestScoped;
 import javax.ws.rs.client.InvocationCallback;
 import static org.elasticsearch.index.query.QueryBuilders.fuzzyQuery;
 import static org.elasticsearch.index.query.QueryBuilders.termsQuery;
@@ -77,9 +76,8 @@ import static org.elasticsearch.index.query.QueryBuilders.wildcardQuery;
 import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
 
 @Path("/elastic")
-@RolesAllowed({"HOPS_ADMIN", "HOPS_USER"})
 @Produces(MediaType.APPLICATION_JSON)
-@Stateless
+@RequestScoped
 @Api(value = "Elastic",
         description = "Elastic service")
 @TransactionAttribute(TransactionAttributeType.NEVER)
@@ -201,11 +199,16 @@ public class ElasticService {
     final List<RegisteredClusterJSON> registeredClusters
             = manageGlobalClusterParticipation.getRegisteredClusters();
     final SettableFuture<Boolean> futureResult = SettableFuture.create();
+    logger.log(Level.INFO, "Registered Clusters {0}", 
+            registeredClusters != null? registeredClusters.size(): null);
     if (registeredClusters != null && registeredClusters.size() > 0) {
       final List<Boolean> responded = new LinkedList<>();
       rest_client = ClientBuilder.newClient();
       for (int i = 0; i < registeredClusters.size(); i++) {
-        if (registeredClusters.get(i).getHeartbeatsMissed() < 5) {
+        if (!settings.getCLUSTER_ID().equals(registeredClusters.get(i).
+                getClusterId()) && registeredClusters.get(i).
+                getHeartbeatsMissed() < 5) {
+          final String endpoint = registeredClusters.get(i).getSearchEndpoint();
           target = rest_client.target(registeredClusters.get(i).
                   getSearchEndpoint()).path("/" + searchTerm);
           target.request().accept(MediaType.APPLICATION_JSON).async()
@@ -222,6 +225,7 @@ public class ElasticService {
                               ehit.setLocalDataset(true);
                             } else {
                               ehit.setLocalDataset(false);
+                              ehit.setSearchEndpoint(endpoint);
                             }
                             ehit.appendEndpoint(ehit.getOriginalGvodEndpoint());
                             results.put(ehit.getPublicId(), ehit);
@@ -231,17 +235,19 @@ public class ElasticService {
                           }
                         }
                         responded.add(Boolean.TRUE);
-                        if (responded.size() == registeredClusters.size()) {
-                          futureResult.set(Boolean.TRUE);
-                        }
                       }
                     }
 
                     @Override
                     public void failed(Throwable throwable) {
-                      //TODO
+                      //TODO(Ermias):depending on the failure stop waiting
                     }
                   });
+        } else {
+          responded.add(Boolean.TRUE);
+        }
+        if (responded.size() == registeredClusters.size()) {
+          futureResult.set(Boolean.TRUE);
         }
       }
       try {
@@ -257,7 +263,7 @@ public class ElasticService {
       return noCacheResponse.getNoCacheResponseBuilder(Response.Status.OK).
               entity(searchResults).build();
     }
-    return noCacheResponse.getNoCacheResponseBuilder(Response.Status.NOT_FOUND).
+    return noCacheResponse.getNoCacheResponseBuilder(Response.Status.NO_CONTENT).
             entity(null).build();
   }
 

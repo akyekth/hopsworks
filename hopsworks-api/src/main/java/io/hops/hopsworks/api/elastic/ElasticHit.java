@@ -39,6 +39,8 @@ public class ElasticHit implements Comparator<ElasticHit> {
   private AddressJSON originalGvodEndpoint;
 
   private boolean localDataset;
+  
+  private String searchEndpoint;
 
   public ElasticHit() {
   }
@@ -134,6 +136,14 @@ public class ElasticHit implements Comparator<ElasticHit> {
 
   public void setMap(Map<String, Object> source) {
     this.map = new HashMap<>(source);
+  }
+
+  public String getSearchEndpoint() {
+    return searchEndpoint;
+  }
+
+  public void setSearchEndpoint(String searchEndpoint) {
+    this.searchEndpoint = searchEndpoint;
   }
 
   public Map<String, String> getMap() {

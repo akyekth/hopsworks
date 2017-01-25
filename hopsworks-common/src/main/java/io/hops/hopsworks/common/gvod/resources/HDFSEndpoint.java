@@ -32,4 +32,9 @@ public class HDFSEndpoint {
     this.user = user;
   }
 
+  @Override
+  public String toString() {
+    return "HDFSEndpoint{" + "xmlPath=" + xmlPath + ", user=" + user + '}';
+  }
+
 }
