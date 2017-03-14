@@ -1,13 +1,13 @@
 package io.hops.hopsworks.api.airpal.resources;
 
-//import com.airbnb.airpal.api.Job;
-//import com.airbnb.airpal.api.JobState;
-//import com.airbnb.airpal.core.AirpalUser;
-//import com.airbnb.airpal.core.AuthorizationUtil;
-//import com.airbnb.airpal.core.execution.ExecutionClient;
-//import com.airbnb.airpal.core.store.history.JobHistoryStore;
-//import com.airbnb.airpal.presto.PartitionedTable;
-//import com.airbnb.airpal.presto.Table;
+//import io.hops.hopsworks.api.airpal.api.Job;
+//import io.hops.hopsworks.api.airpal.api.JobState;
+//import io.hops.hopsworks.api.airpal.core.AirpalUser;
+//import io.hops.hopsworks.api.airpal.core.AuthorizationUtil;
+//import io.hops.hopsworks.api.airpal.core.execution.ExecutionClient;
+//import io.hops.hopsworks.api.airpal.core.store.history.JobHistoryStore;
+//import io.hops.hopsworks.api.airpal.presto.PartitionedTable;
+//import io.hops.hopsworks.api.airpal.presto.Table;
 //import com.facebook.presto.client.Column;
 //import com.google.common.base.Optional;
 //import com.google.common.collect.ImmutableList;
@@ -28,7 +28,7 @@ import javax.ws.rs.core.Response;
 //import java.util.List;
 import java.util.UUID;
 
-//import static com.airbnb.airpal.resources.QueryResource.JOB_ORDERING;
+//import static io.hops.hopsworks.api.airpal.resources.QueryResource.JOB_ORDERING;
 @Path("/queries")
 @Produces({MediaType.APPLICATION_JSON})
 public class QueriesResource {

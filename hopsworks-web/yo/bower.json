@@ -44,7 +44,9 @@
     "isteven-angular-multiselect": "angular-multi-select#^4.0.0",
     "angular-material": "^1.1.1",
     "angular-material-data-table": "^0.10.9",
-    "angularjs-slider": "^5.5.1"
+    "angularjs-slider": "^5.5.1",
+    "angular-xeditable": "^0.2.0",
+    "jquery":"2.0.3"
   },
   "overrides": {
     "bootstrap": {

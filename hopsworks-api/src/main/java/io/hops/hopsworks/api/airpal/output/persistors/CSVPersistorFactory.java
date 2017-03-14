@@ -1,0 +1,27 @@
+package io.hops.hopsworks.api.airpal.output.persistors;
+
+import io.hops.hopsworks.api.airpal.Job;
+import io.hops.hopsworks.api.airpal.output.PersistentJobOutput;
+import io.hops.hopsworks.api.airpal.core.store.files.ExpiringFileStore;
+import com.amazonaws.services.s3.AmazonS3;
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
+public class CSVPersistorFactory
+{
+    private boolean useS3Persistor = false;
+    private AmazonS3 s3Client;
+    private String s3Bucket;
+    private ExpiringFileStore expiringFileStore;
+    private boolean compressedOutput;
+
+    public Persistor getPersistor(Job job, PersistentJobOutput jobOutput)
+    {
+        // TODO: Support variable CSV persistor.
+        if (useS3Persistor) {
+            return new S3FilePersistor(s3Client, s3Bucket, 0L, compressedOutput);
+        } else {
+            return new FlatFilePersistor(expiringFileStore);
+        }
+    }
+}

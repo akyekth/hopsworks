@@ -1,12 +1,12 @@
 package io.hops.hopsworks.api.airpal.resources;
 
-//import com.airbnb.airpal.api.ExecutionRequest;
-//import com.airbnb.airpal.core.AirpalUser;
-//import com.airbnb.airpal.core.AuthorizationUtil;
-//import com.airbnb.airpal.core.execution.ExecutionClient;
-//import com.fasterxml.jackson.annotation.JsonProperty;
+import io.hops.hopsworks.api.airpal.ExecutionRequest;
+import io.hops.hopsworks.api.airpal.core.AirpalUser;
+import io.hops.hopsworks.api.airpal.core.AuthorizationUtil;
+import io.hops.hopsworks.api.airpal.core.execution.ExecutionClient;
 import com.fasterxml.jackson.annotation.JsonProperty;
-//import com.google.inject.Inject;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.inject.Inject;
 import lombok.Data;
 //import org.secnod.shiro.jaxrs.Auth;
 
@@ -24,27 +24,28 @@ import java.util.UUID;
 @Path("/execute")
 public class ExecuteResource {
 
-//  private ExecutionClient executionClient;
-//
-//  @Inject
-//  public ExecuteResource(ExecutionClient executionClient) {
-//    this.executionClient = executionClient;
-//  }
+  private ExecutionClient executionClient;
+
+  @Inject
+  public ExecuteResource(ExecutionClient executionClient) {
+    this.executionClient = executionClient;
+  }
   @PUT
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.APPLICATION_JSON)
-  public Response executeQuery() throws IOException {
-//@Auth AirpalUser user, ExecutionRequest request
+  public Response executeQuery(//@Auth
+                                  AirpalUser user, ExecutionRequest request) throws IOException {
 
-//    if (user != null) {
-//      final UUID queryUuid = executionClient.runQuery(
-//              request,
-//              user,
-//              user.getDefaultSchema(),
-//              user.getQueryTimeout());
-//
-//      return Response.ok(new ExecutionSuccess(queryUuid)).build();
-//    }
+
+    if (user != null) {
+      final UUID queryUuid = executionClient.runQuery(
+             request,
+              user,
+             user.getDefaultSchema(),
+             user.getQueryTimeout());
+
+     return Response.ok(new ExecutionSuccess(queryUuid)).build();
+    }
     return Response.status(Response.Status.NOT_FOUND)
             .entity(new ExecutionError("No Airpal user found"))
             .build();
@@ -53,20 +54,20 @@ public class ExecuteResource {
   @GET
   @Path("permissions")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getPermissions() { //          @Auth AirpalUser user
-
-//    if (user == null) {
-//      return Response.status(Response.Status.FORBIDDEN).build();
-//    } else {
-//      return Response.ok(new ExecutionPermissions(
-//              AuthorizationUtil.isAuthorizedWrite(user, "hive", "airpal", "any"),
-//              true,
-//              user.getUserName(),
-//              user.getAccessLevel()
-//      )).build();
-//    }
-    return Response.ok().build();
-  }
+   public Response getPermissions(//@Auth 
+            AirpalUser user)
+    {
+        if (user == null) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        } else {
+            return Response.ok(new ExecutionPermissions(
+                    AuthorizationUtil.isAuthorizedWrite(user, "hive", "airpal", "any"),
+                    true,
+                    user.getUserName(),
+                    user.getAccessLevel()
+            )).build();
+        }
+    }
 
   @Data
   public static class ExecutionSuccess {

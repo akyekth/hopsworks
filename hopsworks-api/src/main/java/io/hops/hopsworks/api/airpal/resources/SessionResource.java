@@ -1,6 +1,6 @@
 package io.hops.hopsworks.api.airpal.resources;
 
-//import com.airbnb.airpal.service.LoginView;
+import io.hops.hopsworks.api.airpal.service.LoginView;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -23,44 +23,48 @@ import java.io.IOException;
 import java.net.URI;
 
 @Path("/")
-public class SessionResource {
+public class SessionResource
+{
 
-//  @GET
-//  public Response redirectToApp() {
-//    return Response.temporaryRedirect(URI.create("/app"))
-//            .status(Response.Status.MOVED_PERMANENTLY)
-//            .build();
-//  }
-
-//  @GET
-//  @Path("/login")
-//  @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
-//  public LoginView getLogin() {
-//    return new LoginView();
-//  }
-
-  @POST
-  @Path("/login")
-  public void doLogin(
-          @Context HttpServletRequest request,
-          @Context HttpServletResponse response,
-          @FormParam("username") String username,
-          @FormParam("password") String password)
-          throws IOException {
-    Subject currentUser = SecurityUtils.getSubject();
-    if (!currentUser.isAuthenticated()) {
-      AuthenticationToken token = new UsernamePasswordToken(username, password);
-      currentUser.login(token);
+    @GET
+    public Response redirectToApp()
+    {
+        return Response.temporaryRedirect(URI.create("/app"))
+                .status(Response.Status.MOVED_PERMANENTLY)
+                .build();
     }
 
-    WebUtils.redirectToSavedRequest(request, response, "/app");
-  }
+    @GET
+    @Path("/login")
+    @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
+    public LoginView getLogin()
+    {
+        return new LoginView();
+    }
 
-  @GET
-  @Path("/postlogin")
-  @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
-  public Response getLoginNoRemember() {
-    return Response.temporaryRedirect(URI.create("/app")).cookie(new NewCookie(
-            "rememberMe", null)).build();
-  }
+    @POST
+    @Path("/login")
+    public void doLogin(
+            @Context HttpServletRequest request,
+            @Context HttpServletResponse response,
+            @FormParam("username") String username,
+            @FormParam("password") String password)
+            throws IOException
+    {
+        Subject currentUser = SecurityUtils.getSubject();
+        if (!currentUser.isAuthenticated()) {
+            AuthenticationToken token = new UsernamePasswordToken(username, password);
+            currentUser.login(token);
+        }
+
+        WebUtils.redirectToSavedRequest(request, response, "/app");
+    }
+
+    @GET
+    @Path("/postlogin")
+    @Produces({MediaType.TEXT_HTML, MediaType.APPLICATION_JSON})
+    public Response getLoginNoRemember()
+    {
+        return Response.temporaryRedirect(URI.create("/app")).cookie(new NewCookie("rememberMe", null)).build();
+    }
 }
