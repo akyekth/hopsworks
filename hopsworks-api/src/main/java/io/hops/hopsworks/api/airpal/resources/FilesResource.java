@@ -1,5 +1,4 @@
- package io.hops.hopsworks.api.airpal.resources;
-
+package io.hops.hopsworks.api.airpal.resources;
 
 import io.hops.hopsworks.api.airpal.core.store.files.ExpiringFileStore;
 import com.google.common.io.ByteStreams;
@@ -20,39 +19,36 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 @Path("/api/files")
-public class FilesResource
-{
-    private final ExpiringFileStore fileStore;
+public class FilesResource {
 
-    @Inject
-    public FilesResource(ExpiringFileStore fileStore)
-    {
-        this.fileStore = fileStore;
-    }
+  private final ExpiringFileStore fileStore;
 
-    @GET
-    @Path("/{fileName}")
-    @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response getFile(@PathParam("fileName") String fileName)
-    {
-        final File file = fileStore.get(fileName);
+  @Inject
+  public FilesResource(ExpiringFileStore fileStore) {
+    this.fileStore = fileStore;
+  }
 
-        if (file == null) {
-            return Response.status(Response.Status.NOT_FOUND).build();
-        } else {
-            return Response.ok(new StreamingOutput() {
-                @Override
-                public void write(OutputStream output)
-                        throws IOException, WebApplicationException
-                {
-                    // TODO: Make this use chunked encoding?
-                    try (FileInputStream inputStream = new FileInputStream(file)) {
-                        ByteStreams.copy(inputStream, output);
-                    } finally {
-                        output.close();
-                    }
-                }
-            }).build();
+  @GET
+  @Path("/{fileName}")
+  @Produces(MediaType.APPLICATION_OCTET_STREAM)
+  public Response getFile(@PathParam("fileName") String fileName) {
+    final File file = fileStore.get(fileName);
+
+    if (file == null) {
+      return Response.status(Response.Status.NOT_FOUND).build();
+    } else {
+      return Response.ok(new StreamingOutput() {
+        @Override
+        public void write(OutputStream output)
+            throws IOException, WebApplicationException {
+          // TODO: Make this use chunked encoding?
+          try (FileInputStream inputStream = new FileInputStream(file)) {
+            ByteStreams.copy(inputStream, output);
+          } finally {
+            output.close();
+          }
         }
+      }).build();
     }
+  }
 }

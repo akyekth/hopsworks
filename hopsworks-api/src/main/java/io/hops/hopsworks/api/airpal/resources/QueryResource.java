@@ -37,145 +37,135 @@ import java.util.List;
 import java.util.UUID;
 
 @Path("/api/query")
-public class QueryResource
-{
-    private final JobHistoryStore jobHistoryStore;
-    private final QueryStore queryStore;
+public class QueryResource {
 
-    @Inject
-    public QueryResource(JobHistoryStore jobHistoryStore,
-            QueryStore queryStore)
-    {
-        this.jobHistoryStore = jobHistoryStore;
-        this.queryStore = queryStore;
+  private final JobHistoryStore jobHistoryStore;
+  private final QueryStore queryStore;
+
+  @Inject
+  public QueryResource(JobHistoryStore jobHistoryStore,
+      QueryStore queryStore) {
+    this.jobHistoryStore = jobHistoryStore;
+    this.queryStore = queryStore;
+  }
+
+  @GET
+  @Path("saved")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getSaved(
+      //@Auth 
+      AirpalUser user,
+      @QueryParam("table") List<PartitionedTable> tables) {
+    if (user != null) {
+      return Response.ok(queryStore.getSavedQueries(user)).build();
     }
 
-    @GET
-    @Path("saved")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getSaved(
-            //@Auth 
-           AirpalUser user,
-            @QueryParam("table") List<PartitionedTable> tables)
-    {
-        if (user != null) {
-            return Response.ok(queryStore.getSavedQueries(user)).build();
-        }
+    return Response.ok(Collections.<SavedQuery>emptyList()).build();
+  }
 
-        return Response.ok(Collections.<SavedQuery>emptyList()).build();
+  @POST
+  @Path("saved")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response saveQuery(
+      //@Auth
+      AirpalUser user,
+      @FormParam("description") String description,
+      @FormParam("name") String name,
+      @FormParam("query") String query) {
+    CreateSavedQueryBuilder createFeaturedQueryRequest = CreateSavedQueryBuilder.featured()
+        .description(description)
+        .name(name)
+        .query(query);
+    if (user != null) {
+      SavedQuery savedQuery = createFeaturedQueryRequest.user(user.getUserName())
+          .build();
+
+      if (queryStore.saveQuery((UserSavedQuery) savedQuery)) {
+        return Response.ok(savedQuery.getUuid()).build();
+      } else {
+        return Response.status(Response.Status.NOT_FOUND).build();
+      }
     }
 
-    @POST
-    @Path("saved")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response saveQuery(
-            //@Auth
-           AirpalUser user,
-            @FormParam("description") String description,
-            @FormParam("name") String name,
-            @FormParam("query") String query)
-    {
-        CreateSavedQueryBuilder createFeaturedQueryRequest = CreateSavedQueryBuilder.featured()
-                .description(description)
-                .name(name)
-                .query(query);
-        if (user != null) {
-            SavedQuery savedQuery = createFeaturedQueryRequest.user(user.getUserName())
-                    .build();
+    return Response.status(Response.Status.UNAUTHORIZED).build();
+  }
 
-            if (queryStore.saveQuery((UserSavedQuery) savedQuery)) {
-                return Response.ok(savedQuery.getUuid()).build();
-            }
-            else {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
-        }
+  @DELETE
+  @Path("saved/{uuid}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteQuery(
+      //@Auth 
+      AirpalUser user,
+      @PathParam("uuid") UUID uuid) {
+    if (user != null) {
+      if (queryStore.deleteSavedQuery(user, uuid)) {
+        return Response.status(Response.Status.NO_CONTENT).build();
+      } else {
+        return Response.status(Response.Status.NOT_FOUND).build();
+      }
+    }
+    return Response.status(Response.Status.UNAUTHORIZED).build();
+  }
 
-        return Response.status(Response.Status.UNAUTHORIZED).build();
+  public static Function<Job, DateTime> JOB_ORDERING = new Function<Job, DateTime>() {
+    @Nullable
+    @Override
+    public DateTime apply(@Nullable Job input) {
+      if (input == null) {
+        return null;
+      }
+      return input.getQueryFinished();
+    }
+  };
+
+  @GET
+  @Path("history")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response getHistory(
+      //@Auth
+      AirpalUser user,
+      @QueryParam("table") List<Table> tables) {
+    Iterable<Job> recentlyRun;
+
+    if (tables.size() < 1) {
+      recentlyRun = jobHistoryStore.getRecentlyRun(200);
+    } else {
+      Table[] tablesArray = tables.toArray(new Table[tables.size()]);
+      Table[] restTables = Arrays.copyOfRange(tablesArray, 1, tablesArray.length);
+
+      recentlyRun = jobHistoryStore.getRecentlyRun(200, tablesArray[0], restTables);
     }
 
-    @DELETE
-    @Path("saved/{uuid}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response deleteQuery(
-            //@Auth 
-        AirpalUser user,
-            @PathParam("uuid") UUID uuid)
-    {
-        if (user != null) {
-            if (queryStore.deleteSavedQuery(user, uuid)) {
-                return Response.status(Response.Status.NO_CONTENT).build();
-            }
-            else {
-                return Response.status(Response.Status.NOT_FOUND).build();
-            }
+    ImmutableList.Builder<Job> filtered = ImmutableList.builder();
+    for (Job job : recentlyRun) {
+      if (job.getTablesUsed().isEmpty() && (job.getState() == JobState.FAILED)) {
+        filtered.add(job);
+        continue;
+      }
+      for (Table table : job.getTablesUsed()) {
+        if (AuthorizationUtil.isAuthorizedRead(user, table)) {
+          filtered.add(new Job(
+              job.getUser(),
+              job.getQuery(),
+              job.getUuid(),
+              job.getOutput(),
+              job.getQueryStats(),
+              job.getState(),
+              Collections.<Column>emptyList(),
+              Collections.<Table>emptySet(),
+              job.getQueryStartedDateTime(),
+              job.getError(),
+              job.getQueryFinishedDateTime()));
         }
-        return Response.status(Response.Status.UNAUTHORIZED).build();
+      }
     }
 
-    public static Function<Job, DateTime> JOB_ORDERING = new Function<Job, DateTime>()
-    {
-        @Nullable
-        @Override
-        public DateTime apply(@Nullable Job input)
-        {
-            if (input == null) {
-                return null;
-            }
-            return input.getQueryFinished();
-        }
-    };
-
-    @GET
-    @Path("history")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getHistory(
-            //@Auth
-             AirpalUser user,
-            @QueryParam("table") List<Table> tables)
-    {
-        Iterable<Job> recentlyRun;
-
-        if (tables.size() < 1) {
-            recentlyRun = jobHistoryStore.getRecentlyRun(200);
-        }
-        else {
-            Table[] tablesArray = tables.toArray(new Table[tables.size()]);
-            Table[] restTables = Arrays.copyOfRange(tablesArray, 1, tablesArray.length);
-
-            recentlyRun = jobHistoryStore.getRecentlyRun(200, tablesArray[0], restTables);
-        }
-
-        ImmutableList.Builder<Job> filtered = ImmutableList.builder();
-        for (Job job : recentlyRun) {
-            if (job.getTablesUsed().isEmpty() && (job.getState() == JobState.FAILED)) {
-                filtered.add(job);
-                continue;
-            }
-            for (Table table : job.getTablesUsed()) {
-                if (AuthorizationUtil.isAuthorizedRead(user, table)) {
-                    filtered.add(new Job(
-                            job.getUser(),
-                            job.getQuery(),
-                            job.getUuid(),
-                            job.getOutput(),
-                            job.getQueryStats(),
-                            job.getState(),
-                            Collections.<Column>emptyList(),
-                            Collections.<Table>emptySet(),
-                            job.getQueryStartedDateTime(),
-                            job.getError(),
-                            job.getQueryFinishedDateTime()));
-                }
-            }
-        }
-
-        List<Job> sortedResult = Ordering
-                .natural()
-                .nullsLast()
-                .onResultOf(JOB_ORDERING)
-                .reverse()
-                .immutableSortedCopy(filtered.build());
-        return Response.ok(sortedResult).build();
-    }
+    List<Job> sortedResult = Ordering
+        .natural()
+        .nullsLast()
+        .onResultOf(JOB_ORDERING)
+        .reverse()
+        .immutableSortedCopy(filtered.build());
+    return Response.ok(sortedResult).build();
+  }
 }

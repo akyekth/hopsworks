@@ -12,6 +12,7 @@
 
   <modules>
     <module>hopsworks-common</module>
+    <module>hopsworks-airpal</module>
     <module>hopsworks-kmon</module>
     <module>hopsworks-admin</module>
     <module>hopsworks-api</module>

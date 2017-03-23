@@ -1,0 +1,32 @@
+package io.hops.hopsworks.api.airpal.core;
+
+import com.google.common.cache.CacheLoader;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+
+//import java.util.concurrent.Callable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
+abstract public class BackgroundCacheLoader<K, V> extends CacheLoader<K, V> {
+
+  private final ListeningExecutorService executor;
+
+  protected BackgroundCacheLoader(ListeningExecutorService executor) {
+    this.executor = checkNotNull(executor, "executor is null");
+  }
+
+  @Override
+  public final ListenableFuture<V> reload(final K key, V oldValue) {
+    return executor.submit(() -> load(key));
+    
+    /*use lambda expresion as above
+    return executor.submit(new Callable<V>() {
+      @Override
+      public V call()
+          throws Exception {
+        return load(key);
+      }
+    });   */
+  }
+}

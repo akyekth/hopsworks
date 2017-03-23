@@ -28,8 +28,8 @@ public class S3FilesResource {
 
   @Inject
   public S3FilesResource(
-          AmazonS3 s3Client,
-          @Named("s3Bucket") String outputBucket) {
+      AmazonS3 s3Client,
+      @Named("s3Bucket") String outputBucket) {
     this.s3Client = s3Client;
     this.outputBucket = outputBucket;
   }
@@ -51,14 +51,14 @@ public class S3FilesResource {
     } else {
       ObjectMetadata objectMetadata = object.getObjectMetadata();
       Response.ResponseBuilder builder = Response.ok().type(objectMetadata.
-              getContentType());
+          getContentType());
       if (objectMetadata.getContentEncoding() != null) {
         builder = builder.encoding(objectMetadata.getContentEncoding()); // gzip
       }
       return builder.entity(new StreamingOutput() {
         @Override
         public void write(OutputStream output)
-                throws IOException, WebApplicationException {
+            throws IOException, WebApplicationException {
           try (InputStream objectData = object.getObjectContent()) {
             ByteStreams.copy(objectData, output);
 

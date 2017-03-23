@@ -2,6 +2,7 @@ package io.hops.hopsworks.rest.application.config;
 
 import io.swagger.annotations.Api;
 import org.glassfish.jersey.server.ResourceConfig;
+//import org.glassfish.jersey.media.sse.SseFeature;
 
 @Api
 @javax.ws.rs.ApplicationPath("api")
@@ -11,6 +12,8 @@ public class ApplicationConfig extends ResourceConfig {
    * adding manually all the restful services of the application.
    */
   public ApplicationConfig() {
+    
+    //super(io.hops.hopsworks.api.airpal.resources.socket.SseResource.class, SseFeature.class);
     register(io.hops.hopsworks.api.airpal.resources.ExecuteResource.class);
     register(io.hops.hopsworks.api.airpal.resources.FilesResource.class);
     register(io.hops.hopsworks.api.airpal.resources.HealthResource.class);

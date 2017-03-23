@@ -33,106 +33,102 @@ import static io.hops.hopsworks.api.airpal.resources.QueryResource.JOB_ORDERING;
 
 @Path("/api/users/{id}")
 @Produces(MediaType.APPLICATION_JSON)
-public class UsersResource
-{
-    private final JobHistoryStore jobHistoryStore;
-    private final ActiveJobsStore activeJobsStore;
+public class UsersResource {
 
-    @Inject
-    public UsersResource(JobHistoryStore jobHistoryStore, ActiveJobsStore activeJobsStore)
-    {
-        this.jobHistoryStore = jobHistoryStore;
-        this.activeJobsStore = activeJobsStore;
+  private final JobHistoryStore jobHistoryStore;
+  private final ActiveJobsStore activeJobsStore;
+
+  @Inject
+  public UsersResource(JobHistoryStore jobHistoryStore, ActiveJobsStore activeJobsStore) {
+    this.jobHistoryStore = jobHistoryStore;
+    this.activeJobsStore = activeJobsStore;
+  }
+
+  @GET
+  @Path("permissions")
+  public Response getUserPermissions(
+      // @Auth 
+      AirpalUser user,
+      @PathParam("id") String userId) {
+    if (user == null) {
+      return Response.status(Response.Status.FORBIDDEN).build();
+    } else {
+      return Response.ok(
+          new ExecutionPermissions(
+              AuthorizationUtil.isAuthorizedWrite(user, "hive", "airpal", "any"),
+              true,
+              user.getAccessLevel())
+      ).build();
+    }
+  }
+
+  @GET
+  @Path("queries")
+  public Response getUserQueries(
+      //@Auth 
+      AirpalUser user,
+      @PathParam("id") String userId,
+      @QueryParam("results") int numResults,
+      @QueryParam("table") List<PartitionedTable> tables) {
+    Iterable<Job> recentlyRun;
+    int results = Optional.of(numResults).or(0);
+    if (results <= 0) {
+      results = 100;
     }
 
-    @GET
-    @Path("permissions")
-    public Response getUserPermissions(
-           // @Auth 
-             AirpalUser user,
-            @PathParam("id") String userId)
-    {
-        if (user == null) {
-            return Response.status(Response.Status.FORBIDDEN).build();
-        } else {
-            return Response.ok(
-                    new ExecutionPermissions(
-                            AuthorizationUtil.isAuthorizedWrite(user, "hive", "airpal", "any"),
-                            true,
-                            user.getAccessLevel())
-            ).build();
-        }
+    if (tables.size() < 1) {
+      recentlyRun = jobHistoryStore.getRecentlyRunForUser(userId, results);
+    } else {
+      recentlyRun = jobHistoryStore.getRecentlyRunForUser(
+          userId,
+          results,
+          Iterables.transform(tables, new PartitionedTableToTable()));
     }
 
-    @GET
-    @Path("queries")
-    public Response getUserQueries(
-            //@Auth 
-             AirpalUser user,
-            @PathParam("id") String userId,
-            @QueryParam("results") int numResults,
-            @QueryParam("table") List<PartitionedTable> tables)
-    {
-        Iterable<Job> recentlyRun;
-        int results = Optional.of(numResults).or(0);
-        if (results <= 0) {
-            results = 100;
+    ImmutableList.Builder<Job> filtered = ImmutableList.builder();
+    for (Job job : recentlyRun) {
+      if (job.getTablesUsed().isEmpty() && (job.getState() == JobState.FAILED)) {
+        filtered.add(job);
+        continue;
+      }
+      for (Table table : job.getTablesUsed()) {
+        if (AuthorizationUtil.isAuthorizedRead(user, table)) {
+          filtered.add(new Job(
+              job.getUser(),
+              job.getQuery(),
+              job.getUuid(),
+              job.getOutput(),
+              job.getQueryStats(),
+              job.getState(),
+              Collections.<Column>emptyList(),
+              Collections.<Table>emptySet(),
+              job.getQueryStartedDateTime(),
+              job.getError(),
+              job.getQueryFinishedDateTime()));
         }
-
-        if (tables.size() < 1) {
-            recentlyRun = jobHistoryStore.getRecentlyRunForUser(userId, results);
-        } else {
-            recentlyRun = jobHistoryStore.getRecentlyRunForUser(
-                    userId,
-                    results,
-                    Iterables.transform(tables, new PartitionedTableToTable()));
-        }
-
-        ImmutableList.Builder<Job> filtered = ImmutableList.builder();
-        for (Job job : recentlyRun) {
-            if (job.getTablesUsed().isEmpty() && (job.getState() == JobState.FAILED)) {
-                filtered.add(job);
-                continue;
-            }
-            for (Table table : job.getTablesUsed()) {
-                if (AuthorizationUtil.isAuthorizedRead(user, table)) {
-                    filtered.add(new Job(
-                            job.getUser(),
-                            job.getQuery(),
-                            job.getUuid(),
-                            job.getOutput(),
-                            job.getQueryStats(),
-                            job.getState(),
-                            Collections.<Column>emptyList(),
-                            Collections.<Table>emptySet(),
-                            job.getQueryStartedDateTime(),
-                            job.getError(),
-                            job.getQueryFinishedDateTime()));
-                }
-            }
-        }
-
-        List<Job> sortedResult = Ordering
-                .natural()
-                .nullsLast()
-                .onResultOf(JOB_ORDERING)
-                .reverse()
-                .immutableSortedCopy(filtered.build());
-        return Response.ok(sortedResult).build();
+      }
     }
 
-    @GET
-    @Path("active-queries")
-    public Response getUserActiveQueries(//@Auth
-        AirpalUser user)
-    {
-        List<Job> sortedResult = Ordering
-                .natural()
-                .nullsLast()
-                .onResultOf(JOB_ORDERING)
-                .reverse()
-                .immutableSortedCopy(activeJobsStore.getJobsForUser(user));
+    List<Job> sortedResult = Ordering
+        .natural()
+        .nullsLast()
+        .onResultOf(JOB_ORDERING)
+        .reverse()
+        .immutableSortedCopy(filtered.build());
+    return Response.ok(sortedResult).build();
+  }
 
-        return Response.ok(sortedResult).build();
-    }
+  @GET
+  @Path("active-queries")
+  public Response getUserActiveQueries(//@Auth
+      AirpalUser user) {
+    List<Job> sortedResult = Ordering
+        .natural()
+        .nullsLast()
+        .onResultOf(JOB_ORDERING)
+        .reverse()
+        .immutableSortedCopy(activeJobsStore.getJobsForUser(user));
+
+    return Response.ok(sortedResult).build();
+  }
 }

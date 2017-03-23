@@ -17,52 +17,51 @@ import java.util.SortedMap;
 @Path("/health")
 @Produces(MediaType.APPLICATION_JSON)
 public class HealthResource {
-    private final HealthCheckRegistry registry;
 
-    @Inject
-    public HealthResource(HealthCheckRegistry registry) {
-        this.registry = registry;
+  private final HealthCheckRegistry registry;
+
+  @Inject
+  public HealthResource(HealthCheckRegistry registry) {
+    this.registry = registry;
+  }
+
+  @GET
+  //@CacheControl(mustRevalidate = true, noCache = true, noStore = true)
+  public Response health() {
+    final SortedMap<String, HealthCheck.Result> results = registry.runHealthChecks();
+    if (results.isEmpty()) {
+      return Response.status(new NotImplementedStatus()).entity(results).build();
+    } else if (isAllHealthy(results)) {
+      return Response.status(Response.Status.OK).entity(results).build();
+    } else {
+      return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(results).build();
+    }
+  }
+
+  private static boolean isAllHealthy(Map<String, HealthCheck.Result> results) {
+    for (HealthCheck.Result result : results.values()) {
+      if (!result.isHealthy()) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  private static final class NotImplementedStatus implements Response.StatusType {
+
+    @Override
+    public int getStatusCode() {
+      return 501;
     }
 
-    @GET
-    //@CacheControl(mustRevalidate = true, noCache = true, noStore = true)
-    public Response health() {
-        final SortedMap<String, HealthCheck.Result> results = registry.runHealthChecks();
-        if (results.isEmpty()) {
-            return Response.status(new NotImplementedStatus()).entity(results).build();
-        } else {
-            if (isAllHealthy(results)) {
-                return Response.status(Response.Status.OK).entity(results).build();
-            } else {
-                return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(results).build();
-            }
-        }
+    @Override
+    public String getReasonPhrase() {
+      return "Not Implemented";
     }
 
-    private static boolean isAllHealthy(Map<String, HealthCheck.Result> results) {
-        for (HealthCheck.Result result : results.values()) {
-            if (!result.isHealthy()) {
-                return false;
-            }
-        }
-        return true;
+    @Override
+    public Response.Status.Family getFamily() {
+      return Response.Status.Family.SERVER_ERROR;
     }
-
-    private static final class NotImplementedStatus implements Response.StatusType
-    {
-        @Override
-        public int getStatusCode() {
-            return 501;
-        }
-
-        @Override
-        public String getReasonPhrase() {
-            return "Not Implemented";
-        }
-
-        @Override
-        public Response.Status.Family getFamily() {
-            return Response.Status.Family.SERVER_ERROR;
-        }
-    }
+  }
 }

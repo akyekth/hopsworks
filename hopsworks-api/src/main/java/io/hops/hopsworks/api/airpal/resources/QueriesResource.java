@@ -44,8 +44,8 @@ public class QueriesResource {
 //  }
   @GET
   public Response getQueries(
-          //          @Auth AirpalUser user,
-          @QueryParam("results") int numResults) {
+      //          @Auth AirpalUser user,
+      @QueryParam("results") int numResults) {
     //          @QueryParam("table") List<PartitionedTable> tables
 //    Iterable<Job> recentlyRun;
 //    int results = Optional.of(numResults).or(200);
@@ -96,8 +96,8 @@ public class QueriesResource {
   @DELETE
   @Path("/{uuid}")
   public Response cancelQuery(
-          //          @Auth AirpalUser user,
-          @PathParam("uuid") UUID uuid) {
+      //          @Auth AirpalUser user,
+      @PathParam("uuid") UUID uuid) {
     boolean success = true; //executionClient.cancelQuery(user, uuid);
     if (success) {
       return Response.ok().build();

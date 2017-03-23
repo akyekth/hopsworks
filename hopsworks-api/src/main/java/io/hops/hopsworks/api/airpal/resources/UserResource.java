@@ -13,38 +13,37 @@ import javax.ws.rs.core.Response;
 
 @Path("/api/user")
 @Produces(MediaType.APPLICATION_JSON)
-public class UserResource
-{
-    @GET
-    public Response getUserInfo(//@Auth 
-        AirpalUser user)
-    {
-        if (user == null) {
-            return Response.status(Response.Status.FORBIDDEN).build();
-        } else {
-            return Response.ok(
-                    new UserInfo(
-                            user.getUserName(),
-                            new ExecutionPermissions(
-                                    AuthorizationUtil.isAuthorizedWrite(user, "hive", "airpal", "any"),
-                                    true,
-                                    user.getAccessLevel())
-            )).build();
-        }
-    }
+public class UserResource {
 
-    @Value
-    private static class UserInfo
-    {
-        private final String name;
-        private final ExecutionPermissions executionPermissions;
+  @GET
+  public Response getUserInfo(//@Auth 
+      AirpalUser user) {
+    if (user == null) {
+      return Response.status(Response.Status.FORBIDDEN).build();
+    } else {
+      return Response.ok(
+          new UserInfo(
+              user.getUserName(),
+              new ExecutionPermissions(
+                  AuthorizationUtil.isAuthorizedWrite(user, "hive", "airpal", "any"),
+                  true,
+                  user.getAccessLevel())
+          )).build();
     }
+  }
 
-    @Value
-    public static class ExecutionPermissions
-    {
-        private final boolean canCreateTable;
-        private final boolean canCreateCsv;
-        private final String accessLevel;
-    }
+  @Value
+  private static class UserInfo {
+
+    private final String name;
+    private final ExecutionPermissions executionPermissions;
+  }
+
+  @Value
+  public static class ExecutionPermissions {
+
+    private final boolean canCreateTable;
+    private final boolean canCreateCsv;
+    private final String accessLevel;
+  }
 }
