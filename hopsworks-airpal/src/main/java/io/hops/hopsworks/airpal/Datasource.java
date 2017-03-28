@@ -2,11 +2,11 @@
 package io.hops.hopsworks.airpal;
 
 //import static com.sun.xml.internal.ws.spi.db.BindingContextFactory.LOGGER;
-import io.dropwizard.Configuration;
-import io.dropwizard.db.DataSourceFactory;
-import io.dropwizard.db.DatabaseConfiguration;
-import java.net.URI;
-import java.net.URISyntaxException;
+//import io.dropwizard.Configuration;
+//import io.dropwizard.db.DataSourceFactory;
+//import io.dropwizard.db.DatabaseConfiguration;
+//import java.net.URI;
+//import java.net.URISyntaxException;
 
 public class Datasource {//implements DatabaseConfiguration {
 

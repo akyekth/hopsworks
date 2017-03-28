@@ -4,7 +4,9 @@ import io.hops.hopsworks.api.airpal.presto.Table;
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.SlidingTimeWindowReservoir;
 import com.google.common.collect.Maps;
-import io.dropwizard.util.Duration;
+//import io.dropwizard.util.Duration;
+import org.joda.time.Duration;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Map;
@@ -37,8 +39,8 @@ public class LocalUsageStore implements UsageStore {
 
     if (window == null) {
       final SlidingTimeWindowReservoir reservoir = new SlidingTimeWindowReservoir(
-          usageTrackTime.getQuantity(),
-          usageTrackTime.getUnit());
+          usageTrackTime.getMillis(),
+          TimeUnit.MILLISECONDS);
       window = new Histogram(reservoir);
       usageMap.put(table, window);
     }

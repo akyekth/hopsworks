@@ -5,8 +5,9 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Iterables;
-import io.dropwizard.util.Duration;
-//import org.joda.time.Duration;
+//import io.dropwizard.util.Duration;
+import org.joda.time.Duration;
+import java.util.concurrent.TimeUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -20,7 +21,7 @@ public class CachingUsageStore implements UsageStore {
     this.delegate = delegate;
     this.cache = CacheBuilder
         .newBuilder()
-        .expireAfterWrite(expireAfter.getQuantity(), expireAfter.getUnit())
+        .expireAfterWrite(expireAfter.getMillis(),TimeUnit.MILLISECONDS) //expireAfter.getUnit)
         .build(new CacheLoader<Table, Long>() {
           @Override
           public Long load(Table table)

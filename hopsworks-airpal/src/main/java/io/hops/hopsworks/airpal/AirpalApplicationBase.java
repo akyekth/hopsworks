@@ -1,7 +1,7 @@
 package io.hops.hopsworks.airpal;
 
 //import io.hops.hopsworks.api.airpal.core.AirpalUserFactory;
-import io.hops.hopsworks.api.airpal.core.health.PrestoHealthCheck;
+//import io.hops.hopsworks.api.airpal.core.health.PrestoHealthCheck;
 //import io.hops.hopsworks.api.airpal.resources.ExecuteResource;
 //import io.hops.hopsworks.api.airpal.resources.FilesResource;
 //import io.hops.hopsworks.api.airpal.resources.HealthResource;
@@ -17,24 +17,24 @@ import io.hops.hopsworks.api.airpal.core.health.PrestoHealthCheck;
 //import com.airbnb.airpal.resources.sse.SSEEventSourceServlet;
 //import com.facebook.presto.server.ExecuteResource;
 //import com.facebook.presto.server.QueryResource;
-import com.google.inject.AbstractModule;
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-import com.google.inject.Stage;
-import io.dropwizard.Application;
-import io.dropwizard.Bundle;
-import io.dropwizard.ConfiguredBundle;
-import io.dropwizard.assets.AssetsBundle;
-//import io.dropwizard.jetty.BiDiGzipHandler;
-import io.dropwizard.setup.Bootstrap;
-import io.dropwizard.setup.Environment;
-import io.dropwizard.views.ViewBundle;
-//import org.eclipse.jetty.server.Handler;
-
-// import javax.servlet.ServletRegistration;
-import java.util.Arrays;
-
-import static org.glassfish.jersey.message.MessageProperties.IO_BUFFER_SIZE;
+//import com.google.inject.AbstractModule;
+//import com.google.inject.Guice;
+//import com.google.inject.Injector;
+//import com.google.inject.Stage;
+//import io.dropwizard.Application;
+//import io.dropwizard.Bundle;
+//import io.dropwizard.ConfiguredBundle;
+//import io.dropwizard.assets.AssetsBundle;
+////import io.dropwizard.jetty.BiDiGzipHandler;
+//import io.dropwizard.setup.Bootstrap;
+//import io.dropwizard.setup.Environment;
+//import io.dropwizard.views.ViewBundle;
+////import org.eclipse.jetty.server.Handler;
+//
+//// import javax.servlet.ServletRegistration;
+//import java.util.Arrays;
+//
+//import static org.glassfish.jersey.message.MessageProperties.IO_BUFFER_SIZE;
 
 public abstract class AirpalApplicationBase<T extends AirpalConfiguration> {
     //extends Application<T> {

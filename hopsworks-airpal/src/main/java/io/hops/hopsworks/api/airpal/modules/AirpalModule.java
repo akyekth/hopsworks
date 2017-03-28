@@ -1,6 +1,6 @@
 package io.hops.hopsworks.api.airpal.modules;
 
-import com.airbnb.airlift.http.client.ForQueryInfoClient;
+//import com.airbnb.airlift.http.client.ForQueryInfoClient;
 //import io.hops.hopsworks.api.airpal.AirpalConfiguration;
 import io.hops.hopsworks.api.airpal.output.PersistentJobOutputFactory;
 import io.hops.hopsworks.api.airpal.output.builders.OutputBuilderFactory;
@@ -21,8 +21,8 @@ import io.hops.hopsworks.api.airpal.core.store.usage.SQLUsageStore;
 import io.hops.hopsworks.api.airpal.core.store.usage.UsageStore;
 import io.hops.hopsworks.api.airpal.presto.ClientSessionFactory;
 import io.hops.hopsworks.api.airpal.presto.ForQueryRunner;
-import io.hops.hopsworks.api.airpal.presto.QueryInfoClient;
-import io.hops.hopsworks.api.airpal.presto.QueryInfoClient.BasicQueryInfo;
+//import io.hops.hopsworks.api.airpal.presto.QueryInfoClient;
+//import io.hops.hopsworks.api.airpal.presto.QueryInfoClient.BasicQueryInfo;
 import io.hops.hopsworks.api.airpal.presto.metadata.ColumnCache;
 import io.hops.hopsworks.api.airpal.presto.metadata.PreviewTableCache;
 import io.hops.hopsworks.api.airpal.presto.metadata.SchemaCache;
@@ -67,7 +67,7 @@ import io.airlift.units.Duration;
 //import io.dropwizard.jdbi.DBIFactory;
 //import io.dropwizard.setup.Environment;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.web.env.EnvironmentLoaderListener;
+//import org.apache.shiro;
 import org.skife.jdbi.v2.DBI;
 
 import javax.annotation.Nullable;
@@ -81,9 +81,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 import static io.hops.hopsworks.api.airpal.presto.QueryRunner.QueryRunnerFactory;
-import static io.airlift.http.client.HttpClientBinder.httpClientBinder;
-import static io.airlift.json.JsonCodec.jsonCodec;
-import io.dropwizard.setup.Environment;
+//import static io.airlift.http.client.HttpClientBinder.httpClientBinder;
+//import static io.airlift.json.JsonCodec.jsonCodec;
+//import io.dropwizard.setup.Environment;
 import io.hops.hopsworks.airpal.AirpalConfiguration;
 
 @Slf4j
@@ -93,11 +93,11 @@ public class AirpalModule extends AbstractModule {
       .setConnectTimeout(new Duration(10, TimeUnit.SECONDS));
 
   private final AirpalConfiguration config;
-  private final Environment environment;
+ // private final Environment environment;
 
-  public AirpalModule(AirpalConfiguration config, Environment environment) {
+  public AirpalModule(AirpalConfiguration config) {
     this.config = config;
-    this.environment = environment;
+    //this.environment = environment;
   }
 
   @Override
@@ -113,13 +113,13 @@ public class AirpalModule extends AbstractModule {
 //    bind(ResultsPreviewResource.class).in(Scopes.SINGLETON);
 //    bind(S3FilesResource.class).in(Scopes.SINGLETON);
 
-    httpClientBinder(binder()).bindHttpClient("query-info", ForQueryInfoClient.class)
-        .withConfigDefaults(HTTP_CLIENT_CONFIG_DEFAULTS);
+//    httpClientBinder(binder()).bindHttpClient("query-info", ForQueryInfoClient.class)
+//        .withConfigDefaults(HTTP_CLIENT_CONFIG_DEFAULTS);
+//
+//    httpClientBinder(binder()).bindHttpClient("query-runner", ForQueryRunner.class)
+//        .withConfigDefaults(HTTP_CLIENT_CONFIG_DEFAULTS);
 
-    httpClientBinder(binder()).bindHttpClient("query-runner", ForQueryRunner.class)
-        .withConfigDefaults(HTTP_CLIENT_CONFIG_DEFAULTS);
-
-    bind(EnvironmentLoaderListener.class).in(Scopes.SINGLETON);
+   // bind(EnvironmentLoaderListener.class).in(Scopes.SINGLETON);
     bind(String.class).annotatedWith(Names.named("createTableDestinationSchema"))
         .toInstance(config.getCreateTableDestinationSchema());
     bind(String.class).annotatedWith(Names.named("s3Bucket"))   
@@ -200,10 +200,15 @@ public class AirpalModule extends AbstractModule {
     return new QueryRunnerFactory(sessionFactory, httpClient);
   }
 
-  @Provides
-  public QueryInfoClient provideQueryInfoClient(@ForQueryInfoClient HttpClient httpClient) {
-    return new QueryInfoClient(httpClient, jsonCodec(BasicQueryInfo.class));
-  }
+  /**
+   *
+   * @param httpClient
+   * @return
+   */
+//  @Provides
+//  public QueryInfoClient provideQueryInfoClient(@ForQueryInfoClient HttpClient httpClient) {
+//    return new QueryInfoClient(httpClient, jsonCodec(BasicQueryInfo.class));
+//  }
 
   @Singleton
   @Provides
@@ -328,7 +333,7 @@ public class AirpalModule extends AbstractModule {
   public UsageStore provideUsageCache(DBI dbi) {
     UsageStore delegate = new SQLUsageStore(config.getUsageWindow(), dbi, provideDbType());
 
-    return new CachingUsageStore(delegate, io.dropwizard.util.Duration.minutes(6));
+    return new CachingUsageStore(delegate, org.joda.time.Duration.standardMinutes(6));
   }
 
   @Provides

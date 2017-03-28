@@ -15,7 +15,8 @@ import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 import com.google.inject.Inject;
 import com.google.inject.name.Named;
-import io.dropwizard.util.Duration;
+//import io.dropwizard.util.Duration;
+import org.joda.time.Duration;
 import lombok.Data;
 import lombok.NonNull;
 import org.joda.time.DateTime;
@@ -222,8 +223,8 @@ public class TablesResource {
       builder.add(PartitionedTableWithMetaData.fromTable(
           table,
           lastUsage,
-          usageWindow.getUnit(),
-          (int) usageWindow.getQuantity(),
+          TimeUnit.MILLISECONDS,
+          (int) usageWindow.getMillis(),
           updatedAt
       ));
     }

@@ -6,14 +6,35 @@
         <artifactId>hopsworks</artifactId>
         <version>0.1.0</version>
     </parent>
+    <groupId>io.hops.hopsworks</groupId>
     <artifactId>hopsworks-airpal</artifactId>
     <packaging>jar</packaging>
      <dependencies>
-    <dependency>
+<!--    <dependency>
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-web</artifactId>
       <version>1.2.4</version>
       <scope>compile</scope>
+    </dependency>-->
+    
+<!--        <dependency>
+            <groupId>org.glassfish.jersey.bundles</groupId>
+            <artifactId>jaxrs-ri</artifactId>
+            <version>2.25</version>
+            <scope>provided</scope>
+        </dependency>
+   
+    <dependency>
+        <groupId>org.glassfish.jersey.media</groupId>
+        <artifactId>jersey-media-moxy</artifactId>
+        <version>2.25</version>
+        <scope>provided</scope>
+    </dependency>-->
+    <dependency>
+      <groupId>javax</groupId>
+      <artifactId>javaee-web-api</artifactId>
+      <version>7.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -33,18 +54,13 @@
       <version>1.10.6</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>io.dropwizard</groupId>
-      <artifactId>dropwizard-views-freemarker</artifactId>
-      <version>1.0.0-rc2</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
+    
+    <!--    <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-util</artifactId>
       <version>9.3.9.M1</version>
       <scope>compile</scope>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
@@ -52,10 +68,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.secnod.dropwizard</groupId>
-      <artifactId>dropwizard-shiro</artifactId>
-      <version>0.2.0</version>
-      <scope>compile</scope>
+      <groupId>org.apache.shiro</groupId>
+      <artifactId>shiro-core</artifactId>
+      <version>1.3.2</version>
     </dependency>
     <dependency>
       <groupId>com.opencsv</groupId>
@@ -63,30 +78,25 @@
       <version>3.2</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
+    <!--    <dependency>
       <groupId>org.apache.shiro</groupId>
       <artifactId>shiro-guice</artifactId>
       <version>1.2.4</version>
       <scope>compile</scope>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
       <version>1.4.190</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>io.dropwizard</groupId>
-      <artifactId>dropwizard-jdbi</artifactId>
-      <version>1.0.0-rc2</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
+
+    <!--    <dependency>
       <groupId>org.eclipse.jetty</groupId>
       <artifactId>jetty-client</artifactId>
       <version>9.3.9.M1</version>
       <scope>compile</scope>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>mysql</groupId>
       <artifactId>mysql-connector-java</artifactId>
@@ -94,40 +104,79 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+    <groupId>com.codahale.metrics</groupId>
+    <artifactId>metrics-healthchecks</artifactId>
+    <version>3.0.1</version>
+</dependency>
+<dependency>
+    <groupId>com.codahale.metrics</groupId>
+    <artifactId>metrics-core</artifactId>
+    <version>3.0.2</version>
+</dependency>
+
+<!--    <dependency>
       <groupId>io.dropwizard</groupId>
       <artifactId>dropwizard-core</artifactId>
       <version>1.0.0-rc2</version>
       <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.dropwizard.modules</groupId>
-      <artifactId>dropwizard-flyway</artifactId>
-      <version>0.9.0-1</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>io.dropwizard</groupId>
-      <artifactId>dropwizard-assets</artifactId>
-      <version>1.0.0-rc2</version>
-      <scope>compile</scope>
-    </dependency>
+      <exclusions>
+        <exclusion>
+          <groupId>io.dropwizard</groupId>
+          <artifactId>dropwizard-jersey</artifactId>
+        </exclusion>
+        
+        <exclusion>
+          <groupId>io.dropwizard</groupId>
+          <artifactId>dropwizard-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.dropwizard</groupId>
+          <artifactId>dropwizard-configuration</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.dropwizard</groupId>
+          <artifactId>dropwizard-validation</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>-->
+    
+    
     <dependency>
       <groupId>com.facebook.presto</groupId>
       <artifactId>presto-main</artifactId>
       <version>0.166</version>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>io.airlift</groupId>
+          <artifactId>http-server</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.glassfish.jersey.core</groupId>
+          <artifactId>jersey-server</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.validation</groupId>
+          <artifactId>validation-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.apache.bval</groupId>
+          <artifactId>bval-jsr</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
-<!--    <dependency>
-      <groupId>com.facebook.presto</groupId>
-      <artifactId>presto-parser</artifactId>
-      <version>0.166</version>
-      <scope>compile</scope>
-    </dependency>-->
+
     <dependency>
       <groupId>com.facebook.presto</groupId>
       <artifactId>presto-client</artifactId>
       <version>0.166</version>
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>io.dropwizard</groupId>
+          <artifactId>dropwizard-validaton</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
@@ -135,12 +184,7 @@
       <version>1.10.8</version>
       <scope>test</scope>
     </dependency>
-<!--    <dependency>
-      <groupId>com.facebook.presto</groupId>
-      <artifactId>presto-spi</artifactId>
-      <version>0.166</version>
-      <scope>compile</scope>
-    </dependency>-->
+
     <dependency>
       <groupId>com.hubspot.rosetta</groupId>
       <artifactId>RosettaJdbi</artifactId>
@@ -159,12 +203,12 @@
       <version>18.0</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
+    <!--    <dependency>
       <groupId>io.dropwizard</groupId>
       <artifactId>dropwizard-metrics-graphite</artifactId>
       <version>1.0.0-rc2</version>
       <scope>compile</scope>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
@@ -172,9 +216,9 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>1.14.8</version>        
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.14.8</version>        
     </dependency>
   </dependencies>
     

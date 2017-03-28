@@ -2,23 +2,23 @@ package io.hops.hopsworks.airpal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.airlift.units.DataSize;
-import io.dropwizard.Configuration;
-import io.dropwizard.db.DataSourceFactory;
-import io.dropwizard.db.DatabaseConfiguration;
+//import io.dropwizard.Configuration;
+//import io.dropwizard.db.DataSourceFactory;
+//import io.dropwizard.db.DatabaseConfiguration;
 //import io.dropwizard.flyway.FlywayFactory;
-import io.dropwizard.util.Duration;
+import org.joda.time.Duration;
 //import java.net.MalformedURLException;
 import lombok.Getter;
 import lombok.Setter;
-import org.secnod.dropwizard.shiro.ShiroConfiguration;
+//import org.apache.shiro.io.;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+//import java.net.URISyntaxException;
+//import java.util.logging.Level;
+//import java.util.logging.Logger;
 
 public class AirpalConfiguration  {
 
@@ -74,7 +74,7 @@ public class AirpalConfiguration  {
   @Setter
   @JsonProperty
   @NotNull
-  private Duration usageWindow = Duration.hours(6);
+  private Duration usageWindow  = Duration.standardHours(6);
 
   @Getter
   @Setter
@@ -111,16 +111,16 @@ public class AirpalConfiguration  {
   @NotNull
   private DataSize maxOutputSize = DataSize.valueOf("1GB");
 
-  @Valid
-  @NotNull
-  private DataSourceFactory dataSourceFactory = new DataSourceFactory();
+//  @Valid
+//  @NotNull
+//  private DataSourceFactory dataSourceFactory = new DataSourceFactory();
 
-  @Getter
-  @Setter
-  @Valid
-  @JsonProperty
-  @NotNull
-  private ShiroConfiguration shiro;
+//  @Getter
+//  @Setter
+//  @Valid
+//  @JsonProperty
+//  @NotNull
+//  private ShiroConfiguration shiro;
 
   @Getter
   @Setter

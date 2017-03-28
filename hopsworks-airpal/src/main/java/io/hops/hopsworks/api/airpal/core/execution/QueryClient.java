@@ -5,15 +5,14 @@ import com.facebook.presto.client.QueryResults;
 import com.facebook.presto.client.StatementClient;
 import com.google.common.base.Function;
 import com.google.common.base.Stopwatch;
-import io.dropwizard.util.Duration;
-//import org.joda.time.Duration;
+//import io.dropwizard.util.Duration;
+import org.joda.time.Duration;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
-@AllArgsConstructor
+//@AllArgsConstructor
 public class QueryClient {
 
   private final QueryRunner queryRunner;
@@ -22,12 +21,21 @@ public class QueryClient {
   private final AtomicReference<QueryResults> finalResults = new AtomicReference<>();
 
   public QueryClient(QueryRunner queryRunner, String query) {
-    this(queryRunner, Duration.seconds(60 * 30), query);
+    this(queryRunner, Duration.standardSeconds(60*30), query);
   }
 
-  public QueryClient(QueryRunner queryRunner, org.joda.time.Duration timeout, String query) {
+  /**
+   *
+   * @param queryRunner
+   * @param timeout
+   * @param query
+   */
+  public QueryClient(QueryRunner queryRunner, Duration timeout, String query) {
 
-    this(queryRunner, Duration.seconds(timeout.getMillis()), query);
+    this.queryRunner=queryRunner;
+    this.query=query;
+    this.timeout=timeout;
+  //this(queryRunner, new Duration(TimeUnit.SECONDS.convert(timeout.getStandardSeconds(), TimeUnit.SECONDS)) , query);
   }
 
   public <T> T executeWith(Function<StatementClient, T> function)
@@ -37,7 +45,7 @@ public class QueryClient {
 
     try (StatementClient client = queryRunner.startInternalQuery(query)) {
       while (client.isValid() && !Thread.currentThread().isInterrupted()) {
-        if (stopwatch.elapsed(TimeUnit.MILLISECONDS) > timeout.toMilliseconds()) {
+        if (stopwatch.elapsed(TimeUnit.MILLISECONDS) > timeout.getMillis()) {
           throw new QueryTimeOutException(stopwatch.elapsed(TimeUnit.MILLISECONDS));
         }
 
