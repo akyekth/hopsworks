@@ -4,7 +4,7 @@ import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheckRegistry;
 //import io.dropwizard.jersey.caching.CacheControl;
 
-import javax.inject.Inject;
+//import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -18,12 +18,12 @@ import java.util.SortedMap;
 @Produces(MediaType.APPLICATION_JSON)
 public class HealthResource {
 
-  private final HealthCheckRegistry registry;
+  private HealthCheckRegistry registry;
 
-  @Inject
-  public HealthResource(HealthCheckRegistry registry) {
-    this.registry = registry;
-  }
+//  @Inject
+//  public HealthResource(HealthCheckRegistry registry) {
+//    this.registry = registry;
+//  }
 
   @GET
   //@CacheControl(mustRevalidate = true, noCache = true, noStore = true)

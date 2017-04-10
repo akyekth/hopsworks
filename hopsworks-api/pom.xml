@@ -107,10 +107,22 @@
     <dependency>
       <groupId>io.hops.hopsworks</groupId>
       <artifactId>hopsworks-airpal</artifactId>
-      <version>0.1.0</version>
+      <version>0.1.0</version>      
       <scope>compile</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.bval</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions> 
     </dependency>
     <!--end Airpal dependencies -->
+    <dependency>
+      <groupId>org.secnod.shiro</groupId>
+      <artifactId>shiro-jersey</artifactId>
+      <version>0.2.0</version>
+      <type>jar</type>
+    </dependency>
     <dependency>
       <groupId>javax</groupId>
       <artifactId>javaee-web-api</artifactId>

@@ -30,7 +30,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -66,32 +65,33 @@ public class TablesResource {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getTableUpdates(
+  public Response getTableUpdates(){
       //@Auth 
-      AirpalUser user,
-      @QueryParam("catalog") Optional<String> catalogOptional) {
-    final String catalog = catalogOptional.or(defaultCatalog);
-    final Map<String, List<String>> schemaMap = schemaCache.getSchemaMap(catalog);
-    final ImmutableList.Builder<Table> builder = ImmutableList.builder();
+      //AirpalUser user,
+//      @QueryParam("catalog") Optional<String> catalogOptional) {
+//    final String catalog = catalogOptional.or(defaultCatalog);
+//    final Map<String, List<String>> schemaMap = schemaCache.getSchemaMap(catalog);
+//    final ImmutableList.Builder<Table> builder = ImmutableList.builder();
+//    AirpalUser user = null;
+//    schemaMap.entrySet().stream().
+//      forEach((entry) -> 
+//      {
+//        String schema = entry.getKey();
+//        for (String table : entry.getValue())
+//        {
+//          if (isAuthorizedRead(user, catalog, schema, table))
+//          {
+//            builder.add(new Table(catalog, schema, table));
+//          }
+//        }
+//      });
+//
+//    final List<Table> tables = builder.build();
+//    final Map<Table, Long> allUsages = usageStore.getUsages(tables);
+//    final Map<PartitionedTable, DateTime> updateMap = Collections.emptyMap();
 
-    schemaMap.entrySet().stream().
-      forEach((entry) -> 
-      {
-        String schema = entry.getKey();
-        for (String table : entry.getValue())
-        {
-          if (isAuthorizedRead(user, catalog, schema, table))
-          {
-            builder.add(new Table(catalog, schema, table));
-          }
-        }
-      });
-
-    final List<Table> tables = builder.build();
-    final Map<Table, Long> allUsages = usageStore.getUsages(tables);
-    final Map<PartitionedTable, DateTime> updateMap = Collections.emptyMap();
-
-    return Response.ok(createTablesWithMetaData(tables, allUsages, updateMap)).build();
+ //   return Response.ok(createTablesWithMetaData(tables, allUsages, updateMap)).build();
+    return Response.ok().build();
   }
 
   // TODO: Make getTableColumns, getTablePartitions and getTablePreview take a 3rd path parameter for catalog
@@ -100,10 +100,11 @@ public class TablesResource {
   @Path("{schema}/{tableName}/columns")
   public Response getTableColumns(
       //@Auth
-      AirpalUser user,
+      //AirpalUser user,
       @PathParam("schema") String schema,
       @PathParam("tableName") String tableName)
       throws ExecutionException {
+    AirpalUser user = null;
     if (isAuthorizedRead(user, defaultCatalog, schema, tableName)) {
       return Response.ok(columnCache.getColumns(schema, tableName)).build();
     } else {
@@ -116,10 +117,11 @@ public class TablesResource {
   @Path("{schema}/{tableName}/partitions")
   public Response getTablePartitions(
       //@Auth
-      AirpalUser user,
+      //AirpalUser user,
       @PathParam("schema") String schema,
       @PathParam("tableName") String tableName)
       throws ExecutionException {
+    AirpalUser user = null;
     if (isAuthorizedRead(user, defaultCatalog, schema, tableName)) {
       return Response.ok(getPartitionsWithMetaData(new PartitionedTable("hive", schema, tableName))).build();
     } else {
@@ -132,7 +134,7 @@ public class TablesResource {
   @Path("{schema}/{tableName}/preview")
   public Response getTablePreview(
       // @Auth
-      AirpalUser user,
+      //AirpalUser user,
       @PathParam("schema") String schema,
       @PathParam("tableName") String tableName,
       @QueryParam("connectorId") String connectorId,
@@ -143,7 +145,7 @@ public class TablesResource {
 
     Optional<HivePartition> partition = FluentIterable.from(partitions).firstMatch((
         HivePartition input) -> Objects.equals(input.getName(), partitionName));
-
+    AirpalUser user = null;
     if (isAuthorizedRead(user, defaultCatalog, schema, tableName)) {
       return Response.ok(previewTableCache.getPreview(
           Optional.fromNullable(connectorId).or(defaultCatalog),

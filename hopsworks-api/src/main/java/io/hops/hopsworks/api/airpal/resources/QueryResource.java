@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import com.google.inject.Inject;
 import org.joda.time.DateTime;
-//import org.secnod.shiro.jaxrs.Auth;
+import org.secnod.shiro.jaxrs.Auth;
 
 import javax.annotation.Nullable;
 import javax.ws.rs.DELETE;
@@ -53,8 +53,7 @@ public class QueryResource {
   @Path("saved")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getSaved(
-      //@Auth 
-      AirpalUser user,
+      @Auth AirpalUser user,
       @QueryParam("table") List<PartitionedTable> tables) {
     if (user != null) {
       return Response.ok(queryStore.getSavedQueries(user)).build();
@@ -67,8 +66,7 @@ public class QueryResource {
   @Path("saved")
   @Produces(MediaType.APPLICATION_JSON)
   public Response saveQuery(
-      //@Auth
-      AirpalUser user,
+      @Auth AirpalUser user,
       @FormParam("description") String description,
       @FormParam("name") String name,
       @FormParam("query") String query) {
@@ -94,8 +92,7 @@ public class QueryResource {
   @Path("saved/{uuid}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response deleteQuery(
-      //@Auth 
-      AirpalUser user,
+      @Auth AirpalUser user,
       @PathParam("uuid") UUID uuid) {
     if (user != null) {
       if (queryStore.deleteSavedQuery(user, uuid)) {
@@ -122,8 +119,7 @@ public class QueryResource {
   @Path("history")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getHistory(
-      //@Auth
-      AirpalUser user,
+      @Auth AirpalUser user,
       @QueryParam("table") List<Table> tables) {
     Iterable<Job> recentlyRun;
 

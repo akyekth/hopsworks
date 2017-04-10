@@ -3,7 +3,7 @@ package io.hops.hopsworks.api.airpal.resources;
 import io.hops.hopsworks.api.airpal.core.AirpalUser;
 import io.hops.hopsworks.api.airpal.core.AuthorizationUtil;
 import lombok.Value;
-//import org.secnod.shiro.jaxrs.Auth;
+import org.secnod.shiro.jaxrs.Auth;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -16,8 +16,7 @@ import javax.ws.rs.core.Response;
 public class UserResource {
 
   @GET
-  public Response getUserInfo(//@Auth 
-      AirpalUser user) {
+  public Response getUserInfo(@Auth AirpalUser user) {
     if (user == null) {
       return Response.status(Response.Status.FORBIDDEN).build();
     } else {

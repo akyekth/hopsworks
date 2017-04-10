@@ -12,7 +12,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import com.google.common.collect.Sets;
-import com.hubspot.rosetta.StoredAsJson;
+import com.hubspot.rosetta.annotations.StoredAsJson;
 import lombok.Data;
 import lombok.experimental.Wither;
 import org.joda.time.DateTime;

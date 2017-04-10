@@ -1,23 +1,19 @@
 package io.hops.hopsworks.api.airpal.resources;
 
-import io.hops.hopsworks.api.airpal.ExecutionRequest;
 import io.hops.hopsworks.api.airpal.core.AirpalUser;
 import io.hops.hopsworks.api.airpal.core.AuthorizationUtil;
 import io.hops.hopsworks.api.airpal.core.execution.ExecutionClient;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
 import lombok.Data;
-//import org.secnod.shiro.jaxrs.Auth;
+import org.secnod.shiro.jaxrs.Auth;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import java.io.IOException;
 import java.util.UUID;
 
 @Path("/execute")
@@ -30,31 +26,30 @@ public class ExecuteResource {
     this.executionClient = executionClient;
   }
 
-  @PUT
-  @Produces(MediaType.APPLICATION_JSON)
-  @Consumes(MediaType.APPLICATION_JSON)
-  public Response executeQuery(//@Auth
-      AirpalUser user, ExecutionRequest request) throws IOException {
-
-    if (user != null) {
-      final UUID queryUuid = executionClient.runQuery(
-          request,
-          user,
-          user.getDefaultSchema(),
-          user.getQueryTimeout());
-
-      return Response.ok(new ExecutionSuccess(queryUuid)).build();
-    }
-    return Response.status(Response.Status.NOT_FOUND)
-        .entity(new ExecutionError("No Airpal user found"))
-        .build();
-  }
+//  @PUT
+//  @Produces(MediaType.APPLICATION_JSON)
+//  @Consumes(MediaType.APPLICATION_JSON)
+//  public Response executeQuery(@Auth AirpalUser user, 
+//         ExecutionRequest request) throws IOException {
+//
+//    if (user != null) {
+//      final UUID queryUuid = executionClient.runQuery(
+//          request,
+//          user,
+//          user.getDefaultSchema(),
+//          user.getQueryTimeout());
+//
+//      return Response.ok(new ExecutionSuccess(queryUuid)).build();
+//    }
+//    return Response.status(Response.Status.NOT_FOUND)
+//        .entity(new ExecutionError("No Airpal user found"))
+//        .build();
+//  }
 
   @GET
   @Path("permissions")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getPermissions(//@Auth 
-      AirpalUser user) {
+  public Response getPermissions(@Auth AirpalUser user) {
     if (user == null) {
       return Response.status(Response.Status.FORBIDDEN).build();
     } else {

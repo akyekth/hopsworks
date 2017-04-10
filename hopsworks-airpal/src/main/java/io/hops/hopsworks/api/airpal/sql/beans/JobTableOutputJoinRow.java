@@ -8,7 +8,7 @@ import io.hops.hopsworks.api.airpal.presto.Table;
 import com.facebook.presto.client.Column;
 import com.facebook.presto.client.QueryError;
 import com.facebook.presto.execution.QueryStats;
-import com.hubspot.rosetta.StoredAsJson;
+import com.hubspot.rosetta.annotations.StoredAsJson;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;

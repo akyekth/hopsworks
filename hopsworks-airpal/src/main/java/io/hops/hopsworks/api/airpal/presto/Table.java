@@ -8,7 +8,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
-import com.hubspot.rosetta.StoredAsJson;
+import com.hubspot.rosetta.annotations.StoredAsJson;
 import lombok.Data;
 import lombok.ToString;
 

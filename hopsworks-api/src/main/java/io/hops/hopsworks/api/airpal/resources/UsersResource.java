@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
 import com.google.inject.Inject;
-//import org.secnod.shiro.jaxrs.Auth;
+import org.secnod.shiro.jaxrs.Auth;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -47,8 +47,7 @@ public class UsersResource {
   @GET
   @Path("permissions")
   public Response getUserPermissions(
-      // @Auth 
-      AirpalUser user,
+      @Auth AirpalUser user,
       @PathParam("id") String userId) {
     if (user == null) {
       return Response.status(Response.Status.FORBIDDEN).build();
@@ -65,8 +64,7 @@ public class UsersResource {
   @GET
   @Path("queries")
   public Response getUserQueries(
-      //@Auth 
-      AirpalUser user,
+      @Auth AirpalUser user,
       @PathParam("id") String userId,
       @QueryParam("results") int numResults,
       @QueryParam("table") List<PartitionedTable> tables) {
@@ -120,8 +118,7 @@ public class UsersResource {
 
   @GET
   @Path("active-queries")
-  public Response getUserActiveQueries(//@Auth
-      AirpalUser user) {
+  public Response getUserActiveQueries(@Auth AirpalUser user) {
     List<Job> sortedResult = Ordering
         .natural()
         .nullsLast()

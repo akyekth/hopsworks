@@ -1,7 +1,7 @@
 package io.hops.hopsworks.api.airpal.queries;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.hubspot.rosetta.StoredAsJson;
+import com.hubspot.rosetta.annotations.StoredAsJson;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 //import lombok.EqualsAndHashCode;

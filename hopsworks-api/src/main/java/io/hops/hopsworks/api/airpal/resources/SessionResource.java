@@ -25,12 +25,12 @@ import java.net.URI;
 @Path("/")
 public class SessionResource {
 
-  @GET
-  public Response redirectToApp() {
-    return Response.temporaryRedirect(URI.create("/app"))
-        .status(Response.Status.MOVED_PERMANENTLY)
-        .build();
-  }
+//  @GET
+//  public Response redirectToApp() {
+//    return Response.temporaryRedirect(URI.create("/app"))
+//        .status(Response.Status.MOVED_PERMANENTLY)
+//        .build();
+//  }
 
   @GET
   @Path("/login")

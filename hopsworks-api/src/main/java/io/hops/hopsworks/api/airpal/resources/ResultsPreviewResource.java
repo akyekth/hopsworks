@@ -53,7 +53,6 @@ public class ResultsPreviewResource {
   }
 
   @GET
-  @Path("/")
   @Produces(MediaType.APPLICATION_JSON)
   public Response getFile(@QueryParam("fileURI") URI fileURI,
       @DefaultValue("100") @QueryParam("lines") int numLines) {
