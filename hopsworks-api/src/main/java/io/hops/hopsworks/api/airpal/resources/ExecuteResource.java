@@ -5,6 +5,7 @@ import io.hops.hopsworks.api.airpal.core.AuthorizationUtil;
 import io.hops.hopsworks.api.airpal.core.execution.ExecutionClient;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
+import io.swagger.annotations.Api;
 import lombok.Data;
 import org.secnod.shiro.jaxrs.Auth;
 
@@ -17,6 +18,7 @@ import javax.ws.rs.core.Response;
 import java.util.UUID;
 
 @Path("/execute")
+@Api(value = "ExecuteResource", description = "Execute Resource")
 public class ExecuteResource {
 
   private ExecutionClient executionClient;

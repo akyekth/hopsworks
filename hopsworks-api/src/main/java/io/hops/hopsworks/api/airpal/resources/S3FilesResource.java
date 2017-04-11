@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
+import io.swagger.annotations.Api;
 import lombok.val;
 
 import javax.inject.Named;
@@ -21,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 @Path("/s3")
+@Api(value = "S3FilesResource", description = "S3Files Resource")
 public class S3FilesResource {
 
   private final AmazonS3 s3Client;

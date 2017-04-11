@@ -2,6 +2,7 @@ package io.hops.hopsworks.api.airpal.resources;
 
 import io.hops.hopsworks.api.airpal.core.AirpalUser;
 import io.hops.hopsworks.api.airpal.core.AuthorizationUtil;
+import io.swagger.annotations.Api;
 import lombok.Value;
 import org.secnod.shiro.jaxrs.Auth;
 
@@ -13,6 +14,7 @@ import javax.ws.rs.core.Response;
 
 @Path("/api/user")
 @Produces(MediaType.APPLICATION_JSON)
+@Api(value = "UserResource", description = "User Resource")
 public class UserResource {
 
   @GET

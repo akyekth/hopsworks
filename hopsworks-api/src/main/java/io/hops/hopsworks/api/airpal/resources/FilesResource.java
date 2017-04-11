@@ -3,6 +3,7 @@ package io.hops.hopsworks.api.airpal.resources;
 import io.hops.hopsworks.api.airpal.core.store.files.ExpiringFileStore;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
+import io.swagger.annotations.Api;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 @Path("/api/files")
+@Api(value = "FilesResource", description = "Files Resource")
 public class FilesResource {
 
   private final ExpiringFileStore fileStore;

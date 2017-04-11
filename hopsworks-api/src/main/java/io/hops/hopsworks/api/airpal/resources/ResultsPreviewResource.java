@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.AmazonS3;
+import io.swagger.annotations.Api;
 
 import javax.inject.Named;
 import javax.ws.rs.DefaultValue;
@@ -36,6 +37,7 @@ import java.util.zip.GZIPInputStream;
 
 @Slf4j
 @Path("/api/preview")
+@Api(value = "ResultsPreview", description = "Results Preview")
 public class ResultsPreviewResource {
 
   private final ExpiringFileStore fileStore;

@@ -15,6 +15,7 @@ package io.hops.hopsworks.api.airpal.resources;
 //import com.google.common.collect.Ordering;
 //import com.google.inject.Inject;
 //import org.secnod.shiro.jaxrs.Auth;
+import io.swagger.annotations.Api;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -31,6 +32,7 @@ import java.util.UUID;
 //import static io.hops.hopsworks.api.airpal.resources.QueryResource.JOB_ORDERING;
 @Path("/queries")
 @Produces({MediaType.APPLICATION_JSON})
+@Api(value = "QueriesResource", description = "Queries Resource")
 public class QueriesResource {
 
 //  private final JobHistoryStore jobHistoryStore;

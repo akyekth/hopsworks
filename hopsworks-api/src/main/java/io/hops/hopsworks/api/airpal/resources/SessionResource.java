@@ -1,6 +1,7 @@
 package io.hops.hopsworks.api.airpal.resources;
 
 import io.hops.hopsworks.api.airpal.service.LoginView;
+import io.swagger.annotations.Api;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -23,6 +24,7 @@ import java.io.IOException;
 import java.net.URI;
 
 @Path("/")
+@Api(value = "SessionResource", description = "Session Resource")
 public class SessionResource {
 
 //  @GET

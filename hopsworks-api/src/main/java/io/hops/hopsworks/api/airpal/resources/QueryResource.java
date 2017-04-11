@@ -16,6 +16,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Ordering;
 import com.google.inject.Inject;
+import io.swagger.annotations.Api;
 import org.joda.time.DateTime;
 import org.secnod.shiro.jaxrs.Auth;
 
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Path("/api/query")
+@Api(value = "QueryResource", description = "Query Resource")
 public class QueryResource {
 
   private final JobHistoryStore jobHistoryStore;

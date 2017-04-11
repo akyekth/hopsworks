@@ -38,9 +38,11 @@ import java.util.concurrent.TimeUnit;
 
 import static io.hops.hopsworks.api.airpal.core.AuthorizationUtil.isAuthorizedRead;
 import static io.hops.hopsworks.api.airpal.presto.hive.HivePartition.HivePartitionItem;
+import io.swagger.annotations.Api;
 import static java.lang.String.format;
 
 @Path("/api/table")
+@Api(value = "TablesResource", description = "Tables Resource")
 public class TablesResource {
 
   private final SchemaCache schemaCache;

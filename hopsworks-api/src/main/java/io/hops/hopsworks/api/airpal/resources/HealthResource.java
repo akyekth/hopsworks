@@ -2,6 +2,7 @@ package io.hops.hopsworks.api.airpal.resources;
 
 import com.codahale.metrics.health.HealthCheck;
 import com.codahale.metrics.health.HealthCheckRegistry;
+import io.swagger.annotations.Api;
 //import io.dropwizard.jersey.caching.CacheControl;
 
 //import javax.inject.Inject;
@@ -16,6 +17,7 @@ import java.util.SortedMap;
 
 @Path("/health")
 @Produces(MediaType.APPLICATION_JSON)
+@Api(value = "HealthResource", description = "Health Resource")
 public class HealthResource {
 
   private HealthCheckRegistry registry;

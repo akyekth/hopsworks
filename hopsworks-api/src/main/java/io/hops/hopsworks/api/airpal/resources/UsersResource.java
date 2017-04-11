@@ -30,9 +30,11 @@ import java.util.Collections;
 import java.util.List;
 
 import static io.hops.hopsworks.api.airpal.resources.QueryResource.JOB_ORDERING;
+import io.swagger.annotations.Api;
 
 @Path("/api/users/{id}")
 @Produces(MediaType.APPLICATION_JSON)
+@Api(value = "UsersResource", description = "Users Resource")
 public class UsersResource {
 
   private final JobHistoryStore jobHistoryStore;
