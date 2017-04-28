@@ -1,6 +1,6 @@
 package io.hops.hopsworks.api.airpal.resources;
 
-import io.hops.hopsworks.api.airpal.service.LoginView;
+import io.hops.hopsworks.airpal.service.LoginView;
 import io.swagger.annotations.Api;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationToken;

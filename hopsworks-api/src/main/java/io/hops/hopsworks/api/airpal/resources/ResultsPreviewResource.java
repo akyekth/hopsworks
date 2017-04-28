@@ -2,7 +2,7 @@ package io.hops.hopsworks.api.airpal.resources;
 
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.opencsv.CSVReader;
-import io.hops.hopsworks.api.airpal.core.store.files.ExpiringFileStore;
+import io.hops.hopsworks.airpal.core.store.files.ExpiringFileStore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
 import lombok.Data;

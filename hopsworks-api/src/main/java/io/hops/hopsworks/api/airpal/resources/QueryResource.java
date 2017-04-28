@@ -1,16 +1,16 @@
 package io.hops.hopsworks.api.airpal.resources;
 
-import io.hops.hopsworks.api.airpal.Job;
-import io.hops.hopsworks.api.airpal.JobState;
-import io.hops.hopsworks.api.airpal.queries.CreateSavedQueryBuilder;
-import io.hops.hopsworks.api.airpal.queries.SavedQuery;
-import io.hops.hopsworks.api.airpal.queries.UserSavedQuery;
-import io.hops.hopsworks.api.airpal.core.AirpalUser;
-import io.hops.hopsworks.api.airpal.core.AuthorizationUtil;
-import io.hops.hopsworks.api.airpal.core.store.history.JobHistoryStore;
-import io.hops.hopsworks.api.airpal.core.store.queries.QueryStore;
-import io.hops.hopsworks.api.airpal.presto.PartitionedTable;
-import io.hops.hopsworks.api.airpal.presto.Table;
+import io.hops.hopsworks.airpal.api.Job;
+import io.hops.hopsworks.airpal.api.JobState;
+import io.hops.hopsworks.airpal.queries.CreateSavedQueryBuilder;
+import io.hops.hopsworks.airpal.queries.SavedQuery;
+import io.hops.hopsworks.airpal.queries.UserSavedQuery;
+import io.hops.hopsworks.airpal.core.AirpalUser;
+import io.hops.hopsworks.airpal.core.AuthorizationUtil;
+import io.hops.hopsworks.airpal.core.store.history.JobHistoryStore;
+import io.hops.hopsworks.airpal.core.store.queries.QueryStore;
+import io.hops.hopsworks.airpal.presto.PartitionedTable;
+import io.hops.hopsworks.airpal.presto.Table;
 import com.facebook.presto.client.Column;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;

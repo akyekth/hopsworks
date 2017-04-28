@@ -1,7 +1,7 @@
 package io.hops.hopsworks.api.airpal.resources;
 
-import io.hops.hopsworks.api.airpal.core.AirpalUser;
-import io.hops.hopsworks.api.airpal.core.AuthorizationUtil;
+import io.hops.hopsworks.airpal.core.AirpalUser;
+import io.hops.hopsworks.airpal.core.AuthorizationUtil;
 import io.swagger.annotations.Api;
 import lombok.Value;
 import org.secnod.shiro.jaxrs.Auth;

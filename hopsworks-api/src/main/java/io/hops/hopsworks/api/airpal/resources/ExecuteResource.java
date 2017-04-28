@@ -1,8 +1,8 @@
 package io.hops.hopsworks.api.airpal.resources;
 
-import io.hops.hopsworks.api.airpal.core.AirpalUser;
-import io.hops.hopsworks.api.airpal.core.AuthorizationUtil;
-import io.hops.hopsworks.api.airpal.core.execution.ExecutionClient;
+import io.hops.hopsworks.airpal.core.AirpalUser;
+import io.hops.hopsworks.airpal.core.AuthorizationUtil;
+import io.hops.hopsworks.airpal.core.execution.ExecutionClient;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.inject.Inject;
 import io.swagger.annotations.Api;

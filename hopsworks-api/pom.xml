@@ -36,6 +36,10 @@
           <groupId>org.apache.flink</groupId>
           <artifactId>*</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.mortbay.jetty</groupId>
+          <artifactId>jetty-util</artifactId>
+        </exclusion>
       </exclusions> 
     </dependency>
     <!--Zeppelin dependencies -->
@@ -61,7 +65,21 @@
     <dependency>
       <groupId>org.apache.zeppelin</groupId>
       <artifactId>zeppelin-zengine</artifactId>
-      <version>0.7.1-SNAPSHOT</version>      
+      <version>0.7.1-SNAPSHOT</version>
+      <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-client</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-io</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-util</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <!-- Apache Shiro -->
     <dependency>
@@ -86,6 +104,12 @@
       <groupId>org.glassfish.jersey.core</groupId>
       <artifactId>jersey-server</artifactId>
       <version>2.21</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.validation</groupId>
+          <artifactId>validation-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.glassfish.jersey.media</groupId>
@@ -97,6 +121,12 @@
       <groupId>io.swagger</groupId>
       <artifactId>swagger-jersey2-jaxrs</artifactId>
       <version>1.5.10</version>
+      <exclusions>
+        <exclusion>
+          <groupId>javax.validation</groupId>
+          <artifactId>validation-api</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.google.guava</groupId>
@@ -109,13 +139,39 @@
       <artifactId>hopsworks-airpal</artifactId>
       <version>0.1.0</version>      
       <scope>compile</scope>
-      <exclusions>
+<!--      <exclusions>
         <exclusion>
           <groupId>org.apache.bval</groupId>
           <artifactId>*</artifactId>
         </exclusion>
-      </exclusions> 
+      </exclusions> -->
+      <exclusions>
+        <exclusion>
+          <groupId>javax.validation</groupId>
+          <artifactId>validation-api</artifactId>
+        </exclusion>
+<!--        <exclusion>
+          <groupId>org.eclipse.jetty</groupId>
+          <artifactId>jetty-client</artifactId>
+        </exclusion>-->
+      </exclusions>
     </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.glassfish.hk2/guice-bridge -->
+    <dependency>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <version>1.1.0.Final</version>
+      <scope>provided</scope>
+    </dependency> 
+    
+<!--    <dependency>
+      <groupId>org.eclipse.jetty</groupId>
+      <artifactId>jetty-util</artifactId>
+      <version>9.2.15.v20160210</version>
+      <scope>compile</scope>
+    </dependency>-->
+   
     <!--end Airpal dependencies -->
     <dependency>
       <groupId>org.secnod.shiro</groupId>
@@ -185,6 +241,7 @@
           </execution>
         </executions>
       </plugin>
+     
     </plugins>
   </build>
   <repositories>

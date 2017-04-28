@@ -14,31 +14,25 @@ import lombok.Setter;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-
 import java.net.URI;
+import java.net.URISyntaxException;
 //import java.net.URISyntaxException;
 //import java.util.logging.Level;
 //import java.util.logging.Logger;
 
-public class AirpalConfiguration  {
+public class AirpalConfiguration {
 
-//  private final static String DBUNAME = "kthfs";
-//  private final static String DBPWD = "kthfs";
-//  private final static URI DBURI;
-//
-//  static {
-//    java.net.URI temp = null;
-//    try {
-//      temp = new java.net.URI("jdbc:mysql://localhost:3306/airpal");
-//    } catch (URISyntaxException ex) {
-//      Logger.getLogger(AirpalConfiguration.class.getName()).log(Level.SEVERE, null, ex);
-//    }
-//    DBURI = temp;
-//  }
-  @Getter
-  @Setter
+  
   @JsonProperty
-  private URI prestoCoordinator = null;
+  private URI prestoCoordinator ;
+
+  public void setPrestoCoordinator(URI prestoCoordinator) {
+    this.prestoCoordinator = prestoCoordinator;
+  }
+
+  public URI getPrestoCoordinator() throws URISyntaxException {
+    return new URI("http://10.0.2.15:8282");
+  }
 
   @Getter
   @Setter

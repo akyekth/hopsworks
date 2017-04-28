@@ -4,6 +4,42 @@
     <param-name>javax.faces.PROJECT_STAGE</param-name>
     <param-value>Development</param-value>
   </context-param>
+  
+  <!-- Airpal related -->
+   <!--This block handles the setting up of our Guice Filter so that we can use Guice for Dependency Injection. -->
+<!--  <filter>
+    <filter-name>guiceFilter</filter-name>
+    <filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>guiceFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>-->
+   <!--
+    This sets up our JerseyContextFilter so that we have a default URL for our Jersey calls.
+    This also declares the class path to our webservices, so that it knows where to look for which
+    calls.  Note that the url is /api/*, which means the paths for all Jersey Objects must start with "api/*"
+  -->
+<!--  <filter>
+    <filter-name>JerseyContextFilter</filter-name>
+    <filter-class>org.glassfish.jersey.servlet.ServletContainer</filter-class>
+    <init-param>
+      <param-name>javax.ws.rs.Application</param-name>
+      <param-value>io.hops.hopsworks.rest.application.config</param-value>
+    </init-param>
+    <init-param>
+      <param-name>jersey.config.server.provider.packages</param-name>
+      <param-value>io.hops.hopsworks.api.airpal.resources</param-value>
+    </init-param>
+  </filter>
+  <filter-mapping>
+    <filter-name>JerseyContextFilter</filter-name>
+    <url-pattern>/api/*</url-pattern>
+  </filter-mapping>-->
+  
+  <!--   end airpal related -->
+  
+   
   <servlet>
     <servlet-name>Faces Servlet</servlet-name>
     <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>

@@ -1,6 +1,6 @@
 package io.hops.hopsworks.api.airpal.resources;
 
-import io.hops.hopsworks.api.airpal.core.store.files.ExpiringFileStore;
+import io.hops.hopsworks.airpal.core.store.files.ExpiringFileStore;
 import com.google.common.io.ByteStreams;
 import com.google.inject.Inject;
 import io.swagger.annotations.Api;
