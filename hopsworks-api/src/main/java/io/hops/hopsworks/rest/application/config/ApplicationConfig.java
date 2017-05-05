@@ -2,36 +2,25 @@ package io.hops.hopsworks.rest.application.config;
 
 import io.swagger.annotations.Api;
 
-import com.google.inject.Guice;
-import io.hops.hopsworks.airpal.modules.AirpalModule;
-import org.glassfish.hk2.api.ServiceLocator;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.jvnet.hk2.guice.bridge.api.GuiceBridge;
-import org.jvnet.hk2.guice.bridge.api.GuiceIntoHK2Bridge;
-import com.google.inject.Injector;
-import javax.inject.Inject;
-import org.glassfish.jersey.media.multipart.MultiPartFeature;
+
 
 @Api
 @javax.ws.rs.ApplicationPath("api")
 public class ApplicationConfig extends ResourceConfig {
 
-  protected final Injector injector;
-  /**
-   * adding manually all the restful services of the application.
-   */
-  @Inject
-  public ApplicationConfig(ServiceLocator serviceLocator) {
+  
+  public ApplicationConfig() {
 
-//    packages("io.hops.hopsworks.api.airpal.resources");
-    
-    register(MultiPartFeature.class);
-    GuiceBridge.getGuiceBridge().initializeGuiceBridge(serviceLocator);
-    GuiceIntoHK2Bridge guiceBridge = serviceLocator.getService(GuiceIntoHK2Bridge.class);
-    this.injector=Guice.createInjector(new AirpalModule());
-    guiceBridge.bridgeGuiceInjector(injector);
-    register(injector.getInstance(io.hops.hopsworks.api.airpal.resources.TablesResource.class));
-    register(injector.getInstance(io.hops.hopsworks.api.airpal.resources.SampleResource.class));
+////    packages("io.hops.hopsworks.api.airpal.resources");
+//    
+//    register(MultiPartFeature.class);
+//    GuiceBridge.getGuiceBridge().initializeGuiceBridge(serviceLocator);
+//    GuiceIntoHK2Bridge guiceBridge = serviceLocator.getService(GuiceIntoHK2Bridge.class);
+//    this.injector=Guice.createInjector(new AirpalModule());
+//    guiceBridge.bridgeGuiceInjector(injector);
+//    register(injector.getInstance(io.hops.hopsworks.api.airpal.resources.TablesResource.class));
+//    register(injector.getInstance(io.hops.hopsworks.api.airpal.resources.SampleResource.class));
 
     register(io.hops.hopsworks.api.agent.AgentResource.class);
     register(io.hops.hopsworks.api.agent.AgentService.class);

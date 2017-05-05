@@ -134,30 +134,28 @@
       <version>18.0</version>
     </dependency>
     <!--Airpal dependencies -->
-    <dependency>
+<!--    <dependency>
       <groupId>io.hops.hopsworks</groupId>
       <artifactId>hopsworks-airpal</artifactId>
       <version>0.1.0</version>      
       <scope>compile</scope>
-<!--      <exclusions>
+      <exclusions>
         <exclusion>
           <groupId>org.apache.bval</groupId>
           <artifactId>*</artifactId>
         </exclusion>
-      </exclusions> -->
-      <exclusions>
         <exclusion>
           <groupId>javax.validation</groupId>
           <artifactId>validation-api</artifactId>
         </exclusion>
-<!--        <exclusion>
+        <exclusion>
           <groupId>org.eclipse.jetty</groupId>
           <artifactId>jetty-client</artifactId>
-        </exclusion>-->
+        </exclusion>
       </exclusions>
-    </dependency>
+    </dependency>-->
 
-    <!-- https://mvnrepository.com/artifact/org.glassfish.hk2/guice-bridge -->
+<!--     https://mvnrepository.com/artifact/org.glassfish.hk2/guice-bridge -->
     <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>

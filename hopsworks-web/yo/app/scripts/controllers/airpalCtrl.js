@@ -5,9 +5,10 @@ angular.module('hopsWorksApp')
           function ($scope, $routeParams, $route) {
 
             var self = this;
+            self.projectId=$routeParams.projectID;
 
             self.getAirpalURL = function () {
-              return getLocationBase() + "/airpal";
+              return getLocationBase() + "/airpal?projectID="+ self.projectId;
             };
           }]);
 
